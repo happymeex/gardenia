@@ -1,13 +1,31 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 )
 
+const PORT = "8080"
+
 func main(){
-	fs := http.FileServer(http.Dir("./client"))
-	http.Handle("/", fs)
-	fmt.Println("Listening on port:", 8080)
-	http.ListenAndServe(":8080", nil)
+	var prodMode bool
+	flag.BoolVar(&prodMode, "prod", false, "Specifies production mode")
+	flag.Parse()
+
+	if prodMode {
+		fs := http.FileServer(http.Dir("./client/dist/assets/"))
+		http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+		http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request){
+			http.ServeFile(w, req, "./client/dist/index.html")
+		})
+	} else {
+		viteDevServerURL, _ := url.Parse("http://localhost:5173")
+		proxy := httputil.NewSingleHostReverseProxy(viteDevServerURL)
+		http.Handle("/", proxy)
+	}
+	fmt.Println("Listening on port:", PORT)
+	http.ListenAndServe(":" + PORT, nil)
 }
