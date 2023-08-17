@@ -1,10 +1,12 @@
 FROM golang:1.21-alpine
 
-WORKDIR /server
+WORKDIR /game
 
-COPY ./*.go /server
+COPY server ./server/ 
+COPY go.mod .
+COPY client ./client/
 
-RUN go build main.go
+RUN go build server/main.go
 
 EXPOSE 8080
 
