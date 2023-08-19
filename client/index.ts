@@ -8,6 +8,9 @@ const config: Phaser.Types.Core.GameConfig = {
     scene: [BrawlScene],
     physics: {
         default: "arcade",
+        arcade: {
+            gravity: { y: 1500 },
+        },
     },
 };
 
