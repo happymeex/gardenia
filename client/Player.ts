@@ -6,6 +6,8 @@ const DIRECTIONS = ["left", "right", "up", "down"] as const;
 const WALK_FRAME_RATE = 12;
 const WALK_VELOCITY = 450;
 const JUMP_VELOCITY = 800;
+const HITBOX_WIDTH = 64;
+const HITBOX_HEIGHT = 105;
 type CollisionObject =
     | Phaser.Types.Physics.Arcade.GameObjectWithBody
     | Phaser.Tilemaps.Tile;
@@ -58,6 +60,7 @@ class Player {
             repeat: -1,
         });
         scene.physics.add.collider(this.player, platforms, this.makeCollider());
+        this.player.setSize(HITBOX_WIDTH, HITBOX_HEIGHT);
     }
     private makeCollider() {
         return (player: CollisionObject, platforms: CollisionObject) => {

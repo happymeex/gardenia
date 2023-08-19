@@ -47,7 +47,7 @@ class MainMenu extends Phaser.Scene {
                 fontSize: `${SUBHEADER_FONT_SIZE}px`,
             });
             const blah = navButton.setInteractive();
-            navButton.on("pointerdown", () => {
+            navButton.on("pointerup", () => {
                 this.scene.start(key);
                 document.body.style.cursor = "default";
             });
