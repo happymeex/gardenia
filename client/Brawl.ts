@@ -5,7 +5,7 @@ import forestPlatform from "./static/forest_platform.png";
 
 import Player, { getMotions } from "./Player";
 
-class BrawlScene extends Phaser.Scene {
+class Brawl extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private player: Player;
     public constructor() {
@@ -36,4 +36,4 @@ class BrawlScene extends Phaser.Scene {
     }
 }
 
-export default BrawlScene;
+export default Brawl;

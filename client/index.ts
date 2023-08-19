@@ -1,11 +1,13 @@
 import Phaser from "phaser";
-import BrawlScene from "./brawl";
+import MainMenu from "./MainMenu";
+import Survival from "./Survival";
+import Brawl from "./Brawl";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",
     width: 1680,
     height: 945,
-    scene: [BrawlScene],
+    scene: [MainMenu, Survival, Brawl],
     physics: {
         default: "arcade",
         arcade: {
