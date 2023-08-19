@@ -6,6 +6,7 @@ const baseTextColor = "#f5efa4";
 export const menuTextStyleBase: TextStyle = {
     color: baseTextColor,
     fontFamily: "Alegreya SC",
+    fontSize: "40px",
 };
 
 export const paragraphTextStyleBase: TextStyle = {

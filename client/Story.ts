@@ -21,10 +21,12 @@ class Story extends Phaser.Scene {
             { ...paragraphTextStyleBase, align: "center" }
         );
 
-        const returnToHome = this.add.text(0, 200, "Return to menu", {
-            ...menuTextStyleBase,
-            fontSize: "40px",
-        });
+        const returnToHome = this.add.text(
+            0,
+            200,
+            "Return to menu",
+            menuTextStyleBase
+        );
         makeClickable(returnToHome, this, () => {
             this.scene.start("main-menu");
         });
