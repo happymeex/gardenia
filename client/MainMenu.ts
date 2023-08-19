@@ -1,8 +1,12 @@
 import Phaser from "phaser";
-import { makeClickable, MENU_TEXTSTYLE_BASE } from "./utils";
+import { makeClickable } from "./utils";
 import { mainMenu } from "./ui";
 
 const SCENES = [
+    {
+        label: "Story",
+        key: "story",
+    },
     {
         label: "Survival",
         key: "survival",

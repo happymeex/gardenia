@@ -2,9 +2,16 @@ import Phaser from "phaser";
 
 type TextStyle = Phaser.Types.GameObjects.Text.TextStyle;
 
-export const MENU_TEXTSTYLE_BASE: TextStyle = {
-    color: "#f5efa4",
+const baseTextColor = "#f5efa4";
+export const menuTextStyleBase: TextStyle = {
+    color: baseTextColor,
     fontFamily: "Alegreya SC",
+};
+
+export const paragraphTextStyleBase: TextStyle = {
+    color: baseTextColor,
+    fontFamily: "Alegreya",
+    fontSize: "24px",
 };
 
 type MenuStyle = {
@@ -16,11 +23,11 @@ type MenuStyle = {
 
 export const mainMenu: MenuStyle = {
     headerStyle: {
-        ...MENU_TEXTSTYLE_BASE,
+        ...menuTextStyleBase,
         fontSize: "120px",
     },
     optionStyle: {
-        ...MENU_TEXTSTYLE_BASE,
+        ...menuTextStyleBase,
         fontSize: "56px",
     },
     optionSpacing: 80,
@@ -29,11 +36,11 @@ export const mainMenu: MenuStyle = {
 
 export const settingsPanel: MenuStyle = {
     headerStyle: {
-        ...MENU_TEXTSTYLE_BASE,
+        ...menuTextStyleBase,
         fontSize: "72px",
     },
     optionStyle: {
-        ...MENU_TEXTSTYLE_BASE,
+        ...menuTextStyleBase,
         fontSize: "32px",
     },
     optionSpacing: 48,
