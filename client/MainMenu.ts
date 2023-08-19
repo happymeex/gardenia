@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { makeClickable } from "./utils";
 
 const SCENES = [
     {
@@ -18,7 +19,6 @@ const SHARED_TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
 const TITLE_FONT_SIZE = 96;
 const SUBHEADER_FONT_SIZE = 60;
 const SUBHEADER_SPACING = 80;
-const HOVER_ANIMATION_MS_DURATION = 150;
 
 class MainMenu extends Phaser.Scene {
     public constructor() {
@@ -46,32 +46,11 @@ class MainMenu extends Phaser.Scene {
                 ...SHARED_TEXT_STYLE,
                 fontSize: `${SUBHEADER_FONT_SIZE}px`,
             });
-            const blah = navButton.setInteractive();
-            navButton.on("pointerup", () => {
+            makeClickable(navButton, this, () => {
                 this.scene.start(key);
-                document.body.style.cursor = "default";
-            });
-            navButton.on("pointerover", () => {
-                document.body.style.cursor = "pointer";
-                this.tweens.add({
-                    targets: navButton,
-                    scaleX: 1.05,
-                    scaleY: 1.05,
-                    duration: HOVER_ANIMATION_MS_DURATION,
-                });
-                navButton.style.setFontSize(`${SUBHEADER_FONT_SIZE * 1.05}px`);
-            });
-            navButton.on("pointerout", () => {
-                document.body.style.cursor = "default";
-                this.tweens.add({
-                    targets: navButton,
-                    scaleX: 1,
-                    scaleY: 1,
-                    duration: HOVER_ANIMATION_MS_DURATION,
-                });
             });
             menuTextContainer.add(navButton);
-            navButton.setOrigin(0.5);
+            navButton.setOrigin(0.5); // center-align text
         });
     }
     update() {
