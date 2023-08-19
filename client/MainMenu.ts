@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import { makeClickable } from "./utils";
+import { makeClickable, MENU_TEXTSTYLE_BASE } from "./utils";
+import { mainMenu } from "./ui";
 
 const SCENES = [
     {
@@ -11,14 +12,6 @@ const SCENES = [
         key: "brawl",
     },
 ];
-
-const SHARED_TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
-    color: "white",
-    fontFamily: "Alegreya SC",
-};
-const TITLE_FONT_SIZE = 96;
-const SUBHEADER_FONT_SIZE = 60;
-const SUBHEADER_SPACING = 80;
 
 class MainMenu extends Phaser.Scene {
     public constructor() {
@@ -33,19 +26,22 @@ class MainMenu extends Phaser.Scene {
             this.cameras.main.height / 2
         );
         const title = this.add
-            .text(0, -120, "Gardenia", {
-                ...SHARED_TEXT_STYLE,
-                fontStyle: "bold",
-                fontSize: `${TITLE_FONT_SIZE}px`,
-            })
+            .text(
+                0,
+                -mainMenu.headerMarginBottom,
+                "Gardenia",
+                mainMenu.headerStyle
+            )
             .setOrigin(0.5);
         menuTextContainer.add(title);
 
         SCENES.forEach(({ label, key }, i) => {
-            const navButton = this.add.text(0, SUBHEADER_SPACING * i, label, {
-                ...SHARED_TEXT_STYLE,
-                fontSize: `${SUBHEADER_FONT_SIZE}px`,
-            });
+            const navButton = this.add.text(
+                0,
+                mainMenu.optionSpacing * i,
+                label,
+                mainMenu.optionStyle
+            );
             makeClickable(navButton, this, () => {
                 this.scene.start(key);
             });

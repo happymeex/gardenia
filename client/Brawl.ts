@@ -2,13 +2,14 @@ import Phaser from "phaser";
 import background from "./static/forest_bg.png";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import forestPlatform from "./static/forest_platform.png";
-import { loadSettingsIcon, addSettingsIcon } from "./utils";
+import { loadSettingsIcon, configureSettingsPanel } from "./utils";
 
 import Player, { getMotions } from "./Player";
 
 class Brawl extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private player: Player;
+    private isPaused = false;
     public constructor() {
         super({ key: "brawl" });
     }
@@ -22,7 +23,8 @@ class Brawl extends Phaser.Scene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {
-        addSettingsIcon(this);
+        const { pause, resume } = this.makeFlowControlFunctions();
+        configureSettingsPanel(this, pause, resume);
         const platforms = this.physics.add.staticGroup();
 
         platforms.create(100, 800, "platform");
@@ -34,8 +36,28 @@ class Brawl extends Phaser.Scene {
     }
     update() {
         const cursors = this.cursors; // holds keypress data
-        if (cursors === undefined) return;
+        if (cursors === undefined || this.isPaused) return;
         this.player.handleMotion(getMotions(cursors));
+    }
+
+    /**
+     * Creates two handler functions that pause and resume the scene.
+     * Specifically: pausing/resuming the physics engine, and toggling
+     * `this.isPause`.
+     *
+     * @returns Object whose values are the appropriate pause and resume functions
+     */
+    private makeFlowControlFunctions() {
+        return {
+            pause: () => {
+                this.physics.pause();
+                this.isPaused = true;
+            },
+            resume: () => {
+                this.physics.resume();
+                this.isPaused = false;
+            },
+        };
     }
 }
 

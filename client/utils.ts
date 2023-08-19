@@ -1,11 +1,21 @@
 import Phaser from "phaser";
 import settingsIcon from "./static/settings_icon.png";
+import { settingsPanel } from "./ui";
+
+export const MENU_TEXTSTYLE_BASE: Phaser.Types.GameObjects.Text.TextStyle = {
+    color: "white",
+    fontFamily: "Alegreya SC",
+};
 
 export function loadSettingsIcon(scene: Phaser.Scene) {
     scene.load.image("settings-icon", settingsIcon);
 }
 
-export function addSettingsIcon(scene: Phaser.Scene) {
+export function configureSettingsPanel(
+    scene: Phaser.Scene,
+    onOpen = () => {},
+    onClose = () => {}
+) {
     const offset = 50;
     const settingsButton = scene.add.image(
         scene.cameras.main.width - offset,
@@ -13,15 +23,67 @@ export function addSettingsIcon(scene: Phaser.Scene) {
         "settings-icon"
     );
     makeClickable(settingsButton, scene, () => {
-        scene.scene.start("main-menu");
+        menuPanel.setVisible(true);
+        onOpen();
     });
-    settingsButton.on("pointerup", () => {
-        scene.cameras.main.fadeOut(500, 0, 0, 0, (camera, progress: number) => {
-            if (progress === 1) {
-                scene.scene.start("main-menu");
-            }
-        });
+    const menuPanel = makeSettingsPanel(scene, onClose);
+}
+
+function makeSettingsPanel(
+    scene: Phaser.Scene,
+    onClose = () => {}
+): Phaser.GameObjects.Container {
+    const menuTextContainer = scene.add.container(
+        scene.cameras.main.width / 2,
+        scene.cameras.main.height / 2
+    );
+    const header = scene.add.text(
+        0,
+        -settingsPanel.headerMarginBottom,
+        "Menu",
+        settingsPanel.headerStyle
+    );
+    const buttonData = [
+        {
+            label: "Resume game",
+            onClick: () => {
+                menuTextContainer.setVisible(false);
+                onClose();
+            },
+        },
+        {
+            label: "Return to home",
+            onClick: () => {
+                scene.cameras.main.fadeOut(
+                    500,
+                    0,
+                    0,
+                    0,
+                    (camera, progress: number) => {
+                        if (progress === 1) {
+                            scene.scene.start("main-menu");
+                        }
+                    }
+                );
+            },
+        },
+    ];
+    const buttons = buttonData.map(({ label, onClick }, i) => {
+        const textButton = scene.add.text(
+            0,
+            settingsPanel.optionSpacing * i,
+            label,
+            settingsPanel.optionStyle
+        );
+        makeClickable(textButton, scene, onClick);
+        return textButton;
     });
+    menuTextContainer.add(
+        [header, ...buttons].map((item) => item.setOrigin(0.5))
+    );
+
+    menuTextContainer.setVisible(false);
+    return menuTextContainer;
 }
 
 /**
