@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import background from "./static/forest_bg.png";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import forestPlatform from "./static/forest_platform.png";
+import { loadSettingsIcon, addSettingsIcon } from "./utils";
 
 import Player, { getMotions } from "./Player";
 
@@ -12,6 +13,7 @@ class Brawl extends Phaser.Scene {
         super({ key: "brawl" });
     }
     preload() {
+        loadSettingsIcon(this);
         this.load.image("platform", forestPlatform);
         this.load.spritesheet("player", playerSpritesheet, {
             frameWidth: 128,
@@ -20,6 +22,7 @@ class Brawl extends Phaser.Scene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {
+        addSettingsIcon(this);
         const platforms = this.physics.add.staticGroup();
 
         platforms.create(100, 800, "platform");
