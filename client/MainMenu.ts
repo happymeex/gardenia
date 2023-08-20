@@ -17,6 +17,18 @@ const SCENES = [
     },
 ];
 
+const buttonData = [
+    {
+        label: "Survival",
+        nextScene: "survival-settings",
+    },
+    { label: "Brawl", nextScene: "brawl-settings" },
+    {
+        label: "Story",
+        nextScene: "story",
+    },
+];
+
 class MainMenu extends Phaser.Scene {
     public constructor() {
         super({ key: "main-menu" });
@@ -39,7 +51,7 @@ class MainMenu extends Phaser.Scene {
             .setOrigin(0.5);
         menuTextContainer.add(title);
 
-        SCENES.forEach(({ label, key }, i) => {
+        buttonData.forEach(({ label, nextScene }, i) => {
             const navButton = this.add.text(
                 0,
                 mainMenu.optionSpacing * i,
@@ -47,7 +59,7 @@ class MainMenu extends Phaser.Scene {
                 mainMenu.optionStyle
             );
             makeClickable(navButton, this, () => {
-                this.scene.start(key);
+                this.scene.start(nextScene);
             });
             menuTextContainer.add(navButton);
             navButton.setOrigin(0.5); // center-align text
