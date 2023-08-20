@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { menuTextStyleBase } from "./ui";
-import { makeClickable } from "./utils";
+import { makeClickable, makeWebSocket } from "./utils";
 
 class BrawlSettings extends Phaser.Scene {
     public constructor() {
@@ -36,13 +36,12 @@ class BrawlSettings extends Phaser.Scene {
                 item.setOrigin(0.5)
             )
         );
-        const socket = new WebSocket("ws://localhost:8080/ws");
+        const socket = makeWebSocket();
         socket.onopen = (e) => {
-            console.log("connection opened", e);
-            socket.send("helloooo!");
+            socket.send("ready");
         };
         socket.onmessage = (e) => {
-            console.log("message:", e);
+            if (e.data === "Init") this.scene.start("brawl", { socket });
         };
     }
 }

@@ -10,6 +10,7 @@ class Brawl extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private player: Player;
     private isPaused = false;
+    private socket: WebSocket | undefined = undefined;
     public constructor() {
         super({ key: "brawl" });
     }
@@ -22,9 +23,11 @@ class Brawl extends Phaser.Scene {
         });
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
-    create() {
-        const { pause, resume } = this.makeFlowControlFunctions();
-        configureSettingsPanel(this, pause, resume);
+    create(data: { socket: WebSocket }) {
+        this.socket = data.socket;
+        this.socket.send("In brawl now");
+        const { pause, resume, leave } = this.makeFlowControlFunctions();
+        configureSettingsPanel(this, pause, resume, leave);
         const platforms = this.physics.add.staticGroup();
 
         platforms.create(100, 800, "platform");
@@ -41,9 +44,9 @@ class Brawl extends Phaser.Scene {
     }
 
     /**
-     * Creates two handler functions that pause and resume the scene.
-     * Specifically: pausing/resuming the physics engine, and toggling
-     * `this.isPause`.
+     * Creates handler functions to be run when pausing, resuming, and leaving the scene.
+     * Specifically: pausing/resuming the physics engine, toggling `this.isPause`,
+     * and closing the websocket connection if leaving.
      *
      * @returns Object whose values are the appropriate pause and resume functions
      */
@@ -56,6 +59,9 @@ class Brawl extends Phaser.Scene {
             resume: () => {
                 this.physics.resume();
                 this.isPaused = false;
+            },
+            leave: () => {
+                this.socket.close(1000); // indicates normal closure
             },
         };
     }

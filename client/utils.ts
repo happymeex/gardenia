@@ -14,7 +14,8 @@ export function loadSettingsIcon(scene: Phaser.Scene) {
 export function configureSettingsPanel(
     scene: Phaser.Scene,
     onOpen = () => {},
-    onClose = () => {}
+    onClose = () => {},
+    leave = () => {}
 ) {
     const offset = 50;
     const settingsButton = scene.add.image(
@@ -26,12 +27,13 @@ export function configureSettingsPanel(
         menuPanel.setVisible(true);
         onOpen();
     });
-    const menuPanel = makeSettingsPanel(scene, onClose);
+    const menuPanel = makeSettingsPanel(scene, onClose, leave);
 }
 
 function makeSettingsPanel(
     scene: Phaser.Scene,
-    onClose = () => {}
+    onClose = () => {},
+    leave = () => {}
 ): Phaser.GameObjects.Container {
     const menuTextContainer = scene.add.container(
         scene.cameras.main.width / 2,
@@ -61,6 +63,7 @@ function makeSettingsPanel(
                     0,
                     (camera, progress: number) => {
                         if (progress === 1) {
+                            leave();
                             scene.scene.start("main-menu");
                         }
                     }
@@ -128,4 +131,13 @@ export function makeClickable(
             duration,
         });
     });
+}
+
+export function makeWebSocket(): WebSocket {
+    const URL = window.location.href;
+    const prod = URL.includes("https");
+    const wsURL = URL.replace(prod ? "https" : "http", prod ? "wss" : "ws");
+    console.log("websocket URL:", wsURL);
+    const socket = new WebSocket(`${wsURL}ws/`);
+    return socket;
 }
