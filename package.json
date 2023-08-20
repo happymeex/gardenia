@@ -4,9 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "concurrently \"go run server/main.go\" \"npx vite\"",
+        "dev": "concurrently \"go run server/*.go\" \"npx vite\"",
         "build:client": "vite build",
-        "build:local": "go build server/main.go && npm run build:client",
+        "build:local": "go build server/*.go && npm run build:client",
         "start:local": "./main -prod",
         "dockerize": "npm run build:client && docker build -t gardenia .",
         "start": "npm run dockerize && docker run -p 8080:8080 gardenia"

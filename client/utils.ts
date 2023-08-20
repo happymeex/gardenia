@@ -137,7 +137,6 @@ export function makeWebSocket(): WebSocket {
     const URL = window.location.href;
     const prod = URL.includes("https");
     const wsURL = URL.replace(prod ? "https" : "http", prod ? "wss" : "ws");
-    console.log("websocket URL:", wsURL);
-    const socket = new WebSocket(`${wsURL}ws/`);
+    const socket = new WebSocket(`${wsURL}ws/12`);
     return socket;
 }

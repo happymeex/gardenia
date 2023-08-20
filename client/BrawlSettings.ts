@@ -29,20 +29,28 @@ class BrawlSettings extends Phaser.Scene {
             "Share this link with friends:",
             menuTextStyleBase
         );
-        makeClickable(returnToHome, this, () => this.scene.start("main-menu"));
-        makeClickable(begin, this, () => this.scene.start("brawl"));
-        container.add(
-            [header, returnToHome, begin, generateLink].map((item) =>
-                item.setOrigin(0.5)
-            )
-        );
+
         const socket = makeWebSocket();
         socket.onopen = (e) => {
             socket.send("ready");
         };
         socket.onmessage = (e) => {
-            if (e.data === "Init") this.scene.start("brawl", { socket });
+            if (e.data === "true") {
+                makeClickable(begin, this, () =>
+                    this.scene.start("brawl", { socket })
+                );
+            } else begin.removeInteractive();
         };
+
+        makeClickable(returnToHome, this, () => {
+            this.scene.start("main-menu");
+            socket.close(1000);
+        });
+        container.add(
+            [header, returnToHome, begin, generateLink].map((item) =>
+                item.setOrigin(0.5)
+            )
+        );
     }
 }
 

@@ -4,9 +4,10 @@ WORKDIR /game
 
 COPY server ./server/ 
 COPY go.mod .
+COPY go.sum .
 COPY client ./client/
 
-RUN go build server/main.go
+RUN go build server/*.go
 
 EXPOSE 8080
 

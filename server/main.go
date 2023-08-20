@@ -6,40 +6,9 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-
-	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize: 1024,
-	WriteBufferSize: 1024,
-}
-
 const PORT = "8080"
-
-func handleWebSocket(w http.ResponseWriter, req *http.Request) {
-	conn, err := upgrader.Upgrade(w, req, nil)
-	if err != nil {
-		return
-	}
-	defer conn.Close()
-
-	for {
-		_, msg, err := conn.ReadMessage()
-		if err != nil {
-			if websocket.IsCloseError(err, websocket.CloseNormalClosure ) {
-				fmt.Println("connection closed")
-			}
-			return
-		}
-		if string(msg) == "ready" {
-			err = conn.WriteMessage(websocket.TextMessage, []byte("Init"))
-			if err != nil {
-				fmt.Println(err)
-			}
-		}
-	}
-}
 
 func main(){
 	var prodMode bool
@@ -58,7 +27,7 @@ func main(){
 		http.Handle("/", proxy)
 	}
 
-	http.HandleFunc("/ws/", handleWebSocket)
+	http.HandleFunc("/ws/", HandleWebSocket)
 	fmt.Println("Listening on port:", PORT)
 	http.ListenAndServe(":" + PORT, nil)
 }
