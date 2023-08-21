@@ -17,6 +17,14 @@ const playerFrames = {
     left: 18, //idle
 } as const;
 
+export type KeyData = { [K in (typeof DIRECTIONS)[number]]: boolean };
+export const NO_KEYS_PRESSED: KeyData = {
+    left: false,
+    right: false,
+    up: false,
+    down: false,
+};
+
 class Player {
     private readonly player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     public constructor(
@@ -112,9 +120,9 @@ class Player {
  * @returns object with fields corresponding to the four directions, whose values
  *      are booleans indicating whether or not that key is currently pressed
  */
-export function getMotions(cursors: Phaser.Types.Input.Keyboard.CursorKeys): {
-    [K in (typeof DIRECTIONS)[number]]: boolean;
-} {
+export function getMotions(
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys
+): KeyData {
     const ret = { up: false, down: false, left: false, right: false };
     DIRECTIONS.forEach((dir) => {
         ret[dir] = cursors[dir].isDown;

@@ -140,3 +140,21 @@ export function makeWebSocket(): WebSocket {
     const socket = new WebSocket(`${wsURL}ws/12`);
     return socket;
 }
+
+const getRandLetter = () =>
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[
+        Math.floor(Math.random() * 52)
+    ];
+
+/**
+ * Generates a pseudo-random string.
+ *
+ * @param len desired length of string.
+ */
+export function getRandomString(len: number): string {
+    let ret = "";
+    for (let i = 0; i < len; i++) {
+        ret += getRandLetter();
+    }
+    return ret;
+}

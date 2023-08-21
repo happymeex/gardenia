@@ -20,6 +20,9 @@ const config: Phaser.Types.Core.GameConfig = {
     dom: {
         createContainer: true,
     },
+    fps: {
+        target: 30,
+    },
 };
 
 const game = new Phaser.Game(config);

@@ -1,11 +1,13 @@
 import Phaser from "phaser";
 import { menuTextStyleBase } from "./ui";
-import { makeClickable, makeWebSocket } from "./utils";
+import { getRandomString, makeClickable, makeWebSocket } from "./utils";
 
 class BrawlSettings extends Phaser.Scene {
     public constructor() {
         super({ key: "brawl-settings" });
     }
+
+    private idList: string[];
 
     create() {
         const container = this.add.container(
@@ -31,15 +33,34 @@ class BrawlSettings extends Phaser.Scene {
         );
 
         const socket = makeWebSocket();
+        const id = getRandomString(5);
         socket.onopen = (e) => {
-            socket.send("ready");
+            socket.send(`ready_${id}`);
         };
         socket.onmessage = (e) => {
-            if (e.data === "true") {
-                makeClickable(begin, this, () =>
-                    this.scene.start("brawl", { socket })
+            console.log("got message:", e.data);
+            const msg = e.data as string;
+            const start = () => {
+                socket.send("begin_");
+                this.scene.start("brawl", { socket, id, idList: this.idList });
+            };
+            if (msg.startsWith("idList")) {
+                const idList: string[] = JSON.parse(
+                    msg.replace(new RegExp("idList_"), "")
                 );
-            } else begin.removeInteractive();
+                this.idList = idList;
+                if (idList.length > 1) {
+                    makeClickable(begin, this, () => {
+                        if (socket.readyState === socket.OPEN) {
+                            start();
+                        }
+                    });
+                } else {
+                    begin.removeInteractive();
+                }
+            } else if (msg === "activate") {
+                start();
+            }
         };
 
         makeClickable(returnToHome, this, () => {
