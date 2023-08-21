@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
+import { SpriteAppearance } from "./SpriteBody";
 
 const SPRITE_SIZE = 128; // square sprites
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
@@ -27,13 +28,13 @@ export const NO_KEYS_PRESSED: KeyData = {
 
 class Player {
     private readonly player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    private cachedAppearance: SpriteAppearance | null = null;
     public constructor(
         public readonly key: string,
         readonly scene: Phaser.Scene,
         readonly platforms: Phaser.Physics.Arcade.StaticGroup,
         locationX: number,
         locationY: number,
-        withPhysics = true,
         private direction: "left" | "right" = "right",
         private inAir: boolean = false
     ) {
@@ -49,7 +50,6 @@ class Player {
             "player",
             playerFrames[direction]
         );
-        this.player.body.moves = withPhysics;
         this.player.setCollideWorldBounds(true);
         this.player.anims.create({
             key: "right",
@@ -104,7 +104,7 @@ class Player {
      *
      * @param dirs indicates which keys are currently pressed
      */
-    public handleMotion(dirs: { [K in (typeof DIRECTIONS)[number]]: boolean }) {
+    public handleMotion(dirs: KeyData) {
         let noAnim = false;
         if (dirs.up) {
             if (!this.inAir) {
@@ -130,6 +130,35 @@ class Player {
             noAnim = true;
         }
         if (noAnim) this.player.setFrame(playerFrames[this.direction]);
+    }
+
+    /**
+     * @returns An object specifying what the player sprite should look like at the moment.
+     *      If the appearance is the same as when this method was last called, returns "same".
+     *      Otherwise:
+     *          If `type` field is "frame", then `value` gives the spritesheet frame number.
+     *          if `type` field is "anim", then `value` gives the name of the animation.
+     */
+    public getAppearance(): SpriteAppearance | "same" {
+        const currentAnimName = this.player.anims.currentAnim?.key;
+        let ret: SpriteAppearance;
+        if (this.player.anims.isPlaying) {
+            ret = { type: "anim", value: currentAnimName };
+        } else {
+            ret = {
+                type: "frame",
+                value: String(playerFrames[this.direction]),
+            };
+        }
+        if (
+            this.cachedAppearance &&
+            ret.type === this.cachedAppearance.type &&
+            ret.value === this.cachedAppearance.value
+        ) {
+            return "same";
+        }
+        this.cachedAppearance = ret;
+        return ret;
     }
 }
 

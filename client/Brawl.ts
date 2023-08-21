@@ -3,20 +3,17 @@ import background from "./static/forest_bg.png";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import forestPlatform from "./static/forest_platform.png";
 import { loadSettingsIcon, configureSettingsPanel } from "./utils";
+import { Field, MsgTypes } from "./enums";
 
-import Player, {
-    getMotions,
-    KeyData,
-    hasChanged,
-    NO_KEYS_PRESSED,
-} from "./Player";
+import Player, { getMotions } from "./Player";
+import { PlayerBody } from "./SpriteBody";
 
 class Brawl extends Phaser.Scene {
+    private player: Player;
     /** Object used to read this player's keypress status.*/
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     /** Maps ids to players and their keypress data. */
-    private players: Map<string, { player: Player; keyData: KeyData }> =
-        new Map();
+    private otherPlayers: Map<string, PlayerBody> = new Map();
     /** Id of this player. */
     private uid: string;
     /** If true, the game is paused because the menu is open. */
@@ -39,27 +36,23 @@ class Brawl extends Phaser.Scene {
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
         this.socket = data.socket;
         this.uid = data.id;
-        console.log("In brawl, idList", data.idList);
         this.socket.onmessage = (e) => {
-            try {
-                const data = JSON.parse(e.data);
-                if (data.type === "movement") {
-                    this.setPlayerKeyData(data.keysPressed, data.source);
-                } else if (data.type === "position") {
-                    if (data.source === this.uid) return;
-                    const { player, keyData } = this.players.get(data.source);
-                    player.updatePosition(data.position.x, data.position.y);
-                }
-            } catch (err) {
-                console.log("error JSON parsing:", e.data);
+            const msg = JSON.parse(e.data);
+            if (msg[Field.TYPE] === MsgTypes.SPRITE) {
+                if (msg[Field.SOURCE] === this.uid) return;
+                const playerBody = this.otherPlayers.get(msg[Field.SOURCE]);
+                const { x, y } = msg[Field.POSITION];
+                playerBody.setPosition(x, y);
+                playerBody.setAppearance(msg[Field.APPEARANCE]);
             }
         };
         setInterval(() => {
             this.socket.send(
                 `data_${JSON.stringify({
-                    source: this.uid,
-                    type: "position",
-                    position: this.getPlayerPosition(),
+                    [Field.SOURCE]: this.uid,
+                    [Field.TYPE]: MsgTypes.SPRITE,
+                    [Field.POSITION]: this.player.getPosition(),
+                    [Field.APPEARANCE]: this.player.getAppearance(),
                 })}`
             );
         }, 30); // 33 fps
@@ -76,61 +69,20 @@ class Brawl extends Phaser.Scene {
         platforms.create(1130, 800, "platform");
         platforms.create(1330, 800, "platform");
         data.idList.forEach((id, i) => {
-            this.players.set(id, {
-                player: new Player(
-                    id,
-                    this,
-                    platforms,
-                    300 + 100 * i,
-                    300,
-                    id === this.uid // enable physics only for this player
-                ),
-                keyData: NO_KEYS_PRESSED,
-            });
+            const x = 300 + 100 * i;
+            const y = 300;
+            if (id === this.uid) {
+                this.player = new Player(id, this, platforms, x, y);
+            } else
+                this.otherPlayers.set(id, new PlayerBody(this, x, y, "right"));
         });
     }
     update() {
         if (this.cursors === undefined || this.isPaused) return;
         const keysPressed = getMotions(this.cursors);
-        if (hasChanged(keysPressed, this.player().keyData)) {
-            console.log("detected change!");
-            this.socket.send(
-                `data_${JSON.stringify({
-                    source: this.uid,
-                    type: "movement",
-                    keysPressed,
-                })}`
-            );
-            this.setPlayerKeyData(keysPressed);
-        }
-        //player.handleMotion(keysPressed);
-        for (const { player, keyData } of this.players.values()) {
-            player.handleMotion(keyData);
-        }
+        this.player.handleMotion(keysPressed);
     }
 
-    /**
-     * @param id Id of the player to be retrieved. Defaults to this player's.
-     * @returns The player controlled by this client's user.
-     */
-    private player(id = this.uid): { player: Player; keyData: KeyData } {
-        return this.players.get(id);
-    }
-
-    /**
-     * Updates the keypress data of the player with the given id.
-     *
-     * @param keyData Keypress data
-     * @param id Player id. Defaults to this player's.
-     */
-    private setPlayerKeyData(keyData: KeyData, id = this.uid) {
-        const pkg = this.player(id);
-        pkg.keyData = keyData;
-    }
-
-    private getPlayerPosition(id = this.uid) {
-        return this.player(id).player.getPosition();
-    }
     /**
      * Creates handler functions to be run when pausing, resuming, and leaving the scene.
      * Specifically: pausing/resuming the physics engine, toggling `this.isPause`,
