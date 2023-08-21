@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { loadSettingsIcon, configureSettingsPanel } from "./utils";
-import Player, { getMotions } from "./Player";
-import playerSpritesheet from "./static/gardenia_spritesheet.png";
-import forestPlatform from "./static/forest_platform.png";
+import { loadSettingsIcon, configureSettingsPanel } from "../utils";
+import Player, { getMotions } from "../Player";
+import playerSpritesheet from "../static/gardenia_spritesheet.png";
+import forestPlatform from "../static/forest_platform.png";
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private player: Player;

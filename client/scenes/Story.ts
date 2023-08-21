@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { menuTextStyleBase, paragraphTextStyleBase } from "./ui";
-import { makeClickable } from "./utils";
+import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
+import { makeClickable } from "../utils";
 
 class Story extends Phaser.Scene {
     public constructor() {

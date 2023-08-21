@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { makeClickable } from "./utils";
-import { mainMenu } from "./ui";
+import { makeClickable } from "../utils";
+import { mainMenu } from "../ui";
 
 const SCENES = [
     {

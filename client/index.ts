@@ -1,10 +1,10 @@
 import Phaser from "phaser";
-import MainMenu from "./MainMenu";
-import Story from "./Story";
-import Survival from "./Survival";
-import Brawl from "./Brawl";
-import SurvivalSettings from "./SurvivalSettings";
-import BrawlSettings from "./BrawlSettings";
+import MainMenu from "./scenes/MainMenu";
+import Story from "./scenes/Story";
+import Survival from "./scenes/Survival";
+import Brawl from "./scenes/Brawl";
+import SurvivalSettings from "./scenes/SurvivalSettings";
+import BrawlSettings from "./scenes/BrawlSettings";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",

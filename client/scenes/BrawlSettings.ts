@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { menuTextStyleBase } from "./ui";
-import { getRandomString, makeClickable, makeWebSocket } from "./utils";
+import { menuTextStyleBase } from "../ui";
+import { getRandomString, makeClickable, makeWebSocket } from "../utils";
 
 class BrawlSettings extends Phaser.Scene {
     public constructor() {

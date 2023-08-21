@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { menuTextStyleBase } from "./ui";
-import { makeClickable } from "./utils";
+import { menuTextStyleBase } from "../ui";
+import { makeClickable } from "../utils";
 
 class SurvivalSettings extends Phaser.Scene {
     public constructor() {
