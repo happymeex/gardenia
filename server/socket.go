@@ -38,18 +38,11 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 				delete(AllBrawls, url)
 			} else if len(b.sockets) == 1{
 				b.sendIdList()
-				//for other := range b.sockets {
-				//	err := other.WriteMessage(websocket.TextMessage, []byte("false"))
-				//	if err != nil {
-				//		fmt.Println(err)
-				//	}
-				//}
-
 			}
 			conn.Close();
 			return;
 		}
-		msgParts := strings.Split(string(rawMsg), "_")
+		msgParts := strings.SplitN(string(rawMsg), "_", 2)
 		switch msgParts[0] {
 			case "ready": // ready_userId
 				fmt.Println("uid:", msgParts[1])
@@ -57,12 +50,6 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 				b.sockets[conn] = msgParts[1]; // track user id
 				if len(b.sockets) > 1 {
 					b.sendIdList()
-					//for connection := range b.sockets {
-					//	err := connection.WriteMessage(websocket.TextMessage, []byte("true"))
-					//	if err != nil {
-					//		fmt.Println(err)
-					//	}
-					//}
 				}
 			case "begin":
 				if !b.active {
@@ -82,7 +69,6 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 				
 			case "data":
 				// pipe data through channel; StartBrawl func listens on other side for data to pipe to all clients
-				fmt.Println("got data:", msgParts[1])
 				UserInput <- msgParts[1]
 			default:
 				fmt.Println(msgParts[0])

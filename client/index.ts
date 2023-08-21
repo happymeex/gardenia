@@ -8,8 +8,8 @@ import BrawlSettings from "./BrawlSettings";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",
-    width: 1680,
-    height: 945,
+    width: 1344,
+    height: 756,
     scene: [MainMenu, Story, Survival, SurvivalSettings, BrawlSettings, Brawl],
     physics: {
         default: "arcade",

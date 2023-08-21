@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "esModuleInterop": true,
+        "downlevelIteration": true,
         "lib": ["ES2017", "DOM"],
         "paths": {
             "*": ["./declare.d.ts"]

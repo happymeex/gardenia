@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
 
-const fps = 80.0
 
 var AllBrawls map[string]*BrawlNetwork = make(map[string]*BrawlNetwork)
 type InputData = string
@@ -22,18 +20,16 @@ type BrawlNetwork struct {
 
 func (b *BrawlNetwork) StartBrawl() {
 	for {
-		for data := range UserInput {
-			for conn := range b.sockets {
-				err := conn.WriteMessage(websocket.TextMessage, []byte(data))
-				if err != nil {
-					fmt.Println(err)
-				}
-			}
-		}	
-		// If all sockets have closed, terminate
-		if len(b.sockets) == 0 {
+		data, ok := <- UserInput
+		// If channel or all sockets have closed, terminate
+		if !ok || len(b.sockets) == 0 {
 			return
 		}
-		time.After(time.Second / fps)
+		for conn := range b.sockets {
+			err := conn.WriteMessage(websocket.TextMessage, []byte(data))
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
 	}
 }

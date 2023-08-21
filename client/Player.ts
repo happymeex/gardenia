@@ -33,6 +33,7 @@ class Player {
         readonly platforms: Phaser.Physics.Arcade.StaticGroup,
         locationX: number,
         locationY: number,
+        withPhysics = true,
         private direction: "left" | "right" = "right",
         private inAir: boolean = false
     ) {
@@ -48,6 +49,7 @@ class Player {
             "player",
             playerFrames[direction]
         );
+        this.player.body.moves = withPhysics;
         this.player.setCollideWorldBounds(true);
         this.player.anims.create({
             key: "right",
@@ -70,6 +72,24 @@ class Player {
         scene.physics.add.collider(this.player, platforms, this.makeCollider());
         this.player.setSize(HITBOX_WIDTH, HITBOX_HEIGHT);
     }
+
+    /**
+     * Forcefully moves the player to the given position while preserving velocity.
+     *
+     * @param x x-coordinate of new position
+     * @param y y-coordinate of new position
+     */
+    public updatePosition(x: number, y: number) {
+        //this.player.body.moves = false;
+        this.player.x = x;
+        this.player.y = y;
+        //this.player.body.moves = true;
+    }
+
+    public getPosition(): { x: number; y: number } {
+        return { x: this.player.x, y: this.player.y };
+    }
+
     private makeCollider() {
         return (player: CollisionObject, platforms: CollisionObject) => {
             // silly typechecking to rule out player being tile type
@@ -128,6 +148,17 @@ export function getMotions(
         ret[dir] = cursors[dir].isDown;
     });
     return ret;
+}
+
+/**
+ * Detects a change between two keypress snapshots.
+ *
+ * @param keyData1
+ * @param keyData2
+ * @returns
+ */
+export function hasChanged(keyData1: KeyData, keyData2: KeyData): boolean {
+    return DIRECTIONS.some((dir) => keyData1[dir] !== keyData2[dir]);
 }
 
 export default Player;
