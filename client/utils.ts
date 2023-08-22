@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import settingsIcon from "./static/settings_icon.png";
-import { settingsPanel } from "./ui";
+import { baseTextColor, darkenedColor, settingsPanel } from "./ui";
 
 export const MENU_TEXTSTYLE_BASE: Phaser.Types.GameObjects.Text.TextStyle = {
     color: "white",
@@ -96,6 +96,7 @@ function makeSettingsPanel(
  * @param item The game object
  * @param scene Scene containing `item`
  * @param onClick click handler
+ * @param oneAndDone if true, allows only one click
  * @param scaleX scale factor in x direction on hover
  * @param scaleY scale factor in y direction on hover
  * @param duration duration of hover animation
@@ -133,11 +134,24 @@ export function makeClickable(
     });
 }
 
-export function makeWebSocket(): WebSocket {
+/**
+ * Opens a websocket connection at the current URL with /ws/`id` appended
+ *
+ * @param id Used by the server to identify the brawl being created/accessed.
+ * @param uid User id
+ * @returns WebSocket object
+ */
+export function makeBrawlWebSocket(
+    id: string,
+    uid: string,
+    isHost: boolean = false
+): WebSocket {
     const URL = window.location.href;
     const prod = URL.includes("https");
     const wsURL = URL.replace(prod ? "https" : "http", prod ? "wss" : "ws");
-    const socket = new WebSocket(`${wsURL}ws/12`);
+    const socket = new WebSocket(
+        `${wsURL}ws/${id}?uid=${uid}${isHost ? "&isHost=true" : ""}`
+    );
     return socket;
 }
 
@@ -165,4 +179,12 @@ export function getUserId(): string | null {
 
 export function setUserId(id: string): void {
     localStorage.setItem("gardenia-id", id);
+}
+
+export function darkenText(text: Phaser.GameObjects.Text): void {
+    text.setStyle({ ...text.style, color: darkenedColor });
+}
+
+export function undarkenText(text: Phaser.GameObjects.Text): void {
+    text.setStyle({ ...text.style, color: baseTextColor });
 }

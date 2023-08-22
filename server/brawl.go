@@ -15,13 +15,14 @@ var UserInput = make(chan InputData, 1000)
 
 type BrawlNetwork struct {
 	active bool
+	hostId string
 	// Maps socket pointers to the ID of the corresponding user
-	sockets map[*websocket.Conn]string
+	sockets map[string]*websocket.Conn
 }
 
 func (b BrawlNetwork) getIdList() string {
 	var ids []string
-	for _, id := range b.sockets {
+	for id := range b.sockets {
 		ids = append(ids, fmt.Sprintf("\"%s\"", id))
 	}
 	return fmt.Sprintf("[%s]", strings.Join(ids, ","))
@@ -31,7 +32,7 @@ func (b BrawlNetwork) getIdList() string {
 // notifying each client of the most updated list of user ids that have joined.
 func (b BrawlNetwork) sendIdList() {
 	msg := []byte(fmt.Sprintf("idList_%s", b.getIdList()))
-	for connection := range b.sockets {
+	for _, connection := range b.sockets {
 		err := connection.WriteMessage(websocket.TextMessage, msg)
 		if err != nil {
 			fmt.Println(err)
@@ -46,7 +47,7 @@ func (b *BrawlNetwork) StartBrawl() {
 		if !ok || len(b.sockets) == 0 {
 			return
 		}
-		for conn := range b.sockets {
+		for _, conn := range b.sockets {
 			err := conn.WriteMessage(websocket.TextMessage, []byte(data))
 			if err != nil {
 				fmt.Println(err)

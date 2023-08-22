@@ -13,6 +13,7 @@
     <body>
         <main id="game-container"></main>
     </body>
+    <input id="join-code-input" placeholder="Join code" />
     <style>
         body {
             margin: 0;
@@ -24,6 +25,13 @@
         #game-container {
             width: 1344;
             height: 756;
+        }
+        #join-code-input {
+            display: none;
+        }
+        #join-code-input:focus {
+            border: none;
+            outline: none;
         }
     </style>
     <script src="./index.ts" type="module"></script>

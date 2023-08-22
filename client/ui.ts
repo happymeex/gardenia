@@ -1,8 +1,12 @@
 import Phaser from "phaser";
 
-type TextStyle = Phaser.Types.GameObjects.Text.TextStyle;
+export type TextStyle = Phaser.Types.GameObjects.Text.TextStyle;
 
-const baseTextColor = "#f5efa4";
+export const baseTextColor = "#f5efa4";
+export const darkenedColor = "#8f8b5d";
+export const baseColorNumber = 0xf5efa4;
+export const capitalFont = "Alegreya SC";
+export const lowercaseFont = "Alegreya";
 export const menuTextStyleBase: TextStyle = {
     color: baseTextColor,
     fontFamily: "Alegreya SC",
@@ -13,6 +17,11 @@ export const paragraphTextStyleBase: TextStyle = {
     color: baseTextColor,
     fontFamily: "Alegreya",
     fontSize: "24px",
+};
+
+export const largeParagraph: TextStyle = {
+    ...paragraphTextStyleBase,
+    fontSize: "32px",
 };
 
 type MenuStyle = {

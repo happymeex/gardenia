@@ -1,93 +1,61 @@
 import Phaser from "phaser";
-import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
-import {
-    getRandomString,
-    getUserId,
-    makeClickable,
-    makeWebSocket,
-} from "../utils";
+import { baseColorNumber, menuTextStyleBase } from "../ui";
+import { makeClickable } from "../utils";
 
 class BrawlSettings extends Phaser.Scene {
     public constructor() {
         super({ key: "brawl-settings" });
     }
 
-    private idList: string[];
-
     create() {
         const container = this.add.container(
             this.cameras.main.width / 2,
             this.cameras.main.height / 2
         );
-        const header = this.add.text(0, 0, "Brawl", {
+        const header = this.add.text(0, -250, "Brawl", {
             ...menuTextStyleBase,
             fontSize: "72px",
         });
         const returnToHome = this.add.text(
-            -200,
-            200,
-            "Return to menu",
+            -400,
+            -250,
+            "\u2039 Back",
             menuTextStyleBase
         );
-        const begin = this.add.text(200, 200, "Begin", menuTextStyleBase);
-        const generateLink = this.add.text(
+        const joinBrawl = this.add.text(
             0,
-            100,
-            "Share this link with friends:",
+            -150,
+            "Join existing brawl",
             menuTextStyleBase
         );
-        const brawlIdText = this.add.text(
-            100,
-            100,
-            "Loading...",
-            paragraphTextStyleBase
+        makeClickable(joinBrawl, this, () => {
+            this.scene.start("brawl-join");
+        });
+        const createNew = this.add.text(
+            0,
+            150,
+            "Create new brawl",
+            menuTextStyleBase
         );
-
-        const id = getUserId();
-        fetch(`/new-brawl-id?id=${id}`)
-            .then((res) => res.text())
-            .then((brawlId) => {
-                brawlIdText.text = brawlId;
-            });
-
-        const socket = makeWebSocket();
-        socket.onopen = (e) => {
-            socket.send(`ready_${id}`);
-        };
-        socket.onmessage = (e) => {
-            console.log("got message:", e.data);
-            const msg = e.data as string;
-            const start = () => {
-                socket.send("begin_");
-                this.scene.start("brawl", { socket, id, idList: this.idList });
-            };
-            if (msg.startsWith("idList")) {
-                const idList: string[] = JSON.parse(
-                    msg.replace(new RegExp("idList_"), "")
-                );
-                this.idList = idList;
-                if (idList.length > 1) {
-                    makeClickable(begin, this, () => {
-                        if (socket.readyState === socket.OPEN) {
-                            start();
-                        }
-                    });
-                } else {
-                    begin.removeInteractive();
-                }
-            } else if (msg === "activate") {
-                start();
-            }
-        };
-
+        makeClickable(createNew, this, () => {
+            this.scene.start("brawl-create");
+        });
+        const orText = this.add.text(0, 0, "Or", menuTextStyleBase);
+        const leftLine = this.add.line(0, 0, -63, 0, -3, 0, baseColorNumber);
+        const rightLine = this.add.line(0, 0, 60, 0, 120, 0, baseColorNumber);
         makeClickable(returnToHome, this, () => {
             this.scene.start("main-menu");
-            socket.close(1000);
         });
         container.add(
-            [header, returnToHome, begin, generateLink].map((item) =>
-                item.setOrigin(0.5)
-            )
+            [
+                header,
+                returnToHome,
+                joinBrawl,
+                orText,
+                leftLine,
+                rightLine,
+                createNew,
+            ].map((item) => item.setOrigin(0.5))
         );
     }
 }

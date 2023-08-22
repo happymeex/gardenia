@@ -49,6 +49,9 @@ class MainMenu extends Phaser.Scene {
                 mainMenu.headerStyle
             )
             .setOrigin(0.5);
+        makeClickable(title, this, () => {
+            console.log("clicked!");
+        });
         menuTextContainer.add(title);
 
         buttonData.forEach(({ label, nextScene }, i) => {

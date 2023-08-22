@@ -28,6 +28,7 @@ func HandleBrawlUrlRequest(w http.ResponseWriter, req *http.Request) {
 	fmt.Println("id requesting brawl:", id)
 	_, exists := AllUsers[id]
 	if id == "" || !exists {
+		fmt.Println("unauthorized")
 		w.WriteHeader(http.StatusUnauthorized)
 	} else {
 		brawlId := GenerateUntilNew(&AllBrawls)

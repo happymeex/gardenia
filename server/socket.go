@@ -17,46 +17,62 @@ var upgrader = websocket.Upgrader{
 // a file-scoped map tracking the websocket connections corresponding to each
 // given request URL.
 func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
-	url := req.URL.String()
+	url := req.URL.Path
+	queryParams := req.URL.Query()
+	uid := queryParams.Get("uid")
+	isHost := queryParams.Get("isHost") == "true"
+
+	b, exists := AllBrawls[url]
+	if !exists {
+		// only hosts can create a new brawl
+		if !isHost {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Not found"))
+			return
+		}
+		b = &BrawlNetwork{false, uid, make(map[string]*websocket.Conn)}
+		AllBrawls[url] = b;
+	}
+	_, userExists := AllUsers[uid]
+	if !userExists {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
 	conn, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
 		return
 	}
-	//defer conn.Close()
 
-	b, exists := AllBrawls[url]
-	if !exists {
-		b = &BrawlNetwork{false, make(map[*websocket.Conn]string)}
-		AllBrawls[url] = b;
-	}
+	// add the user to the network and let everyone know
+	b.sockets[uid] = conn;
+	fmt.Println("currently connected:", b.sockets)
+	b.sendIdList();
+
 	for {
 		_, rawMsg, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("connection closed")
-			delete(b.sockets, conn)
-			if len(b.sockets) == 0 {
+			delete(b.sockets, uid)
+			if isHost || len(b.sockets) == 0 { // length condition extraneous but wtv
+				// If the host errors, then close everything
 				delete(AllBrawls, url)
-			} else if len(b.sockets) == 1{
+				for _, other := range b.sockets {
+					other.Close();
+				}
+			} else {
 				b.sendIdList()
 			}
-			conn.Close();
+			
+			conn.Close(); // in case error wasn't a closure
 			return;
 		}
 		msgParts := strings.SplitN(string(rawMsg), "_", 2)
 		switch msgParts[0] {
-			case "ready": // ready_userId
-				fmt.Println("uid:", msgParts[1])
-				fmt.Println("existing connections:", *b)
-				b.sockets[conn] = msgParts[1]; // track user id
-				if len(b.sockets) > 1 {
-					b.sendIdList()
-				}
 			case "begin":
 				if !b.active {
 					fmt.Println("Creating new brawl")
 					b.active = true;
 					// notify all other clients, each then pings "begin" through its own socket connection
-					for connection := range b.sockets {
+					for _, connection := range b.sockets {
 						err := connection.WriteMessage(websocket.TextMessage,[]byte("activate"))
 						if err != nil {
 							fmt.Println(err)

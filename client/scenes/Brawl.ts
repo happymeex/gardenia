@@ -19,6 +19,12 @@ class Brawl extends Phaser.Scene {
     private isPaused = false;
     /** Websocket used to sync game state with server. */
     private socket: WebSocket | undefined = undefined;
+    /**
+     * Id of the browser "process" responsible for pinging the server with this player's
+     * sprite position/appearance every N milliseconds. Use this as the argument to clearInterval
+     * when the player leaves the scene.
+     */
+    private spritePinger: number;
 
     public constructor() {
         super({ key: "brawl" });
@@ -45,7 +51,7 @@ class Brawl extends Phaser.Scene {
                 playerBody.setAppearance(msg[Field.APPEARANCE]);
             }
         };
-        setInterval(() => {
+        this.spritePinger = setInterval(() => {
             this.socket.send(
                 `data_${JSON.stringify({
                     [Field.SOURCE]: this.uid,
@@ -100,6 +106,7 @@ class Brawl extends Phaser.Scene {
                 this.isPaused = false;
             },
             leave: () => {
+                clearInterval(this.spritePinger);
                 this.socket.close(1000); // indicates normal closure
             },
         };

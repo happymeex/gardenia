@@ -5,13 +5,24 @@ import Survival from "./scenes/Survival";
 import Brawl from "./scenes/Brawl";
 import SurvivalSettings from "./scenes/SurvivalSettings";
 import BrawlSettings from "./scenes/BrawlSettings";
+import BrawlJoin from "./scenes/BrawlJoin";
+import BrawlCreate from "./scenes/BrawlCreate";
 import { getUserId, setUserId } from "./utils";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",
     width: 1344,
     height: 756,
-    scene: [MainMenu, Story, Survival, SurvivalSettings, BrawlSettings, Brawl],
+    scene: [
+        MainMenu,
+        Story,
+        Survival,
+        SurvivalSettings,
+        Brawl,
+        BrawlSettings,
+        BrawlJoin,
+        BrawlCreate,
+    ],
     physics: {
         default: "arcade",
         arcade: {
