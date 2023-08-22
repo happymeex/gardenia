@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -16,6 +17,26 @@ type BrawlNetwork struct {
 	active bool
 	// Maps socket pointers to the ID of the corresponding user
 	sockets map[*websocket.Conn]string
+}
+
+func (b BrawlNetwork) getIdList() string {
+	var ids []string
+	for _, id := range b.sockets {
+		ids = append(ids, fmt.Sprintf("\"%s\"", id))
+	}
+	return fmt.Sprintf("[%s]", strings.Join(ids, ","))
+}
+
+// sendIdList sends a message over each socket connection of the BrawlNetwork,
+// notifying each client of the most updated list of user ids that have joined.
+func (b BrawlNetwork) sendIdList() {
+	msg := []byte(fmt.Sprintf("idList_%s", b.getIdList()))
+	for connection := range b.sockets {
+		err := connection.WriteMessage(websocket.TextMessage, msg)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }
 
 func (b *BrawlNetwork) StartBrawl() {

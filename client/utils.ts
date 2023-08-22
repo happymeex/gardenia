@@ -158,3 +158,11 @@ export function getRandomString(len: number): string {
     }
     return ret;
 }
+
+export function getUserId(): string | null {
+    return localStorage.getItem("gardenia-id");
+}
+
+export function setUserId(id: string): void {
+    localStorage.setItem("gardenia-id", id);
+}

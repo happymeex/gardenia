@@ -5,6 +5,7 @@ import Survival from "./scenes/Survival";
 import Brawl from "./scenes/Brawl";
 import SurvivalSettings from "./scenes/SurvivalSettings";
 import BrawlSettings from "./scenes/BrawlSettings";
+import { getUserId, setUserId } from "./utils";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",
@@ -24,5 +25,17 @@ const config: Phaser.Types.Core.GameConfig = {
         target: 30,
     },
 };
+
+const id = getUserId();
+if (id === null) {
+    fetch("/new-id")
+        .then((res) => res.text())
+        .then((id) => {
+            console.log("got id:", id);
+            setUserId(id);
+        });
+} else {
+    console.log("existing id:", id);
+}
 
 const game = new Phaser.Game(config);

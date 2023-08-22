@@ -28,6 +28,7 @@ func main(){
 	}
 
 	http.HandleFunc("/ws/", HandleWebSocket)
+	http.HandleFunc("/new-id", HandleIdRequest)
 	fmt.Println("Listening on port:", PORT)
 	http.ListenAndServe(":" + PORT, nil)
 }
