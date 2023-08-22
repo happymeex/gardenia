@@ -29,6 +29,8 @@ func main(){
 
 	http.HandleFunc("/ws/", HandleWebSocket)
 	http.HandleFunc("/new-id", HandleIdRequest)
+	http.HandleFunc("/new-brawl-id", HandleBrawlUrlRequest)
+	http.HandleFunc("/auth", HandleAuth)
 	fmt.Println("Listening on port:", PORT)
 	http.ListenAndServe(":" + PORT, nil)
 }

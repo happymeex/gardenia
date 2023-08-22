@@ -1,6 +1,11 @@
 import Phaser from "phaser";
-import { menuTextStyleBase } from "../ui";
-import { getRandomString, makeClickable, makeWebSocket } from "../utils";
+import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
+import {
+    getRandomString,
+    getUserId,
+    makeClickable,
+    makeWebSocket,
+} from "../utils";
 
 class BrawlSettings extends Phaser.Scene {
     public constructor() {
@@ -31,9 +36,21 @@ class BrawlSettings extends Phaser.Scene {
             "Share this link with friends:",
             menuTextStyleBase
         );
+        const brawlIdText = this.add.text(
+            100,
+            100,
+            "Loading...",
+            paragraphTextStyleBase
+        );
+
+        const id = getUserId();
+        fetch(`/new-brawl-id?id=${id}`)
+            .then((res) => res.text())
+            .then((brawlId) => {
+                brawlIdText.text = brawlId;
+            });
 
         const socket = makeWebSocket();
-        const id = getRandomString(5);
         socket.onopen = (e) => {
             socket.send(`ready_${id}`);
         };

@@ -36,6 +36,7 @@ if (id === null) {
         });
 } else {
     console.log("existing id:", id);
+    fetch(`/auth?id=${id}`);
 }
 
 const game = new Phaser.Game(config);
