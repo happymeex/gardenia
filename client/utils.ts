@@ -1,17 +1,29 @@
 import Phaser from "phaser";
 import settingsIcon from "./static/settings_icon.png";
 import {
-    baseTextColor,
+    baseColor,
     darkenedColor,
     paragraphTextStyleBase,
-    settingsPanel,
+    pauseMenu,
 } from "./ui";
 
+/** Loads the settings icon image into a scene. */
 export function loadSettingsIcon(scene: Phaser.Scene) {
     scene.load.image("settings-icon", settingsIcon);
 }
 
-export function configureSettingsPanel(
+/**
+ * Creates and adds a settings button icon in the top right corner
+ * as well as the in-game pause menu that appears when that button is clicked.
+ * The menu contains clickable options for resuming the game, returning
+ * to the main menu, or adjusting player options.
+ *
+ * @param scene
+ * @param onOpen
+ * @param onClose
+ * @param leave
+ */
+export function configurePauseMenu(
     scene: Phaser.Scene,
     onOpen = () => {},
     onClose = () => {},
@@ -27,10 +39,11 @@ export function configureSettingsPanel(
         menuPanel.setVisible(true);
         onOpen();
     });
-    const menuPanel = makeSettingsPanel(scene, onClose, leave);
+    const menuPanel = makePauseMenu(scene, onClose, leave);
 }
 
-function makeSettingsPanel(
+/** Helper function. Handles panel position and logic. */
+function makePauseMenu(
     scene: Phaser.Scene,
     onClose = () => {},
     leave = () => {}
@@ -41,9 +54,9 @@ function makeSettingsPanel(
     );
     const header = scene.add.text(
         0,
-        -settingsPanel.headerMarginBottom,
+        -pauseMenu.headerMarginBottom,
         "Menu",
-        settingsPanel.headerStyle
+        pauseMenu.headerStyle
     );
     const buttonData = [
         {
@@ -74,9 +87,9 @@ function makeSettingsPanel(
     const buttons = buttonData.map(({ label, onClick }, i) => {
         const textButton = scene.add.text(
             0,
-            settingsPanel.optionSpacing * i,
+            pauseMenu.optionSpacing * i,
             label,
-            settingsPanel.optionStyle
+            pauseMenu.optionStyle
         );
         makeClickable(textButton, scene, onClick);
         return textButton;
@@ -155,24 +168,6 @@ export function makeBrawlWebSocket(
     return socket;
 }
 
-const getRandLetter = () =>
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[
-        Math.floor(Math.random() * 52)
-    ];
-
-/**
- * Generates a pseudo-random string.
- *
- * @param len desired length of string.
- */
-export function getRandomString(len: number): string {
-    let ret = "";
-    for (let i = 0; i < len; i++) {
-        ret += getRandLetter();
-    }
-    return ret;
-}
-
 export function getUserId(): string | null {
     return localStorage.getItem("gardenia-id");
 }
@@ -186,9 +181,16 @@ export function darkenText(text: Phaser.GameObjects.Text): void {
 }
 
 export function undarkenText(text: Phaser.GameObjects.Text): void {
-    text.setStyle({ ...text.style, color: baseTextColor });
+    text.setStyle({ ...text.style, color: baseColor });
 }
 
+/**
+ * Flashes a notification message at the bottom of the screen.
+ * Message fades out after two seconds.
+ *
+ * @param scene Scene in which the message will be shown
+ * @param message Message to show.
+ */
 export function showNotification(scene: Phaser.Scene, message: string) {
     console.log("showing notif");
     const text = scene.add

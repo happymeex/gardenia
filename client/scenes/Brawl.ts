@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import forestPlatform from "../static/forest_platform.png";
-import { loadSettingsIcon, configureSettingsPanel } from "../utils";
+import { loadSettingsIcon, configurePauseMenu } from "../utils";
 import { Field, MsgTypes } from "../enums";
 
 import Player, { getMotions } from "../Player";
@@ -65,7 +65,7 @@ class Brawl extends Phaser.Scene {
             );
         }, 30); // 33 fps
         const { pause, resume, leave } = this.makeFlowControlFunctions();
-        configureSettingsPanel(this, pause, resume, leave);
+        configurePauseMenu(this, pause, resume, leave);
         const platforms = this.physics.add.staticGroup();
 
         platforms.create(100, 800, "platform");

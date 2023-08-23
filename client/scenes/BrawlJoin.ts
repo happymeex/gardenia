@@ -5,7 +5,7 @@ import {
     darkenedColor,
     TextStyle,
     lowercaseFont,
-    baseTextColor,
+    baseColor,
 } from "../ui";
 import {
     getUserId,
@@ -61,13 +61,13 @@ class BrawlJoin extends Phaser.Scene {
             "input",
             `display: initial;
             background-color: transparent;
-            color: ${baseTextColor};
+            color: ${baseColor};
             border: none;
             font-size: 24px;
             font-family: ${lowercaseFont};
             text-align: center;
             width: 200px;
-            border-bottom: 1px solid ${baseTextColor}`
+            border-bottom: 1px solid ${baseColor}`
         );
         this.joinCodeInput.node.id = "join-code-input"; // to apply focus styling that I put in index.html
         this.joinCodeInput.node["placeholder"] = "Join code";
@@ -98,7 +98,7 @@ class BrawlJoin extends Phaser.Scene {
             if (target.value.length > 0) {
                 this.joinButton.setStyle({
                     ...this.joinButton.style,
-                    color: baseTextColor,
+                    color: baseColor,
                 });
                 this.joinButton.setInteractive();
             } else {

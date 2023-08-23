@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import {
-    baseTextColor,
+    baseColor,
     largeParagraph,
     menuTextStyleBase,
     darkenedColor,

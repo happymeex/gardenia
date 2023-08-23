@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { loadSettingsIcon, configureSettingsPanel } from "../utils";
+import { loadSettingsIcon, configurePauseMenu } from "../utils";
 import Player, { getMotions } from "../Player";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import forestPlatform from "../static/forest_platform.png";
@@ -21,7 +21,7 @@ class Survival extends Phaser.Scene {
     }
     create() {
         const { pause, resume } = this.makeFlowControlFunctions();
-        configureSettingsPanel(this, pause, resume);
+        configurePauseMenu(this, pause, resume);
         const platforms = this.physics.add.staticGroup();
 
         platforms.create(100, 800, "platform");
