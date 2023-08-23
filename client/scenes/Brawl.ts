@@ -12,11 +12,11 @@ class Brawl extends Phaser.Scene {
     /** Object used to read this player's keypress status.*/
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     /** Maps ids to players and their keypress data. */
-    private otherPlayers: Map<string, PlayerBody> = new Map();
+    private otherPlayers: Map<string, PlayerBody>;
     /** Id of this player. */
     private uid: string;
     /** If true, the game is paused because the menu is open. */
-    private isPaused = false;
+    private isPaused;
     /** Websocket used to sync game state with server. */
     private socket: WebSocket | undefined = undefined;
     /**
@@ -39,8 +39,11 @@ class Brawl extends Phaser.Scene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
+        this.isPaused = false; // need to reset this in case this brawl isn't the first one of the sitting
+        this.otherPlayers = new Map();
         this.socket = data.socket;
         this.uid = data.id;
+
         this.socket.onmessage = (e) => {
             const msg = JSON.parse(e.data);
             if (msg[Field.TYPE] === MsgTypes.SPRITE) {
