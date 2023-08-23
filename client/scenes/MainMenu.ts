@@ -2,21 +2,6 @@ import Phaser from "phaser";
 import { makeClickable } from "../utils";
 import { mainMenu } from "../ui";
 
-const SCENES = [
-    {
-        label: "Story",
-        key: "story",
-    },
-    {
-        label: "Survival",
-        key: "survival",
-    },
-    {
-        label: "Brawl",
-        key: "brawl",
-    },
-];
-
 const buttonData = [
     {
         label: "Survival",
@@ -49,9 +34,6 @@ class MainMenu extends Phaser.Scene {
                 mainMenu.headerStyle
             )
             .setOrigin(0.5);
-        makeClickable(title, this, () => {
-            console.log("clicked!");
-        });
         menuTextContainer.add(title);
 
         buttonData.forEach(({ label, nextScene }, i) => {
@@ -67,9 +49,6 @@ class MainMenu extends Phaser.Scene {
             menuTextContainer.add(navButton);
             navButton.setOrigin(0.5); // center-align text
         });
-    }
-    update() {
-        //
     }
 }
 
