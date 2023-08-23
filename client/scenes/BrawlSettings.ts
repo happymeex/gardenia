@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { baseColorNumber, menuTextStyleBase } from "../ui";
+import { menuTextStyleBase } from "../ui";
 import { makeClickable } from "../utils";
 
 class BrawlSettings extends Phaser.Scene {
@@ -24,7 +24,7 @@ class BrawlSettings extends Phaser.Scene {
         );
         const joinBrawl = this.add.text(
             0,
-            -150,
+            -100,
             "Join existing brawl",
             menuTextStyleBase
         );
@@ -33,7 +33,7 @@ class BrawlSettings extends Phaser.Scene {
         });
         const createNew = this.add.text(
             0,
-            150,
+            100,
             "Create new brawl",
             menuTextStyleBase
         );
@@ -41,21 +41,13 @@ class BrawlSettings extends Phaser.Scene {
             this.scene.start("brawl-create");
         });
         const orText = this.add.text(0, 0, "Or", menuTextStyleBase);
-        const leftLine = this.add.line(0, 0, -63, 0, -3, 0, baseColorNumber);
-        const rightLine = this.add.line(0, 0, 60, 0, 120, 0, baseColorNumber);
         makeClickable(returnToHome, this, () => {
             this.scene.start("main-menu");
         });
         container.add(
-            [
-                header,
-                returnToHome,
-                joinBrawl,
-                orText,
-                leftLine,
-                rightLine,
-                createNew,
-            ].map((item) => item.setOrigin(0.5))
+            [header, returnToHome, joinBrawl, orText, createNew].map((item) =>
+                item.setOrigin(0.5)
+            )
         );
     }
 }

@@ -2,11 +2,6 @@ import Phaser from "phaser";
 import settingsIcon from "./static/settings_icon.png";
 import { baseTextColor, darkenedColor, settingsPanel } from "./ui";
 
-export const MENU_TEXTSTYLE_BASE: Phaser.Types.GameObjects.Text.TextStyle = {
-    color: "white",
-    fontFamily: "Alegreya SC",
-};
-
 export function loadSettingsIcon(scene: Phaser.Scene) {
     scene.load.image("settings-icon", settingsIcon);
 }
