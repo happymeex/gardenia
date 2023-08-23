@@ -11,18 +11,26 @@ class SurvivalSettings extends Phaser.Scene {
             this.cameras.main.width / 2,
             this.cameras.main.height / 2
         );
+        const header = this.add.text(0, -250, "Survival", {
+            ...menuTextStyleBase,
+            fontSize: "72px",
+        });
         const returnToHome = this.add.text(
-            -200,
-            200,
-            "Return to menu",
+            -400,
+            -250,
+            "\u2039 Back",
             menuTextStyleBase
         );
-        const begin = this.add.text(200, 200, "Begin", menuTextStyleBase);
-        returnToHome.setOrigin(0.5);
-        begin.setOrigin(0.5);
-        makeClickable(returnToHome, this, () => this.scene.start("main-menu"));
-        makeClickable(begin, this, () => this.scene.start("survival"));
-        container.add([returnToHome, begin]);
+        const begin = this.add.text(0, 200, "Begin", menuTextStyleBase);
+        makeClickable(returnToHome, this, () => {
+            this.scene.start("main-menu");
+        });
+        makeClickable(begin, this, () => {
+            this.scene.start("survival");
+        });
+        container.add(
+            [header, returnToHome, begin].map((item) => item.setOrigin(0.5))
+        );
     }
 }
 
