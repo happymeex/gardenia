@@ -24,30 +24,29 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 
 	b, exists := AllBrawls[url]
 	if !exists {
-		// only hosts can create a new brawl
+		// disallow creation of new brawls by users not designated as hosts
 		if !isHost {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Not found"))
 			return
 		}
 		b = &BrawlNetwork{false, uid, make(map[string]*websocket.Conn)}
 		AllBrawls[url] = b;
 	}
+
+	// disallow unauthorized users
 	_, userExists := AllUsers[uid]
 	if !userExists {
-		w.WriteHeader(http.StatusUnauthorized)
+		return
 	}
 
 	// disallow multiple connections by the same user
 	_, alreadyConnected := b.sockets[uid]
 	if alreadyConnected {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Please join only once!"))
 		return
 	}
 
 	conn, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
+		conn.Close()
 		return
 	}
 

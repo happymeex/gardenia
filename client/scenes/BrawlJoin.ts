@@ -13,6 +13,7 @@ import {
     makeBrawlWebSocket,
     undarkenText,
     darkenText,
+    showNotification,
 } from "../utils";
 
 class BrawlJoin extends Phaser.Scene {
@@ -112,7 +113,7 @@ class BrawlJoin extends Phaser.Scene {
     private makeJoinHandler() {
         const id = getUserId();
         return () => {
-            this.joinCodeInput.node["disabled"] = true;
+            this.joinCodeInput.node.setAttribute("disabled", "");
             this.joinButton.disableInteractive();
             darkenText(this.joinButton);
             const socket = makeBrawlWebSocket(this.joinCode, id);
@@ -145,12 +146,17 @@ class BrawlJoin extends Phaser.Scene {
                 }
             };
             socket.onerror = (e) => {
-                console.log("You bozo!");
+                showNotification(
+                    this,
+                    "Brawl not found!\n(Or, you are attempting to join twice.)"
+                );
                 this.joinButton.setInteractive();
+                this.joinCodeInput.node.removeAttribute("disabled");
                 undarkenText(this.joinButton);
             };
             socket.onclose = (e) => {
-                delete this.joinCodeInput.node["disabled"];
+                this.joinButton.setInteractive();
+                this.joinCodeInput.node.removeAttribute("disabled");
                 undarkenText(this.joinButton);
             };
         };

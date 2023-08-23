@@ -1,6 +1,11 @@
 import Phaser from "phaser";
 import settingsIcon from "./static/settings_icon.png";
-import { baseTextColor, darkenedColor, settingsPanel } from "./ui";
+import {
+    baseTextColor,
+    darkenedColor,
+    paragraphTextStyleBase,
+    settingsPanel,
+} from "./ui";
 
 export function loadSettingsIcon(scene: Phaser.Scene) {
     scene.load.image("settings-icon", settingsIcon);
@@ -182,4 +187,29 @@ export function darkenText(text: Phaser.GameObjects.Text): void {
 
 export function undarkenText(text: Phaser.GameObjects.Text): void {
     text.setStyle({ ...text.style, color: baseTextColor });
+}
+
+export function showNotification(scene: Phaser.Scene, message: string) {
+    console.log("showing notif");
+    const text = scene.add
+        .text(
+            scene.cameras.main.width / 2,
+            650,
+            message,
+            paragraphTextStyleBase
+        )
+        .setOrigin(0.5)
+        .setAlign("center");
+    setTimeout(
+        () =>
+            scene.tweens.add({
+                targets: text,
+                alpha: 0,
+                duration: 1000,
+                onComplete: () => {
+                    text.destroy();
+                },
+            }),
+        2000
+    );
 }
