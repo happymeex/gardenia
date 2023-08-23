@@ -38,6 +38,14 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
 
+	// disallow multiple connections by the same user
+	_, alreadyConnected := b.sockets[uid]
+	if alreadyConnected {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Please join only once!"))
+		return
+	}
+
 	conn, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
 		return
