@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
-import forestPlatform from "../static/forest_platform.png";
+import forestPlatform from "../static/platform.png";
 import { loadSettingsIcon, configurePauseMenu } from "../utils";
 import { Field, MsgTypes } from "../enums";
 

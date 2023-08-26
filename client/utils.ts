@@ -35,6 +35,7 @@ export function configurePauseMenu(
         offset,
         "settings-icon"
     );
+    settingsButton.setDepth(100);
     makeClickable(settingsButton, scene, () => {
         menuPanel.setVisible(true);
         onOpen();
@@ -52,6 +53,7 @@ function makePauseMenu(
         scene.cameras.main.width / 2,
         scene.cameras.main.height / 2
     );
+    menuTextContainer.setDepth(100);
     const header = scene.add.text(
         0,
         -pauseMenu.headerMarginBottom,
@@ -214,4 +216,17 @@ export function showNotification(scene: Phaser.Scene, message: string) {
             }),
         2000
     );
+}
+
+export function createTransparentGroundTexture(
+    scene: Phaser.Scene,
+    key: string,
+    width: number,
+    height: number
+) {
+    if (scene.textures.exists(key)) return;
+    const newTexture = scene.textures.createCanvas(key, width, height);
+    const context = newTexture.context;
+    context.clearRect(0, 0, width, height);
+    newTexture.refresh();
 }

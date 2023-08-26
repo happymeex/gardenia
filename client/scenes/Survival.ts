@@ -1,34 +1,55 @@
 import Phaser from "phaser";
-import { loadSettingsIcon, configurePauseMenu } from "../utils";
+import {
+    loadSettingsIcon,
+    configurePauseMenu,
+    createTransparentGroundTexture,
+} from "../utils";
 import Player, { getMotions } from "../Player";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
-import forestPlatform from "../static/forest_platform.png";
+import platform from "../static/platform.png";
+import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
+import waterfallBackground from "../static/waterfall-bg.jpg";
+
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private player: Player;
-    private isPaused = false;
+    private isPaused: boolean;
     public constructor() {
         super({ key: "survival" });
     }
     preload() {
         loadSettingsIcon(this);
-        this.load.image("platform", forestPlatform);
+        this.load.image("waterfall-bg", waterfallBackground);
+        this.load.image("platform", platform);
         this.load.spritesheet("player", playerSpritesheet, {
             frameWidth: 128,
+            frameHeight: 128,
+        });
+        this.load.spritesheet("basic-bot", basicBotSpritesheet, {
+            frameWidth: 96,
             frameHeight: 128,
         });
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {
+        this.isPaused = false;
         const { pause, resume } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume);
         const platforms = this.physics.add.staticGroup();
+        this.add.image(
+            this.cameras.main.width / 2,
+            this.cameras.main.height / 2,
+            "waterfall-bg"
+        );
 
-        platforms.create(100, 800, "platform");
-        platforms.create(300, 800, "platform");
-        platforms.create(400, 800, "platform");
-        platforms.create(520, 800, "platform");
-        platforms.create(730, 800, "platform");
+        createTransparentGroundTexture(
+            this,
+            "ground",
+            this.cameras.main.width,
+            20
+        );
+        platforms.create(this.cameras.main.width / 2, 609, "ground");
+
         this.player = new Player("meex", this, platforms, 300, 300);
     }
     update() {

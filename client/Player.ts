@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import { SpriteAppearance } from "./SpriteBody";
+import { initializeAnimations } from "./animations";
 
 const SPRITE_SIZE = 128; // square sprites
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
@@ -13,10 +14,9 @@ type CollisionObject =
     | Phaser.Types.Physics.Arcade.GameObjectWithBody
     | Phaser.Tilemaps.Tile;
 
-const playerFrames = {
-    right: 16, // idle
-    left: 18, //idle
-} as const;
+enum playerFrames {
+    IDLE = 27,
+}
 
 export type KeyData = { [K in (typeof DIRECTIONS)[number]]: boolean };
 export const NO_KEYS_PRESSED: KeyData = {
@@ -48,27 +48,10 @@ class Player {
             locationX,
             locationY,
             "player",
-            playerFrames[direction]
+            playerFrames.IDLE
         );
         this.player.setCollideWorldBounds(true);
-        this.player.anims.create({
-            key: "right",
-            frames: scene.anims.generateFrameNumbers("player", {
-                start: 0,
-                end: 7,
-            }),
-            frameRate: WALK_FRAME_RATE,
-            repeat: -1,
-        });
-        this.player.anims.create({
-            key: "left",
-            frames: scene.anims.generateFrameNumbers("player", {
-                start: 15,
-                end: 8,
-            }),
-            frameRate: WALK_FRAME_RATE,
-            repeat: -1,
-        });
+        initializeAnimations(scene, this.player, "player");
         scene.physics.add.collider(this.player, platforms, this.makeCollider());
         this.player.setSize(HITBOX_WIDTH, HITBOX_HEIGHT);
     }
@@ -115,21 +98,27 @@ class Player {
             }
         }
         if (dirs.left) {
+            if (this.direction === "right") {
+                this.player.setFlipX(true);
+            }
             this.direction = "left";
             this.player.setVelocityX(-WALK_VELOCITY);
-            if (!this.inAir) this.player.anims.play("left", true);
+            if (!this.inAir) this.player.anims.play("walk", true);
             else noAnim = true;
         } else if (dirs.right) {
+            if (this.direction === "left") {
+                this.player.setFlipX(false);
+            }
             this.direction = "right";
             this.player.setVelocityX(WALK_VELOCITY);
-            if (!this.inAir) this.player.anims.play("right", true);
+            if (!this.inAir) this.player.anims.play("walk", true);
             else noAnim = true;
         } else {
             this.player.setVelocityX(0);
             this.player.anims.stop(); // temporary; will replace with idle animation later
             noAnim = true;
         }
-        if (noAnim) this.player.setFrame(playerFrames[this.direction]);
+        if (noAnim) this.player.setFrame(playerFrames.IDLE);
     }
 
     /**
@@ -177,17 +166,6 @@ export function getMotions(
         ret[dir] = cursors[dir].isDown;
     });
     return ret;
-}
-
-/**
- * Detects a change between two keypress snapshots.
- *
- * @param keyData1
- * @param keyData2
- * @returns
- */
-export function hasChanged(keyData1: KeyData, keyData2: KeyData): boolean {
-    return DIRECTIONS.some((dir) => keyData1[dir] !== keyData2[dir]);
 }
 
 export default Player;

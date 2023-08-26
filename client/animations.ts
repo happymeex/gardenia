@@ -12,19 +12,10 @@ export function initializeAnimations(
     switch (textureKey) {
         case "player":
             object.anims.create({
-                key: "right",
+                key: "walk",
                 frames: scene.anims.generateFrameNumbers("player", {
                     start: 0,
                     end: 7,
-                }),
-                frameRate: PLAYER_WALK_FPS,
-                repeat: -1,
-            });
-            object.anims.create({
-                key: "left",
-                frames: scene.anims.generateFrameNumbers("player", {
-                    start: 15,
-                    end: 8,
                 }),
                 frameRate: PLAYER_WALK_FPS,
                 repeat: -1,
