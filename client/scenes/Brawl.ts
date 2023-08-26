@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import forestPlatform from "../static/platform.png";
 import { loadSettingsIcon, configurePauseMenu } from "../utils";
-import { Field, MsgTypes } from "../enums";
+import { Field, MsgTypes } from "../constants";
 
 import Player, { getMotions } from "../Player";
 import { PlayerBody } from "../SpriteBody";
@@ -16,7 +16,7 @@ class Brawl extends Phaser.Scene {
     /** Id of this player. */
     private uid: string;
     /** If true, the game is paused because the menu is open. */
-    private isPaused;
+    private isPaused: boolean;
     /** Websocket used to sync game state with server. */
     private socket: WebSocket | undefined = undefined;
     /**

@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { makeClickable } from "../utils";
 import { mainMenu } from "../ui";
+import { CANVAS_CENTER } from "../constants";
 
 const buttonData = [
     {
@@ -22,10 +23,7 @@ class MainMenu extends Phaser.Scene {
         //
     }
     create() {
-        const menuTextContainer = this.add.container(
-            this.cameras.main.width / 2,
-            this.cameras.main.height / 2
-        );
+        const menuTextContainer = this.add.container(...CANVAS_CENTER);
         const title = this.add
             .text(
                 0,

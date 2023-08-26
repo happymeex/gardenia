@@ -8,11 +8,12 @@ import BrawlSettings from "./scenes/BrawlSettings";
 import BrawlJoin from "./scenes/BrawlJoin";
 import BrawlCreate from "./scenes/BrawlCreate";
 import { getUserId, setUserId } from "./utils";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",
-    width: 1344,
-    height: 756,
+    width: CANVAS_WIDTH,
+    height: CANVAS_HEIGHT,
     scene: [
         MainMenu,
         Story,

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { CANVAS_CENTER } from "../constants";
 import { menuTextStyleBase } from "../ui";
 import { makeClickable } from "../utils";
 
@@ -7,10 +8,7 @@ class SurvivalSettings extends Phaser.Scene {
         super({ key: "survival-settings" });
     }
     create() {
-        const container = this.add.container(
-            this.cameras.main.width / 2,
-            this.cameras.main.height / 2
-        );
+        const container = this.add.container(...CANVAS_CENTER);
         const header = this.add.text(0, -250, "Survival", {
             ...menuTextStyleBase,
             fontSize: "72px",

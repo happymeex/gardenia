@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { CANVAS_CENTER, CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants";
 import {
     baseColor,
     largeParagraph,
@@ -23,10 +24,7 @@ class BrawlCreate extends Phaser.Scene {
     private socket: WebSocket;
 
     create() {
-        const container = this.add.container(
-            this.cameras.main.width / 2,
-            this.cameras.main.height / 2
-        );
+        const container = this.add.container(...CANVAS_CENTER);
         const header = this.add.text(0, -250, "Brawl", {
             ...menuTextStyleBase,
             fontSize: "72px",

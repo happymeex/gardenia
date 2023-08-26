@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { CANVAS_CENTER } from "../constants";
 import { menuTextStyleBase } from "../ui";
 import { makeClickable } from "../utils";
 
@@ -8,10 +9,7 @@ class BrawlSettings extends Phaser.Scene {
     }
 
     create() {
-        const container = this.add.container(
-            this.cameras.main.width / 2,
-            this.cameras.main.height / 2
-        );
+        const container = this.add.container(...CANVAS_CENTER);
         const header = this.add.text(0, -250, "Brawl", {
             ...menuTextStyleBase,
             fontSize: "72px",

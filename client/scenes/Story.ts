@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { CANVAS_CENTER } from "../constants";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
 import { makeClickable } from "../utils";
 
@@ -7,10 +8,7 @@ class Story extends Phaser.Scene {
         super({ key: "story" });
     }
     create() {
-        const container = this.add.container(
-            this.cameras.main.width / 2,
-            this.cameras.main.height / 2
-        );
+        const container = this.add.container(...CANVAS_CENTER);
         const message = this.add.text(
             0,
             0,
