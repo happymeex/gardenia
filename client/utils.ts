@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
+import { CANVAS_CENTER, CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
 import settingsIcon from "./static/settings_icon.png";
 import {
     baseColor,
@@ -48,10 +48,7 @@ export function configurePauseMenu(
         onOpen();
     });
     //const menuPanel = makePauseMenu(scene, onClose, onLeave);
-    const menuTextContainer = scene.add.container(
-        scene.cameras.main.width / 2,
-        scene.cameras.main.height / 2
-    );
+    const menuTextContainer = scene.add.container(...CANVAS_CENTER);
     menuTextContainer.setDepth(100);
     const header = scene.add.text(
         0,
@@ -110,7 +107,6 @@ export function configurePauseMenu(
  * @param item The game object
  * @param scene Scene containing `item`
  * @param onClick click handler
- * @param oneAndDone if true, allows only one click
  * @param scaleX scale factor in x direction on hover
  * @param scaleY scale factor in y direction on hover
  * @param duration duration of hover animation
@@ -193,14 +189,8 @@ export function undarkenText(text: Phaser.GameObjects.Text): void {
  * @param message Message to show.
  */
 export function showNotification(scene: Phaser.Scene, message: string) {
-    console.log("showing notif");
     const text = scene.add
-        .text(
-            scene.cameras.main.width / 2,
-            650,
-            message,
-            paragraphTextStyleBase
-        )
+        .text(CANVAS_WIDTH / 2, 650, message, paragraphTextStyleBase)
         .setOrigin(0.5)
         .setAlign("center");
     setTimeout(
@@ -217,12 +207,21 @@ export function showNotification(scene: Phaser.Scene, message: string) {
     );
 }
 
+/**
+ * Creates a transparent rectangular texture. If a texture with key `key`
+ * already exists in `scene`, does nothing.
+ *
+ * @param scene scene to which the texture should belong
+ * @param key id to assign to the texture
+ * @param width
+ * @param height
+ */
 export function createTransparentGroundTexture(
     scene: Phaser.Scene,
     key: string,
     width: number,
     height: number
-) {
+): void {
     if (scene.textures.exists(key)) return;
     const newTexture = scene.textures.createCanvas(key, width, height);
     const context = newTexture.context;

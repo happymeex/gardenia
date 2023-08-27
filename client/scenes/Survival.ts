@@ -9,7 +9,7 @@ import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
 import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants";
+import { CANVAS_CENTER, CANVAS_WIDTH } from "../constants";
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -37,7 +37,7 @@ class Survival extends Phaser.Scene {
         const { pause, resume } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume);
         const platforms = this.physics.add.staticGroup();
-        this.add.image(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "waterfall-bg");
+        this.add.image(...CANVAS_CENTER, "waterfall-bg");
 
         createTransparentGroundTexture(this, "ground", CANVAS_WIDTH, 20);
         platforms.create(CANVAS_WIDTH / 2, 609, "ground");
