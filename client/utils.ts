@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
 import settingsIcon from "./static/settings_icon.png";
 import {
     baseColor,
@@ -21,13 +22,13 @@ export function loadSettingsIcon(scene: Phaser.Scene) {
  * @param scene
  * @param onOpen
  * @param onClose
- * @param leave
+ * @param onLeave
  */
 export function configurePauseMenu(
     scene: Phaser.Scene,
     onOpen = () => {},
     onClose = () => {},
-    leave = () => {}
+    onLeave = () => {}
 ) {
     const offset = 50;
     const settingsButton = scene.add.image(
@@ -35,20 +36,18 @@ export function configurePauseMenu(
         offset,
         "settings-icon"
     );
-    settingsButton.setDepth(100);
+    settingsButton.setDepth(98);
+    const darkenOverlay = scene.add.graphics();
+    darkenOverlay.fillStyle(0x000000, 0.5);
+    darkenOverlay.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    darkenOverlay.setDepth(99);
+    darkenOverlay.setVisible(false);
     makeClickable(settingsButton, scene, () => {
-        menuPanel.setVisible(true);
+        darkenOverlay.setVisible(true);
+        menuTextContainer.setVisible(true);
         onOpen();
     });
-    const menuPanel = makePauseMenu(scene, onClose, leave);
-}
-
-/** Helper function. Handles panel position and logic. */
-function makePauseMenu(
-    scene: Phaser.Scene,
-    onClose = () => {},
-    leave = () => {}
-): Phaser.GameObjects.Container {
+    //const menuPanel = makePauseMenu(scene, onClose, onLeave);
     const menuTextContainer = scene.add.container(
         scene.cameras.main.width / 2,
         scene.cameras.main.height / 2
@@ -64,6 +63,7 @@ function makePauseMenu(
         {
             label: "Resume game",
             onClick: () => {
+                darkenOverlay.setVisible(false);
                 menuTextContainer.setVisible(false);
                 onClose();
             },
@@ -78,7 +78,7 @@ function makePauseMenu(
                     0,
                     (camera, progress: number) => {
                         if (progress === 1) {
-                            leave();
+                            onLeave();
                             scene.scene.start("main-menu");
                         }
                     }
@@ -101,7 +101,6 @@ function makePauseMenu(
     );
 
     menuTextContainer.setVisible(false);
-    return menuTextContainer;
 }
 
 /**
