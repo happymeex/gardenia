@@ -2,11 +2,12 @@ import Phaser from "phaser";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import { SpriteAppearance } from "./SpriteBody";
 import { initializeAnimations } from "./animations";
+import { AttackState } from "./constants";
 
 const SPRITE_SIZE = 128; // square sprites
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
-const WALK_FRAME_RATE = 12;
-const WALK_VELOCITY = 450;
+const ATTACK = "space";
+const WALK_VELOCITY = 300;
 const JUMP_VELOCITY = 800;
 const HITBOX_WIDTH = 64;
 const HITBOX_HEIGHT = 105;
@@ -14,21 +15,25 @@ type CollisionObject =
     | Phaser.Types.Physics.Arcade.GameObjectWithBody
     | Phaser.Tilemaps.Tile;
 
-enum playerFrames {
+enum PlayerFrames {
     IDLE = 27,
 }
 
-export type KeyData = { [K in (typeof DIRECTIONS)[number]]: boolean };
+export type KeyData = {
+    [K in (typeof DIRECTIONS)[number] | typeof ATTACK]: boolean;
+};
 export const NO_KEYS_PRESSED: KeyData = {
     left: false,
     right: false,
     up: false,
     down: false,
+    space: false,
 };
 
 class Player {
     private readonly player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     private cachedAppearance: SpriteAppearance | null = null;
+    private attackState: AttackState = AttackState.READY;
     public constructor(
         public readonly key: string,
         readonly scene: Phaser.Scene,
@@ -48,12 +53,20 @@ class Player {
             locationX,
             locationY,
             "player",
-            playerFrames.IDLE
+            PlayerFrames.IDLE
         );
         this.player.setCollideWorldBounds(true);
         initializeAnimations(scene, this.player, "player");
         scene.physics.add.collider(this.player, platforms, this.makeCollider());
         this.player.setSize(HITBOX_WIDTH, HITBOX_HEIGHT);
+        this.player.on(
+            "animationcomplete",
+            (e: Phaser.Animations.Animation) => {
+                if (e.key === "attack") {
+                    this.attackState = AttackState.READY;
+                }
+            }
+        );
     }
 
     /**
@@ -85,40 +98,52 @@ class Player {
     /**
      * Moves and animates the player character appropriately given keypress data.
      *
-     * @param dirs indicates which keys are currently pressed
+     * @param keyData indicates which keys are currently pressed
      */
-    public handleMotion(dirs: KeyData) {
-        let noAnim = false;
-        if (dirs.up) {
+    public handleMotion(keyData: KeyData) {
+        // null indicates no change
+        let anim: string | null = null,
+            velocityX: number | null = null,
+            velocityY: number | null = null,
+            flipX: boolean | null = null,
+            frame: PlayerFrames | null = null;
+        const horizontal: ("left" | "right")[][] = [
+            ["left", "right"],
+            ["right", "left"],
+        ];
+        if (keyData[ATTACK] && this.attackState === AttackState.READY) {
+            anim = "attack";
+            this.attackState = AttackState.ATTACKING;
+            if (!this.inAir) velocityX = 0;
+        } else if (keyData.up) {
             if (!this.inAir) {
-                this.player.anims.stop();
-                noAnim = true;
-                this.player.setVelocityY(-JUMP_VELOCITY);
+                velocityY = -JUMP_VELOCITY;
                 this.inAir = true;
             }
         }
-        if (dirs.left) {
-            if (this.direction === "right") {
-                this.player.setFlipX(true);
+        for (const [dir, opposite] of horizontal) {
+            if (keyData[dir] && this.attackState !== AttackState.ATTACKING) {
+                if (this.direction === opposite) {
+                    flipX = dir === "left"; // sprites are right-facing by default
+                    this.direction = dir;
+                }
+                if (!this.inAir) anim = "walk";
+                velocityX = WALK_VELOCITY * (dir === "right" ? 1 : -1);
             }
-            this.direction = "left";
-            this.player.setVelocityX(-WALK_VELOCITY);
-            if (!this.inAir) this.player.anims.play("walk", true);
-            else noAnim = true;
-        } else if (dirs.right) {
-            if (this.direction === "left") {
-                this.player.setFlipX(false);
-            }
-            this.direction = "right";
-            this.player.setVelocityX(WALK_VELOCITY);
-            if (!this.inAir) this.player.anims.play("walk", true);
-            else noAnim = true;
-        } else {
-            this.player.setVelocityX(0);
-            this.player.anims.stop(); // temporary; will replace with idle animation later
-            noAnim = true;
         }
-        if (noAnim) this.player.setFrame(playerFrames.IDLE);
+        if (anim === null && this.attackState !== AttackState.ATTACKING) {
+            if (!this.inAir) velocityX = 0;
+            anim = "stop";
+            frame = PlayerFrames.IDLE;
+        }
+
+        if (velocityX !== null) this.player.setVelocityX(velocityX);
+        if (velocityY !== null) this.player.setVelocityY(velocityY);
+        if (anim === "stop") {
+            this.player.anims.stop();
+            this.player.setFrame(frame);
+        } else if (anim !== null) this.player.anims.play(anim, true);
+        if (flipX !== null) this.player.setFlipX(flipX);
     }
 
     /**
@@ -136,7 +161,7 @@ class Player {
         } else {
             ret = {
                 type: "frame",
-                value: String(playerFrames[this.direction]),
+                value: String(PlayerFrames.IDLE),
             };
         }
         if (
@@ -152,7 +177,7 @@ class Player {
 }
 
 /**
- * Utility function for extracting directional keypress information.
+ * Utility function for extracting keypress information regarding the arrow keys and the space bar.
  *
  * @param cursors
  * @returns object with fields corresponding to the four directions, whose values
@@ -161,10 +186,13 @@ class Player {
 export function getMotions(
     cursors: Phaser.Types.Input.Keyboard.CursorKeys
 ): KeyData {
-    const ret = { up: false, down: false, left: false, right: false };
+    const ret: KeyData = {
+        ...NO_KEYS_PRESSED,
+    };
     DIRECTIONS.forEach((dir) => {
         ret[dir] = cursors[dir].isDown;
     });
+    ret[ATTACK] = cursors[ATTACK].isDown;
     return ret;
 }
 

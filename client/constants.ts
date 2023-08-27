@@ -17,3 +17,8 @@ export enum MsgTypes {
     /** For data containing a sprite's position and appearance. */
     SPRITE = "s",
 }
+
+export enum AttackState {
+    ATTACKING,
+    READY,
+}
