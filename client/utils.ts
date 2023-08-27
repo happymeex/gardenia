@@ -6,7 +6,7 @@ import {
     PlayerFrames,
     SpriteSheet,
 } from "./constants";
-import Player from "./Player";
+import { Player } from "./Player";
 import settingsIcon from "./static/settings_icon.png";
 import {
     baseColor,
@@ -216,15 +216,15 @@ export function showNotification(scene: Phaser.Scene, message: string) {
 }
 
 /**
- * Creates a transparent rectangular texture. If a texture with key `key`
- * already exists in `scene`, does nothing.
+ * Creates a transparent rectangular texture which can be referenced by `key`.
+ * If a texture with key `key` already exists in `scene`, this function does nothing.
  *
  * @param scene scene to which the texture should belong
  * @param key id to assign to the texture
  * @param width
  * @param height
  */
-export function createTransparentGroundTexture(
+export function makeTransparentRectTexture(
     scene: Phaser.Scene,
     key: string,
     width: number,
@@ -235,6 +235,25 @@ export function createTransparentGroundTexture(
     const context = newTexture.context;
     context.clearRect(0, 0, width, height);
     newTexture.refresh();
+}
+
+/**
+ * Erects invisible walls on the left and right edges of the screen and adds them
+ * to the static group `platforms`.
+ *
+ * @param platforms static group to add the walls to, for collision detection.
+ */
+export function createCanvasBoundaryWalls(
+    platforms: Phaser.Physics.Arcade.StaticGroup
+) {
+    const scene = platforms.scene;
+    const keys = ["boundary-wall-left", "boundary-wall-right"];
+    keys.forEach((key) => {
+        if (scene.textures.exists(key)) return;
+        makeTransparentRectTexture(scene, key, 10, CANVAS_HEIGHT);
+    });
+    platforms.create(-10, CANVAS_HEIGHT / 2, keys[0]);
+    platforms.create(CANVAS_WIDTH + 10, CANVAS_HEIGHT / 2, keys[1]);
 }
 
 /**

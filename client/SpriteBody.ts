@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import { initializeAnimations } from "./animations";
-import { PLAYER_HITBOX_WIDTH, PLAYER_HITBOX_HEIGHT } from "./animations";
-import { SpriteSheet } from "./constants";
+import { PlayerFrames, SpriteSheet, playerSpriteMetaData } from "./constants";
 
 export type SpriteAppearance = {
     type: "anim" | "frame";
@@ -20,7 +19,7 @@ class SpriteBody {
         initialFrame = 0
     ) {
         this.sprite = scene.add.sprite(x, y, spritesheetName, initialFrame);
-        initializeAnimations(scene, this.sprite, spritesheetName);
+        initializeAnimations(this.sprite, spritesheetName);
         this.sprite.setSize(width, height);
     }
     public setPosition(x: number, y: number): void {
@@ -40,26 +39,20 @@ class SpriteBody {
     }
 }
 
-const playerFrames = {
-    right: 16, // idle
-    left: 18, //idle
-} as const;
-
 export class PlayerBody extends SpriteBody {
     public constructor(
         scene: Phaser.Scene,
         locationX: number,
-        locationY: number,
-        direction: "left" | "right"
+        locationY: number
     ) {
         super(
             scene,
             SpriteSheet.PLAYER,
-            PLAYER_HITBOX_WIDTH,
-            PLAYER_HITBOX_HEIGHT,
+            playerSpriteMetaData.width,
+            playerSpriteMetaData.height,
             locationX,
             locationY,
-            playerFrames[direction]
+            PlayerFrames.IDLE
         );
     }
 }

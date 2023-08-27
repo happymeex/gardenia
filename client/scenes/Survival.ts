@@ -2,15 +2,17 @@ import Phaser from "phaser";
 import {
     loadSettingsIcon,
     configurePauseMenu,
-    createTransparentGroundTexture,
+    makeTransparentRectTexture,
     addPlayerStatusUI,
+    createCanvasBoundaryWalls,
 } from "../utils";
-import Player, { getMotions } from "../Player";
+import { Player, HomingEnemy, getMotions } from "../Player";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
 import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import {
+    basicBotSpriteMetaData,
     CANVAS_CENTER,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
@@ -21,6 +23,7 @@ class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private player: Player;
     private isPaused: boolean;
+    private enemy: HomingEnemy;
     public constructor() {
         super({ key: "survival" });
     }
@@ -45,7 +48,8 @@ class Survival extends Phaser.Scene {
         const platforms = this.physics.add.staticGroup();
         this.add.image(...CANVAS_CENTER, SpriteSheet.WATERFALL);
 
-        createTransparentGroundTexture(this, "ground", CANVAS_WIDTH, 20);
+        makeTransparentRectTexture(this, "ground", CANVAS_WIDTH, 20);
+        createCanvasBoundaryWalls(platforms);
         platforms.create(CANVAS_WIDTH / 2, 609, "ground");
 
         this.player = new Player("Meex", this, platforms, 300, 300);
@@ -55,11 +59,20 @@ class Survival extends Phaser.Scene {
             CANVAS_WIDTH / 2,
             CANVAS_HEIGHT - 70
         );
+        this.enemy = new HomingEnemy(
+            "Sad",
+            this,
+            platforms,
+            basicBotSpriteMetaData,
+            600,
+            300
+        );
     }
     update() {
         const cursors = this.cursors; // holds keypress data
         if (cursors === undefined || this.isPaused) return;
         this.player.handleMotion(getMotions(cursors));
+        this.enemy.handleMotion(null);
     }
 
     /**

@@ -2,26 +2,25 @@ import Phaser from "phaser";
 import { SpriteSheet } from "./constants";
 
 const PLAYER_WALK_FPS = 10;
-export const PLAYER_HITBOX_WIDTH = 64;
-export const PLAYER_HITBOX_HEIGHT = 105;
+const BASIC_BOT_FPS = 10;
 
 /**
  * Defines the appropriate animations on a given sprite.
  *
  * @param scene the scene containing the sprite
  * @param sprite the sprite to be animated
- * @param textureKey the key of the spritesheet from which to take the anim frames
+ * @param spriteKey the name of the spritesheet from which to take the anim frames
  */
 export function initializeAnimations(
-    scene: Phaser.Scene,
     sprite: Phaser.GameObjects.Sprite,
-    textureKey: string
+    spriteKey: string
 ) {
-    switch (textureKey) {
+    const scene = sprite.scene;
+    switch (spriteKey) {
         case SpriteSheet.PLAYER:
             sprite.anims.create({
                 key: "walk",
-                frames: scene.anims.generateFrameNumbers(SpriteSheet.PLAYER, {
+                frames: scene.anims.generateFrameNumbers(spriteKey, {
                     start: 0,
                     end: 7,
                 }),
@@ -30,7 +29,7 @@ export function initializeAnimations(
             });
             sprite.anims.create({
                 key: "attack",
-                frames: scene.anims.generateFrameNumbers(SpriteSheet.PLAYER, {
+                frames: scene.anims.generateFrameNumbers(spriteKey, {
                     frames: [
                         10, 11, 11, 11, 11, 11, 11, 12, 13, 14, 14, 14, 14, 14,
                         14, 15, 16, 16, 17, 18, 18, 18, 18, 18, 19, 20, 21, 22,
@@ -39,6 +38,16 @@ export function initializeAnimations(
                 }),
                 frameRate: 24,
                 repeat: 0,
+            });
+        case SpriteSheet.BASIC_BOT:
+            sprite.anims.create({
+                key: "walk",
+                frames: scene.anims.generateFrameNumbers(spriteKey, {
+                    start: 8,
+                    end: 1,
+                }),
+                frameRate: BASIC_BOT_FPS,
+                repeat: -1,
             });
     }
 }

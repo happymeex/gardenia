@@ -1,16 +1,18 @@
 import Phaser from "phaser";
-import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import { SpriteAppearance } from "./SpriteBody";
 import { initializeAnimations } from "./animations";
-import { AttackState, PlayerFrames, SpriteSheet } from "./constants";
+import {
+    AttackState,
+    PlayerFrames,
+    BasicBotFrames,
+    SpriteMetaData,
+    playerSpriteMetaData,
+} from "./constants";
 
-const SPRITE_SIZE = 128; // square sprites
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
 const ATTACK = "space";
 const WALK_VELOCITY = 300;
 const JUMP_VELOCITY = 800;
-const HITBOX_WIDTH = 64;
-const HITBOX_HEIGHT = 105;
 type CollisionObject =
     | Phaser.Types.Physics.Arcade.GameObjectWithBody
     | Phaser.Tilemaps.Tile;
@@ -26,43 +28,44 @@ export const NO_KEYS_PRESSED: KeyData = {
     space: false,
 };
 
-class Player {
-    private readonly player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-    private cachedAppearance: SpriteAppearance | null = null;
-    private attackState: AttackState = AttackState.READY;
-    private inAir = false;
+/**
+ * Class representing a physics-obeying sprite, with methods for reading its
+ * current position and appearance.
+ */
+class SpriteWithPhysics {
+    protected readonly sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    protected cachedAppearance: SpriteAppearance | null = null;
+    protected attackState: AttackState = AttackState.READY;
+    protected inAir = false;
 
     /**
-     * Initiates a player in the given scene.
+     * Initiates a physics-obeying sprite in the given scene. Does NOT define any collider logic.
      *
-     * Assumes that the player spritesheet has been preloaded in the scene already.
+     * Assumes that the spritesheet `spriteSheet` has been preloaded in the scene already.
      *
-     * @param name
-     * @param scene
-     * @param platforms
-     * @param locationX
-     * @param locationY
-     * @param direction initial direction that the player is facing. Defaults to "right".
+     * @param name identifier for the sprite, e.g. player's name, or NPC label, etc.
+     * @param scene scene to which the sprite belongs
+     * @param x initial x-coord
+     * @param y initial y-coord
+     * @param direction initial direction that the sprite is facing. Defaults to "right".
      */
     public constructor(
         public readonly name: string,
         readonly scene: Phaser.Scene,
-        readonly platforms: Phaser.Physics.Arcade.StaticGroup,
-        locationX: number,
-        locationY: number,
-        private direction: "left" | "right" = "right"
+        spriteData: SpriteMetaData,
+        x: number,
+        y: number,
+        protected direction: "left" | "right" = "right"
     ) {
-        this.player = scene.physics.add.sprite(
-            locationX,
-            locationY,
-            SpriteSheet.PLAYER,
-            PlayerFrames.IDLE
+        this.sprite = scene.physics.add.sprite(
+            x,
+            y,
+            spriteData.spriteSheet,
+            spriteData.idleFrame
         );
-        this.player.setCollideWorldBounds(true);
-        initializeAnimations(scene, this.player, SpriteSheet.PLAYER);
-        scene.physics.add.collider(this.player, platforms, this.makeCollider());
-        this.player.setSize(HITBOX_WIDTH, HITBOX_HEIGHT);
-        this.player.on(
+        initializeAnimations(this.sprite, spriteData.spriteSheet);
+        this.sprite.setSize(spriteData.width, spriteData.height);
+        this.sprite.on(
             "animationcomplete",
             (e: Phaser.Animations.Animation) => {
                 if (e.key === "attack") {
@@ -72,27 +75,69 @@ class Player {
         );
     }
 
-    /**
-     * Forcefully moves the player to the given position while preserving velocity.
-     *
-     * @param x x-coordinate of new position
-     * @param y y-coordinate of new position
-     */
-    public updatePosition(x: number, y: number) {
-        //this.player.body.moves = false;
-        this.player.x = x;
-        this.player.y = y;
-        //this.player.body.moves = true;
+    public getPosition(): { x: number; y: number } {
+        return { x: this.sprite.x, y: this.sprite.y };
     }
 
-    public getPosition(): { x: number; y: number } {
-        return { x: this.player.x, y: this.player.y };
+    /**
+     * @returns An object specifying what the player sprite should look like at the moment.
+     *      If the appearance is the same as when this method was last called, returns "same".
+     *      Otherwise:
+     *          If `type` field is "frame", then `value` gives the spritesheet frame number.
+     *          if `type` field is "anim", then `value` gives the name of the animation.
+     */
+    public getAppearance(): SpriteAppearance | "same" {
+        const currentAnimName = this.sprite.anims.currentAnim?.key;
+        let ret: SpriteAppearance;
+        if (this.sprite.anims.isPlaying) {
+            ret = { type: "anim", value: currentAnimName };
+        } else {
+            ret = {
+                type: "frame",
+                value: String(PlayerFrames.IDLE),
+            };
+        }
+        if (
+            this.cachedAppearance &&
+            ret.type === this.cachedAppearance.type &&
+            ret.value === this.cachedAppearance.value
+        ) {
+            return "same";
+        }
+        this.cachedAppearance = ret;
+        return ret;
+    }
+}
+
+class Player extends SpriteWithPhysics {
+    /**
+     * Initiates a player in the given scene.
+     *
+     * Assumes that the player spritesheet has been preloaded in the scene already.
+     *
+     * @param name
+     * @param scene
+     * @param platforms
+     * @param x
+     * @param y
+     * @param direction initial direction that the player is facing. Defaults to "right".
+     */
+    public constructor(
+        name: string,
+        readonly scene: Phaser.Scene,
+        readonly platforms: Phaser.Physics.Arcade.StaticGroup,
+        x: number,
+        y: number,
+        direction: "left" | "right" = "right"
+    ) {
+        super(name, scene, playerSpriteMetaData, x, y, direction);
+        scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
     }
 
     private makeCollider() {
-        return (player: CollisionObject, platforms: CollisionObject) => {
+        return (sprite: CollisionObject, platforms: CollisionObject) => {
             // silly typechecking to rule out player being tile type
-            if ("body" in player && player.body.touching.down) {
+            if ("body" in sprite && sprite.body.touching.down) {
                 this.inAir = false;
             }
         };
@@ -140,42 +185,13 @@ class Player {
             frame = PlayerFrames.IDLE;
         }
 
-        if (velocityX !== null) this.player.setVelocityX(velocityX);
-        if (velocityY !== null) this.player.setVelocityY(velocityY);
+        if (velocityX !== null) this.sprite.setVelocityX(velocityX);
+        if (velocityY !== null) this.sprite.setVelocityY(velocityY);
         if (anim === "stop") {
-            this.player.anims.stop();
-            this.player.setFrame(frame);
-        } else if (anim !== null) this.player.anims.play(anim, true);
-        if (flipX !== null) this.player.setFlipX(flipX);
-    }
-
-    /**
-     * @returns An object specifying what the player sprite should look like at the moment.
-     *      If the appearance is the same as when this method was last called, returns "same".
-     *      Otherwise:
-     *          If `type` field is "frame", then `value` gives the spritesheet frame number.
-     *          if `type` field is "anim", then `value` gives the name of the animation.
-     */
-    public getAppearance(): SpriteAppearance | "same" {
-        const currentAnimName = this.player.anims.currentAnim?.key;
-        let ret: SpriteAppearance;
-        if (this.player.anims.isPlaying) {
-            ret = { type: "anim", value: currentAnimName };
-        } else {
-            ret = {
-                type: "frame",
-                value: String(PlayerFrames.IDLE),
-            };
-        }
-        if (
-            this.cachedAppearance &&
-            ret.type === this.cachedAppearance.type &&
-            ret.value === this.cachedAppearance.value
-        ) {
-            return "same";
-        }
-        this.cachedAppearance = ret;
-        return ret;
+            this.sprite.anims.stop();
+            this.sprite.setFrame(frame);
+        } else if (anim !== null) this.sprite.anims.play(anim, true);
+        if (flipX !== null) this.sprite.setFlipX(flipX);
     }
 }
 
@@ -199,4 +215,90 @@ export function getMotions(
     return ret;
 }
 
-export default Player;
+enum EnemyStates {
+    WALKING,
+    IDLE,
+    HOMING,
+    ATTACKING,
+}
+
+class HomingEnemy extends SpriteWithPhysics {
+    /** Probability of transitioning from walk to pause on any given update call. */
+    private readonly walkToIdleChance = 0.001;
+    /** Probability of transitioning from pause to walk on any given update call. */
+    private readonly IdleToWalkChance = 0.005;
+    /** Indicates what the bot is "trying" to do. */
+    private semanticState: EnemyStates = EnemyStates.IDLE;
+    /** Bot walk speed. */
+    private readonly walkspeed = 200;
+
+    public constructor(
+        name: string,
+        readonly scene: Phaser.Scene,
+        readonly platforms: Phaser.Physics.Arcade.StaticGroup,
+        spriteData: SpriteMetaData,
+        x: number,
+        y: number,
+        direction: "left" | "right" = "right"
+    ) {
+        super(name, scene, spriteData, x, y, direction);
+        scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
+    }
+
+    private makeCollider() {
+        return (sprite: CollisionObject, platforms: CollisionObject) => {
+            // silly typechecking to rule out sprite being tile type
+            if (!("body" in sprite)) return;
+            if (sprite.body.touching.down) {
+                this.inAir = false;
+            }
+            // turn around when hitting walls
+            if (sprite.body.touching.left) {
+                this.sprite.setFlipX(false);
+                this.direction = "right";
+                if (this.semanticState === EnemyStates.WALKING) {
+                    this.sprite.setVelocityX(this.walkspeed);
+                }
+            } else if (sprite.body.touching.right) {
+                this.sprite.setFlipX(true);
+                this.direction = "left";
+                if (this.semanticState === EnemyStates.WALKING) {
+                    this.sprite.setVelocityX(-this.walkspeed);
+                }
+            }
+        };
+    }
+
+    public handleMotion(homingDirection: "left" | "right" | null) {
+        if (homingDirection !== null) {
+            this.semanticState = EnemyStates.HOMING;
+            const velocity =
+                this.walkspeed * (homingDirection === "right" ? 1 : -1);
+            this.sprite.setVelocityX(velocity);
+            this.sprite.setFlipX(homingDirection === "left");
+            this.sprite.anims.play("walk", true);
+        } else {
+            // If we're transitioning from homing state, go to idle
+            if (this.semanticState === EnemyStates.HOMING) {
+                this.semanticState = EnemyStates.IDLE;
+            } else if (this.semanticState === EnemyStates.IDLE) {
+                if (Math.random() < this.IdleToWalkChance) {
+                    this.semanticState = EnemyStates.WALKING;
+                    const velocity =
+                        this.walkspeed * (this.direction === "right" ? 1 : -1);
+                    this.sprite.setVelocityX(velocity);
+                    this.sprite.anims.play("walk", true);
+                }
+            } else if (this.semanticState === EnemyStates.WALKING) {
+                if (Math.random() < this.walkToIdleChance) {
+                    this.semanticState = EnemyStates.IDLE;
+                    this.sprite.anims.stop();
+                    this.sprite.setFrame(BasicBotFrames.IDLE);
+                    this.sprite.setVelocityX(0);
+                }
+            }
+        }
+    }
+}
+
+export { Player, HomingEnemy };

@@ -39,3 +39,28 @@ export enum PlayerFrames {
     /** Mugshot for use in healthbar/status UI. */
     ICON = 30,
 }
+
+export enum BasicBotFrames {
+    IDLE = 18,
+}
+
+export interface SpriteMetaData {
+    readonly spriteSheet: SpriteSheet;
+    readonly width: number;
+    readonly height: number;
+    readonly idleFrame: number;
+}
+
+export const playerSpriteMetaData: SpriteMetaData = {
+    spriteSheet: SpriteSheet.PLAYER,
+    width: 64,
+    height: 105,
+    idleFrame: PlayerFrames.IDLE,
+};
+
+export const basicBotSpriteMetaData: SpriteMetaData = {
+    spriteSheet: SpriteSheet.BASIC_BOT,
+    width: 64,
+    height: 105,
+    idleFrame: BasicBotFrames.IDLE,
+};

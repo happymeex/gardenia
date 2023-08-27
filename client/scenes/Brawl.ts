@@ -4,7 +4,7 @@ import forestPlatform from "../static/platform.png";
 import { loadSettingsIcon, configurePauseMenu } from "../utils";
 import { Field, MsgTypes } from "../constants";
 
-import Player, { getMotions } from "../Player";
+import { Player, getMotions } from "../Player";
 import { PlayerBody } from "../SpriteBody";
 
 class Brawl extends Phaser.Scene {
@@ -81,8 +81,7 @@ class Brawl extends Phaser.Scene {
             const y = 300;
             if (id === this.uid) {
                 this.player = new Player(id, this, platforms, x, y);
-            } else
-                this.otherPlayers.set(id, new PlayerBody(this, x, y, "right"));
+            } else this.otherPlayers.set(id, new PlayerBody(this, x, y));
         });
     }
     update() {
