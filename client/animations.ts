@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { SpriteSheet } from "./constants";
 
 const PLAYER_WALK_FPS = 10;
 export const PLAYER_HITBOX_WIDTH = 64;
@@ -17,10 +18,10 @@ export function initializeAnimations(
     textureKey: string
 ) {
     switch (textureKey) {
-        case "player":
+        case SpriteSheet.PLAYER:
             sprite.anims.create({
                 key: "walk",
-                frames: scene.anims.generateFrameNumbers("player", {
+                frames: scene.anims.generateFrameNumbers(SpriteSheet.PLAYER, {
                     start: 0,
                     end: 7,
                 }),
@@ -29,7 +30,7 @@ export function initializeAnimations(
             });
             sprite.anims.create({
                 key: "attack",
-                frames: scene.anims.generateFrameNumbers("player", {
+                frames: scene.anims.generateFrameNumbers(SpriteSheet.PLAYER, {
                     frames: [
                         10, 11, 11, 11, 11, 11, 11, 12, 13, 14, 14, 14, 14, 14,
                         14, 15, 16, 16, 17, 18, 18, 18, 18, 18, 19, 20, 21, 22,

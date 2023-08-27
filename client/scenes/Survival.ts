@@ -10,7 +10,12 @@ import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
 import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
-import { CANVAS_CENTER, CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants";
+import {
+    CANVAS_CENTER,
+    CANVAS_HEIGHT,
+    CANVAS_WIDTH,
+    SpriteSheet,
+} from "../constants";
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -21,13 +26,13 @@ class Survival extends Phaser.Scene {
     }
     preload() {
         loadSettingsIcon(this);
-        this.load.image("waterfall-bg", waterfallBackground);
-        this.load.image("platform", platform);
-        this.load.spritesheet("player", playerSpritesheet, {
+        this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
+        this.load.image(SpriteSheet.PLATFORM, platform);
+        this.load.spritesheet(SpriteSheet.PLAYER, playerSpritesheet, {
             frameWidth: 128,
             frameHeight: 128,
         });
-        this.load.spritesheet("basic-bot", basicBotSpritesheet, {
+        this.load.spritesheet(SpriteSheet.BASIC_BOT, basicBotSpritesheet, {
             frameWidth: 96,
             frameHeight: 128,
         });
@@ -38,12 +43,12 @@ class Survival extends Phaser.Scene {
         const { pause, resume } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume);
         const platforms = this.physics.add.staticGroup();
-        this.add.image(...CANVAS_CENTER, "waterfall-bg");
+        this.add.image(...CANVAS_CENTER, SpriteSheet.WATERFALL);
 
         createTransparentGroundTexture(this, "ground", CANVAS_WIDTH, 20);
         platforms.create(CANVAS_WIDTH / 2, 609, "ground");
 
-        this.player = new Player("meex", this, platforms, 300, 300);
+        this.player = new Player("Meex", this, platforms, 300, 300);
         const { setHealth, setMana } = addPlayerStatusUI(
             this,
             this.player,

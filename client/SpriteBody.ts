@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { initializeAnimations } from "./animations";
 import { PLAYER_HITBOX_WIDTH, PLAYER_HITBOX_HEIGHT } from "./animations";
+import { SpriteSheet } from "./constants";
 
 export type SpriteAppearance = {
     type: "anim" | "frame";
@@ -53,7 +54,7 @@ export class PlayerBody extends SpriteBody {
     ) {
         super(
             scene,
-            "player",
+            SpriteSheet.PLAYER,
             PLAYER_HITBOX_WIDTH,
             PLAYER_HITBOX_HEIGHT,
             locationX,

@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import { SpriteAppearance } from "./SpriteBody";
 import { initializeAnimations } from "./animations";
-import { AttackState, PlayerFrames } from "./constants";
+import { AttackState, PlayerFrames, SpriteSheet } from "./constants";
 
 const SPRITE_SIZE = 128; // square sprites
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
@@ -30,29 +30,36 @@ class Player {
     private readonly player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     private cachedAppearance: SpriteAppearance | null = null;
     private attackState: AttackState = AttackState.READY;
+    private inAir = false;
+
+    /**
+     * Initiates a player in the given scene.
+     *
+     * Assumes that the player spritesheet has been preloaded in the scene already.
+     *
+     * @param name
+     * @param scene
+     * @param platforms
+     * @param locationX
+     * @param locationY
+     * @param direction initial direction that the player is facing. Defaults to "right".
+     */
     public constructor(
         public readonly name: string,
         readonly scene: Phaser.Scene,
         readonly platforms: Phaser.Physics.Arcade.StaticGroup,
         locationX: number,
         locationY: number,
-        private direction: "left" | "right" = "right",
-        private inAir: boolean = false
+        private direction: "left" | "right" = "right"
     ) {
-        if (!scene.textures.exists("player")) {
-            scene.load.spritesheet("player", playerSpritesheet, {
-                frameWidth: SPRITE_SIZE,
-                frameHeight: SPRITE_SIZE,
-            });
-        }
         this.player = scene.physics.add.sprite(
             locationX,
             locationY,
-            "player",
+            SpriteSheet.PLAYER,
             PlayerFrames.IDLE
         );
         this.player.setCollideWorldBounds(true);
-        initializeAnimations(scene, this.player, "player");
+        initializeAnimations(scene, this.player, SpriteSheet.PLAYER);
         scene.physics.add.collider(this.player, platforms, this.makeCollider());
         this.player.setSize(HITBOX_WIDTH, HITBOX_HEIGHT);
         this.player.on(

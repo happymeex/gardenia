@@ -2,6 +2,15 @@ export const CANVAS_WIDTH = 1344;
 export const CANVAS_HEIGHT = 756;
 export const CANVAS_CENTER = [CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2] as const;
 
+// spritesheet keys
+
+export enum SpriteSheet {
+    PLAYER = "player",
+    BASIC_BOT = "basic-bot",
+    PLATFORM = "platform",
+    WATERFALL = "waterfall-bg",
+}
+
 // Used to compress messages sent via websocket.
 
 /** Shorthands for object fields. */
@@ -17,6 +26,8 @@ export enum MsgTypes {
     /** For data containing a sprite's position and appearance. */
     SPRITE = "s",
 }
+
+// player constants
 
 export enum AttackState {
     ATTACKING,

@@ -4,6 +4,7 @@ import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     PlayerFrames,
+    SpriteSheet,
 } from "./constants";
 import Player from "./Player";
 import settingsIcon from "./static/settings_icon.png";
@@ -262,7 +263,12 @@ export function addPlayerStatusUI(
     const nameOffset = 15;
     const barWidth = 160;
     const barHeight = 10;
-    const icon = scene.add.sprite(-iconOffset, 0, "player", PlayerFrames.ICON);
+    const icon = scene.add.sprite(
+        -iconOffset,
+        0,
+        SpriteSheet.PLAYER,
+        PlayerFrames.ICON
+    );
     const name = scene.add.text(nameOffset, -30, player.name, {
         ...paragraphTextStyleBase,
         color: "#ffffff",
