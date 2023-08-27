@@ -1,9 +1,16 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
+import {
+    CANVAS_CENTER,
+    CANVAS_HEIGHT,
+    CANVAS_WIDTH,
+    PlayerFrames,
+} from "./constants";
+import Player from "./Player";
 import settingsIcon from "./static/settings_icon.png";
 import {
     baseColor,
     darkenedColor,
+    menuTextStyleBase,
     paragraphTextStyleBase,
     pauseMenu,
 } from "./ui";
@@ -227,4 +234,87 @@ export function createTransparentGroundTexture(
     const context = newTexture.context;
     context.clearRect(0, 0, width, height);
     newTexture.refresh();
+}
+
+/**
+ * Creates a UI component showing the player's character icon (indicating their
+ * current animal mode) and their health/mana bars.
+ *
+ * Assumes that the player spritesheet has been preloaded in `scene` already.
+ *
+ * @param scene
+ * @param player
+ * @param x horizontal position of the component
+ * @param y vertical position of the component
+ * @returns an object with properties `setHealth` and `setManas` whose values are
+ *      functions that adjust the health and mana bars respectively, given a percentage input.
+ */
+export function addPlayerStatusUI(
+    scene: Phaser.Scene,
+    player: Player,
+    x: number,
+    y: number
+) {
+    const container = scene.add.container(x, y);
+    /** Amount to shift the icon to the left of container center. */
+    const iconOffset = 50;
+    /** Amount to shift the name and health, mana bars to the right of container center */
+    const nameOffset = 15;
+    const barWidth = 160;
+    const barHeight = 10;
+    const icon = scene.add.sprite(-iconOffset, 0, "player", PlayerFrames.ICON);
+    const name = scene.add.text(nameOffset, -30, player.name, {
+        ...paragraphTextStyleBase,
+        color: "#ffffff",
+    });
+    const barOffset = icon.width - iconOffset + nameOffset;
+    const setHealth = assembleStatBar(
+        container,
+        barOffset,
+        0,
+        barWidth,
+        barHeight,
+        0x3a5c43,
+        0x32ab52
+    );
+    const setMana = assembleStatBar(
+        container,
+        barOffset,
+        15,
+        barWidth,
+        barHeight,
+        0x35295e,
+        0x5c3ac9
+    );
+
+    container.add([icon, name]);
+    container.setDepth(50);
+    return { setHealth, setMana };
+}
+
+function assembleStatBar(
+    container: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    baseColor: number,
+    fillColor: number
+) {
+    container.scene;
+    const base = container.scene.add.rectangle(x, y, width, height);
+    const fill = container.scene.add.rectangle(x, y, width, height);
+    base.setFillStyle(baseColor);
+    fill.setFillStyle(fillColor);
+
+    const outline = container.scene.add.rectangle(x, y, width, height);
+    outline.setFillStyle(0, 0); // transparent interior
+    outline.setStrokeStyle(3, 0x000000);
+
+    const setFill = (ratio: number) => {
+        fill.setScale(ratio, 1);
+        fill.setPosition(x - (ratio * width) / 2, y);
+    };
+    container.add([base, fill, outline]);
+    return setFill;
 }

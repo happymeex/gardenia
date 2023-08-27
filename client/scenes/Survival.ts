@@ -3,13 +3,14 @@ import {
     loadSettingsIcon,
     configurePauseMenu,
     createTransparentGroundTexture,
+    addPlayerStatusUI,
 } from "../utils";
 import Player, { getMotions } from "../Player";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
 import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
-import { CANVAS_CENTER, CANVAS_WIDTH } from "../constants";
+import { CANVAS_CENTER, CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants";
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -43,6 +44,12 @@ class Survival extends Phaser.Scene {
         platforms.create(CANVAS_WIDTH / 2, 609, "ground");
 
         this.player = new Player("meex", this, platforms, 300, 300);
+        const { setHealth, setMana } = addPlayerStatusUI(
+            this,
+            this.player,
+            CANVAS_WIDTH / 2,
+            CANVAS_HEIGHT - 70
+        );
     }
     update() {
         const cursors = this.cursors; // holds keypress data

@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import { SpriteAppearance } from "./SpriteBody";
 import { initializeAnimations } from "./animations";
-import { AttackState } from "./constants";
+import { AttackState, PlayerFrames } from "./constants";
 
 const SPRITE_SIZE = 128; // square sprites
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
@@ -14,10 +14,6 @@ const HITBOX_HEIGHT = 105;
 type CollisionObject =
     | Phaser.Types.Physics.Arcade.GameObjectWithBody
     | Phaser.Tilemaps.Tile;
-
-enum PlayerFrames {
-    IDLE = 27,
-}
 
 export type KeyData = {
     [K in (typeof DIRECTIONS)[number] | typeof ATTACK]: boolean;
@@ -35,7 +31,7 @@ class Player {
     private cachedAppearance: SpriteAppearance | null = null;
     private attackState: AttackState = AttackState.READY;
     public constructor(
-        public readonly key: string,
+        public readonly name: string,
         readonly scene: Phaser.Scene,
         readonly platforms: Phaser.Physics.Arcade.StaticGroup,
         locationX: number,

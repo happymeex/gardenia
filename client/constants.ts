@@ -22,3 +22,9 @@ export enum AttackState {
     ATTACKING,
     READY,
 }
+
+export enum PlayerFrames {
+    IDLE = 27,
+    /** Mugshot for use in healthbar/status UI. */
+    ICON = 30,
+}
