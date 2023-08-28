@@ -59,6 +59,7 @@ class BrawlCreate extends Phaser.Scene {
         });
 
         const id = getUserId();
+        if (id === null) throw new Error("Unexpected null id"); // TODO: better error handling?
         fetch(`/new-brawl-id?id=${id}`)
             .then((res) => res.text())
             .then((brawlId) => {

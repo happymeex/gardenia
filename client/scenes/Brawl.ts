@@ -49,20 +49,22 @@ class Brawl extends Phaser.Scene {
             if (msg[Field.TYPE] === MsgTypes.SPRITE) {
                 if (msg[Field.SOURCE] === this.uid) return;
                 const playerBody = this.otherPlayers.get(msg[Field.SOURCE]);
+                if (playerBody === undefined) throw new Error();
                 const { x, y } = msg[Field.POSITION];
                 playerBody.setPosition(x, y);
                 playerBody.setAppearance(msg[Field.APPEARANCE]);
             }
         };
         this.spritePinger = setInterval(() => {
-            this.socket.send(
-                `data_${JSON.stringify({
-                    [Field.SOURCE]: this.uid,
-                    [Field.TYPE]: MsgTypes.SPRITE,
-                    [Field.POSITION]: this.player.getPosition(),
-                    [Field.APPEARANCE]: this.player.getAppearance(),
-                })}`
-            );
+            if (this.socket)
+                this.socket.send(
+                    `data_${JSON.stringify({
+                        [Field.SOURCE]: this.uid,
+                        [Field.TYPE]: MsgTypes.SPRITE,
+                        [Field.POSITION]: this.player.getPosition(),
+                        [Field.APPEARANCE]: this.player.getAppearance(),
+                    })}`
+                );
         }, 30); // 33 fps
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
@@ -80,7 +82,7 @@ class Brawl extends Phaser.Scene {
             const x = 300 + 100 * i;
             const y = 300;
             if (id === this.uid) {
-                this.player = new Player(id, this, platforms, x, y);
+                this.player = new Player(id, this, platforms, x, y, () => {}); // TODO: proper onDeath
             } else this.otherPlayers.set(id, new PlayerBody(this, x, y));
         });
     }
@@ -109,7 +111,7 @@ class Brawl extends Phaser.Scene {
             },
             leave: () => {
                 clearInterval(this.spritePinger);
-                this.socket.close(1000); // indicates normal closure
+                if (this.socket) this.socket.close(1000); // indicates normal closure
             },
         };
     }
