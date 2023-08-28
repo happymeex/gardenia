@@ -290,6 +290,21 @@ class HomingEnemy extends SpriteWithPhysics {
     /** Bot walk speed. */
     private readonly walkspeed = 200;
 
+    /**
+     * Creates an enemy that  wanders around, walking straight and pausing at random intervals,
+     * only turning when it hits a wall. If given the signal, it can be instructed to walk
+     * in a given direction and attack a given player character. (last part TODO)
+     *
+     * @param name Must be unique among sprites (players, enemies, ...) in the scene.
+     * @param scene Scene to which this enemy belongs.
+     * @param platforms
+     * @param spriteData
+     * @param x Initial x-coordinate.
+     * @param y Initial y-coordinate.
+     * @param onDeath Handler function that will be run on death (right before death animation).
+     *      Use this to remove any references to this object.
+     * @param direction Initial direction that the enemy faces. Defaults to "right".
+     */
     public constructor(
         name: string,
         readonly scene: Phaser.Scene,
@@ -304,7 +319,11 @@ class HomingEnemy extends SpriteWithPhysics {
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
     }
 
-    private makeCollider() {
+    /**
+     * @returns a handler function for collisions (contact) between this enemy and
+     *      the platforms in the scene. In particular, the enemy turns around when it hits a wall.
+     */
+    private makeCollider(): Phaser.Types.Physics.Arcade.ArcadePhysicsCallback {
         return (sprite: CollisionObject, platforms: CollisionObject) => {
             // silly typechecking to rule out sprite being tile type
             if (!("body" in sprite)) return;
@@ -328,6 +347,19 @@ class HomingEnemy extends SpriteWithPhysics {
         };
     }
 
+    /**
+     * Call this method with scene-update frequency to move and animate this
+     * enemy appropriately.
+     *
+     * If `homingDirection` is not null, then the enemy will move in the specified direction.
+     * TODO: configure attacks. Should they be controlled within this class or externally?
+     *
+     * If walking, then stops with some fixed probability, and if stopped,
+     * starts walking with some different fixed probability.
+     *
+     * @param homingDirection specifies a direction of movement; if left `null`, then the
+     *      enemy continues walking/idling.
+     */
     public handleMotion(homingDirection: "left" | "right" | null) {
         if (homingDirection !== null) {
             this.semanticState = EnemyStates.HOMING;
