@@ -11,10 +11,22 @@
         />
     </head>
     <body>
+        <div id="font-renderer">.</div>
+        <div id="font-renderer2">.</div>
         <main id="game-container"></main>
     </body>
     <input id="join-code-input" placeholder="Join code" />
     <style>
+        #font-renderer,
+        #font-renderer2 {
+            font-family: "Alegreya SC";
+            position: absolute;
+            left: -100px;
+            top: -100px;
+        }
+        #font-renderer2 {
+            font-family: "Alegreya";
+        }
         body {
             margin: 0;
             display: flex;
