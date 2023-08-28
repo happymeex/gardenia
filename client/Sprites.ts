@@ -59,7 +59,7 @@ class SpriteWithPhysics implements CanTakeDamage {
         spriteData: SpriteMetaData,
         x: number,
         y: number,
-        private health: number,
+        protected health: number,
         private onDeath: (name: string) => void,
         protected direction: "left" | "right" = "right"
     ) {
@@ -168,6 +168,8 @@ class Player extends SpriteWithPhysics {
      * @param platforms
      * @param x
      * @param y
+     * @param setHealthUI
+     * @param setManaUI
      * @param direction initial direction that the player is facing. Defaults to "right".
      */
     public constructor(
@@ -177,6 +179,8 @@ class Player extends SpriteWithPhysics {
         x: number,
         y: number,
         onDeath: (name: string) => void,
+        private setHealthUI: (dmg: number) => void,
+        private setManaUI: (dmg: number) => void,
         direction: "left" | "right" = "right"
     ) {
         super(name, scene, playerSpriteMetaData, x, y, 100, onDeath, direction);
@@ -190,6 +194,16 @@ class Player extends SpriteWithPhysics {
                 this.inAir = false;
             }
         };
+    }
+
+    /**
+     * Adjusts the healthbar UI accordingly.
+     * @inheritdoc
+     */
+    public takeDamage(dmg: number) {
+        const newRatio = Math.max((this.health - dmg) / this.maxHealth, 0);
+        this.setHealthUI(newRatio);
+        super.takeDamage(dmg);
     }
 
     /**

@@ -59,21 +59,23 @@ class Survival extends Phaser.Scene {
         platforms.create(CANVAS_WIDTH / 2, 609, "ground");
 
         this.combatManager = new CombatManager();
+        const { setHealthUI, setManaUI } = addPlayerStatusUI(
+            this,
+            "Meex",
+            CANVAS_WIDTH / 2,
+            CANVAS_HEIGHT - 70
+        );
         this.player = new Player(
             "Meex",
             this,
             platforms,
             300,
             300,
-            this.makeDeathHandlers("player")
+            this.makeDeathHandlers("player"),
+            setHealthUI,
+            setManaUI
         );
         this.player.registerAsCombatant(this.combatManager, "player");
-        const { setHealth, setMana } = addPlayerStatusUI(
-            this,
-            this.player,
-            CANVAS_WIDTH / 2,
-            CANVAS_HEIGHT - 70
-        );
         const createEnemy = () => {
             const numEnemies = this.enemies.size;
             if (numEnemies === this.maxEnemies) return;

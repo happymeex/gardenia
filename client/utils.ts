@@ -11,7 +11,6 @@ import settingsIcon from "./static/settings_icon.png";
 import {
     baseColor,
     darkenedColor,
-    menuTextStyleBase,
     paragraphTextStyleBase,
     pauseMenu,
 } from "./ui";
@@ -265,15 +264,15 @@ export function createCanvasBoundaryWalls(
  * Assumes that the player spritesheet has been preloaded in `scene` already.
  *
  * @param scene
- * @param player
+ * @param playerName
  * @param x horizontal position of the component
  * @param y vertical position of the component
- * @returns an object with properties `setHealth` and `setManas` whose values are
+ * @returns an object with properties `setHealthUI` and `setManaUI` whose values are
  *      functions that adjust the health and mana bars respectively, given a percentage input.
  */
 export function addPlayerStatusUI(
     scene: Phaser.Scene,
-    player: Player,
+    playerName: string,
     x: number,
     y: number
 ) {
@@ -290,12 +289,12 @@ export function addPlayerStatusUI(
         SpriteSheet.PLAYER,
         PlayerFrames.ICON
     );
-    const name = scene.add.text(nameOffset, -30, player.name, {
+    const name = scene.add.text(nameOffset, -30, playerName, {
         ...paragraphTextStyleBase,
         color: "#ffffff",
     });
     const barOffset = icon.width - iconOffset + nameOffset;
-    const setHealth = assembleStatBar(
+    const setHealthUI = assembleStatBar(
         container,
         barOffset,
         0,
@@ -304,7 +303,7 @@ export function addPlayerStatusUI(
         0x3a5c43,
         0x32ab52
     );
-    const setMana = assembleStatBar(
+    const setManaUI = assembleStatBar(
         container,
         barOffset,
         15,
@@ -316,7 +315,7 @@ export function addPlayerStatusUI(
 
     container.add([icon, name]);
     container.setDepth(50);
-    return { setHealth, setMana };
+    return { setHealthUI, setManaUI };
 }
 
 function assembleStatBar(
