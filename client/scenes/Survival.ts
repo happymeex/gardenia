@@ -5,6 +5,7 @@ import {
     makeTransparentRectTexture,
     addPlayerStatusUI,
     createCanvasBoundaryWalls,
+    createTimer,
 } from "../utils";
 import { Player, HomingEnemy, getMotions } from "../Sprites";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
@@ -28,7 +29,10 @@ class Survival extends Phaser.Scene {
     /** Maps names to enemy characters. */
     private readonly enemies: Map<string, HomingEnemy> = new Map();
     private readonly maxEnemies = 10;
+    private numSpawned = 0;
     private numKilled = 0;
+    private timer: Phaser.GameObjects.Text;
+    private processes: Map<string, number> = new Map();
 
     public constructor() {
         super({ key: "survival" });
@@ -49,8 +53,9 @@ class Survival extends Phaser.Scene {
     }
     create() {
         this.isPaused = false;
-        const { pause, resume } = this.makeFlowControlFunctions();
-        configurePauseMenu(this, pause, resume);
+        this.enemies.clear();
+        const { pause, resume, leave } = this.makeFlowControlFunctions();
+        configurePauseMenu(this, pause, resume, leave);
         const platforms = this.physics.add.staticGroup();
         this.add.image(...CANVAS_CENTER, SpriteSheet.WATERFALL);
 
@@ -79,7 +84,7 @@ class Survival extends Phaser.Scene {
         const createEnemy = () => {
             const numEnemies = this.enemies.size;
             if (numEnemies === this.maxEnemies) return;
-            const name = `enemy-${this.numKilled}`;
+            const name = `enemy-${this.numSpawned}`;
             const enemy = new HomingEnemy(
                 name,
                 this,
@@ -91,9 +96,20 @@ class Survival extends Phaser.Scene {
             );
             this.enemies.set(name, enemy);
             enemy.registerAsCombatant(this.combatManager, "enemy");
+            this.numSpawned++;
         };
         createEnemy();
-        setInterval(createEnemy, 15 * 1000);
+        const spawner = setInterval(createEnemy, 15 * 1000);
+
+        const { timeText, processNumber } = createTimer(
+            this,
+            CANVAS_WIDTH - 100,
+            45
+        );
+        this.timer = timeText.setOrigin(1, 0.5);
+
+        this.processes.set("enemy-spawner", spawner);
+        this.processes.set("timer", processNumber);
     }
     update() {
         const cursors = this.cursors; // holds keypress data
@@ -102,6 +118,11 @@ class Survival extends Phaser.Scene {
         for (const enemy of this.enemies.values()) {
             enemy.handleMotion(null);
         }
+    }
+
+    /** @returns pause status of the survival scene. */
+    public getIsPaused() {
+        return this.isPaused;
     }
 
     private makeDeathHandlers(
@@ -118,6 +139,7 @@ class Survival extends Phaser.Scene {
                 return (name) => {
                     this.isPaused = true;
                     // TODO: play game over UI and show stats
+                    this.makeFlowControlFunctions().leave();
                     this.scene.start("main-menu");
                 };
         }
@@ -139,6 +161,10 @@ class Survival extends Phaser.Scene {
             resume: () => {
                 this.physics.resume();
                 this.isPaused = false;
+            },
+            leave: () => {
+                for (const processNumber of this.processes.values())
+                    clearInterval(processNumber);
             },
         };
     }

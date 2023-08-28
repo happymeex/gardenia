@@ -6,7 +6,6 @@ import {
     PlayerFrames,
     SpriteSheet,
 } from "./constants";
-import { Player } from "./Sprites";
 import settingsIcon from "./static/settings_icon.png";
 import {
     baseColor,
@@ -350,7 +349,50 @@ function assembleStatBar(
  *
  * @param sprite
  */
-export function flashWhite(sprite: Phaser.GameObjects.Sprite) {
+export function flashWhite(sprite: Phaser.GameObjects.Sprite): void {
     sprite.setTintFill(0xe0e0e0);
     setTimeout(() => sprite.clearTint(), 50);
+}
+
+/**
+ * Converts a given number of seconds to a string of the form minutes:seconds
+ */
+function convertSecondsToTime(totalSeconds: number): string {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds - 60 * minutes;
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+interface Pausable extends Phaser.Scene {
+    getIsPaused(): boolean;
+}
+
+/**
+ * Adds a self-managed timer to a scene.
+ *
+ * @param scene scene with a `getIsPaused` method.
+ * @param x x-coordinate to place the timer
+ * @param y y-coordinate to place the timer
+ * @returns an object with two fields:
+ *      `timeText` is the Phaser text object associated with the timer,
+ *      `processNumber` is the numerical id of the setInterval process
+ *      that updates the timer every second. Call `clearInterval` to terminate
+ *      this process (e.g. when changing scenes)
+ */
+export function createTimer(
+    scene: Pausable,
+    x: number,
+    y: number
+): { timeText: Phaser.GameObjects.Text; processNumber: number } {
+    const timeText = scene.add.text(x, y, "0:00", {
+        ...paragraphTextStyleBase,
+        fontSize: "32px",
+    });
+    let numSecs = 0;
+    const processNumber = setInterval(() => {
+        if (scene.getIsPaused()) return;
+        numSecs++;
+        timeText.text = convertSecondsToTime(numSecs);
+    }, 1000);
+    return { timeText, processNumber };
 }
