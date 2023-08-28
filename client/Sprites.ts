@@ -8,6 +8,8 @@ import {
     SpriteMetaData,
     playerSpriteMetaData,
 } from "./constants";
+import { flashWhite } from "./utils";
+import CombatManager, { CanTakeDamage } from "./CombatManager";
 
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
 const ATTACK = "space";
@@ -32,11 +34,13 @@ export const NO_KEYS_PRESSED: KeyData = {
  * Class representing a physics-obeying sprite, with methods for reading its
  * current position and appearance.
  */
-class SpriteWithPhysics {
+class SpriteWithPhysics implements CanTakeDamage {
     protected readonly sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     protected cachedAppearance: SpriteAppearance | null = null;
     protected attackState: AttackState = AttackState.READY;
     protected inAir = false;
+    protected combatManager: CombatManager | null = null;
+    protected maxHealth: number;
 
     /**
      * Initiates a physics-obeying sprite in the given scene. Does NOT define any collider logic.
@@ -51,12 +55,15 @@ class SpriteWithPhysics {
      */
     public constructor(
         public readonly name: string,
-        readonly scene: Phaser.Scene,
+        scene: Phaser.Scene,
         spriteData: SpriteMetaData,
         x: number,
         y: number,
+        private health: number,
+        private onDeath: (name: string) => void,
         protected direction: "left" | "right" = "right"
     ) {
+        this.maxHealth = health;
         this.sprite = scene.physics.add.sprite(
             x,
             y,
@@ -70,9 +77,42 @@ class SpriteWithPhysics {
             (e: Phaser.Animations.Animation) => {
                 if (e.key === "attack") {
                     this.attackState = AttackState.READY;
+                } else if (e.key === "death") {
+                    this.sprite.destroy();
                 }
             }
         );
+    }
+
+    /**
+     * Deals `dmg` damage to the character and flashes the sprite white to indicate so.
+     * Calls `die` method if health becomes nonpositive.
+     *
+     * @param dmg amount of damage taken
+     */
+    public takeDamage(dmg: number) {
+        flashWhite(this.sprite);
+        this.health -= dmg;
+        if (this.health <= 0) this.die();
+    }
+
+    public die() {
+        this.sprite.setVelocityX(0);
+        this.onDeath(this.name);
+        this.sprite.anims.play("death");
+    }
+
+    /**
+     * Attaches a combat manager to coordinate transmission and receival of attacks
+     * between scene combatants.
+     *
+     * @param combatManager
+     * @param team string used to determine which combatants should be able to hit which
+     *      others.
+     */
+    public registerAsCombatant(combatManager: CombatManager, team: string) {
+        combatManager.addParticipant(this, team);
+        this.combatManager = combatManager;
     }
 
     public getPosition(): { x: number; y: number } {
@@ -90,6 +130,10 @@ class SpriteWithPhysics {
         const currentAnimName = this.sprite.anims.currentAnim?.key;
         let ret: SpriteAppearance;
         if (this.sprite.anims.isPlaying) {
+            if (currentAnimName === undefined)
+                throw new Error(
+                    "Unexpected undefined animation name despite animation playing"
+                );
             ret = { type: "anim", value: currentAnimName };
         } else {
             ret = {
@@ -106,6 +150,10 @@ class SpriteWithPhysics {
         }
         this.cachedAppearance = ret;
         return ret;
+    }
+
+    public getBounds(): Phaser.Geom.Rectangle {
+        return this.sprite.getBounds();
     }
 }
 
@@ -128,9 +176,10 @@ class Player extends SpriteWithPhysics {
         readonly platforms: Phaser.Physics.Arcade.StaticGroup,
         x: number,
         y: number,
+        onDeath: (name: string) => void,
         direction: "left" | "right" = "right"
     ) {
-        super(name, scene, playerSpriteMetaData, x, y, direction);
+        super(name, scene, playerSpriteMetaData, x, y, 100, onDeath, direction);
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
     }
 
@@ -162,6 +211,13 @@ class Player extends SpriteWithPhysics {
         if (keyData[ATTACK] && this.attackState === AttackState.READY) {
             anim = "attack";
             this.attackState = AttackState.ATTACKING;
+            if (this.combatManager !== null) {
+                this.combatManager.processAttack(this, {
+                    damage: 15,
+                    aoe: false,
+                    knockbackPrecedence: 0,
+                });
+            }
             if (!this.inAir) velocityX = 0;
         } else if (keyData.up) {
             if (!this.inAir) {
@@ -189,6 +245,8 @@ class Player extends SpriteWithPhysics {
         if (velocityY !== null) this.sprite.setVelocityY(velocityY);
         if (anim === "stop") {
             this.sprite.anims.stop();
+            if (frame === null)
+                throw new Error("expected non-null frame when anim is stop");
             this.sprite.setFrame(frame);
         } else if (anim !== null) this.sprite.anims.play(anim, true);
         if (flipX !== null) this.sprite.setFlipX(flipX);
@@ -239,9 +297,10 @@ class HomingEnemy extends SpriteWithPhysics {
         spriteData: SpriteMetaData,
         x: number,
         y: number,
+        onDeath: (name: string) => void,
         direction: "left" | "right" = "right"
     ) {
-        super(name, scene, spriteData, x, y, direction);
+        super(name, scene, spriteData, x, y, 25, onDeath, direction);
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
     }
 

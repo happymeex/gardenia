@@ -49,5 +49,13 @@ export function initializeAnimations(
                 frameRate: BASIC_BOT_FPS,
                 repeat: -1,
             });
+            sprite.anims.create({
+                key: "death",
+                frames: scene.anims.generateFrameNames(spriteKey, {
+                    frames: [11, 10, 26, 25, 24, 23, 22, 21, 20, 19, 19, 19],
+                }),
+                frameRate: 12,
+                repeat: 0,
+            });
     }
 }

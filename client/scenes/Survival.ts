@@ -6,7 +6,7 @@ import {
     addPlayerStatusUI,
     createCanvasBoundaryWalls,
 } from "../utils";
-import { Player, HomingEnemy, getMotions } from "../Player";
+import { Player, HomingEnemy, getMotions } from "../Sprites";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
 import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
@@ -18,12 +18,18 @@ import {
     CANVAS_WIDTH,
     SpriteSheet,
 } from "../constants";
+import CombatManager from "../CombatManager";
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private player: Player;
     private isPaused: boolean;
-    private enemy: HomingEnemy;
+    private combatManager: CombatManager;
+    /** Maps names to enemy characters. */
+    private readonly enemies: Map<string, HomingEnemy> = new Map();
+    private readonly maxEnemies = 10;
+    private numKilled = 0;
+
     public constructor() {
         super({ key: "survival" });
     }
@@ -52,27 +58,67 @@ class Survival extends Phaser.Scene {
         createCanvasBoundaryWalls(platforms);
         platforms.create(CANVAS_WIDTH / 2, 609, "ground");
 
-        this.player = new Player("Meex", this, platforms, 300, 300);
+        this.combatManager = new CombatManager();
+        this.player = new Player(
+            "Meex",
+            this,
+            platforms,
+            300,
+            300,
+            this.makeDeathHandlers("player")
+        );
+        this.player.registerAsCombatant(this.combatManager, "player");
         const { setHealth, setMana } = addPlayerStatusUI(
             this,
             this.player,
             CANVAS_WIDTH / 2,
             CANVAS_HEIGHT - 70
         );
-        this.enemy = new HomingEnemy(
-            "Sad",
-            this,
-            platforms,
-            basicBotSpriteMetaData,
-            600,
-            300
-        );
+        const createEnemy = () => {
+            const numEnemies = this.enemies.size;
+            if (numEnemies === this.maxEnemies) return;
+            const name = `enemy-${this.numKilled}`;
+            const enemy = new HomingEnemy(
+                name,
+                this,
+                platforms,
+                basicBotSpriteMetaData,
+                CANVAS_WIDTH / 2,
+                -500,
+                this.makeDeathHandlers("enemy")
+            );
+            this.enemies.set(name, enemy);
+            enemy.registerAsCombatant(this.combatManager, "enemy");
+        };
+        createEnemy();
+        setInterval(createEnemy, 15 * 1000);
     }
     update() {
         const cursors = this.cursors; // holds keypress data
         if (cursors === undefined || this.isPaused) return;
         this.player.handleMotion(getMotions(cursors));
-        this.enemy.handleMotion(null);
+        for (const enemy of this.enemies.values()) {
+            enemy.handleMotion(null);
+        }
+    }
+
+    private makeDeathHandlers(
+        type: "player" | "enemy"
+    ): (name: string) => void {
+        switch (type) {
+            case "enemy":
+                return (name) => {
+                    this.enemies.delete(name);
+                    this.combatManager.removeParticipant(name);
+                    this.numKilled++;
+                };
+            case "player":
+                return (name) => {
+                    this.isPaused = true;
+                    // TODO: play game over UI and show stats
+                    this.scene.start("main-menu");
+                };
+        }
     }
 
     /**

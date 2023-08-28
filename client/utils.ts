@@ -6,7 +6,7 @@ import {
     PlayerFrames,
     SpriteSheet,
 } from "./constants";
-import { Player } from "./Player";
+import { Player } from "./Sprites";
 import settingsIcon from "./static/settings_icon.png";
 import {
     baseColor,
@@ -232,6 +232,8 @@ export function makeTransparentRectTexture(
 ): void {
     if (scene.textures.exists(key)) return;
     const newTexture = scene.textures.createCanvas(key, width, height);
+    if (newTexture === null)
+        throw new Error("Failed to create new canvas texture");
     const context = newTexture.context;
     context.clearRect(0, 0, width, height);
     newTexture.refresh();
@@ -342,4 +344,14 @@ function assembleStatBar(
     };
     container.add([base, fill, outline]);
     return setFill;
+}
+
+/**
+ * Makes the given sprite flash white for 50ms.
+ *
+ * @param sprite
+ */
+export function flashWhite(sprite: Phaser.GameObjects.Sprite) {
+    sprite.setTintFill(0xe0e0e0);
+    setTimeout(() => sprite.clearTint(), 50);
 }

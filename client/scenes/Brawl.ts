@@ -4,7 +4,7 @@ import forestPlatform from "../static/platform.png";
 import { loadSettingsIcon, configurePauseMenu } from "../utils";
 import { Field, MsgTypes } from "../constants";
 
-import { Player, getMotions } from "../Player";
+import { Player, getMotions } from "../Sprites";
 import { PlayerBody } from "../SpriteBody";
 
 class Brawl extends Phaser.Scene {
