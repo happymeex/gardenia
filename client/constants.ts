@@ -60,7 +60,7 @@ export const playerSpriteMetaData: SpriteMetaData = {
 
 export const basicBotSpriteMetaData: SpriteMetaData = {
     spriteSheet: SpriteSheet.BASIC_BOT,
-    width: 64,
+    width: 52,
     height: 105,
     idleFrame: BasicBotFrames.IDLE,
 };

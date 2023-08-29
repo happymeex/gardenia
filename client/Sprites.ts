@@ -56,7 +56,7 @@ class SpriteWithPhysics implements CanTakeDamage {
     public constructor(
         public readonly name: string,
         scene: Phaser.Scene,
-        spriteData: SpriteMetaData,
+        private spriteData: SpriteMetaData,
         x: number,
         y: number,
         protected health: number,
@@ -152,8 +152,19 @@ class SpriteWithPhysics implements CanTakeDamage {
         return ret;
     }
 
+    /**
+     * @returns Rectangle object representing the sprite's bounds (with dimensions as specified in
+     *      the `spriteData` parameter passed to the constructor)
+     */
     public getBounds(): Phaser.Geom.Rectangle {
-        return this.sprite.getBounds();
+        //return this.sprite.getBounds();
+        const { x, y } = this.getPosition();
+        return new Phaser.Geom.Rectangle(
+            x,
+            y,
+            this.spriteData.width,
+            this.spriteData.height
+        );
     }
 }
 
