@@ -410,3 +410,25 @@ export function createTimer(
     }, 1000);
     return { timeText, processNumber };
 }
+
+interface HasLocation {
+    getPosition(): { x: number; y: number };
+    getBounds(): Phaser.Geom.Rectangle;
+}
+
+export function intersect(sprite1: HasLocation, sprite2: HasLocation): boolean {
+    return Phaser.Geom.Intersects.RectangleToRectangle(
+        sprite1.getBounds(),
+        sprite2.getBounds()
+    );
+}
+
+export function inRange(
+    sprite1: HasLocation,
+    sprite2: HasLocation,
+    radius: number
+): boolean {
+    const { x: x1, y: y1 } = sprite1.getPosition();
+    const { x: x2, y: y2 } = sprite2.getPosition();
+    return (x1 - x2) ** 2 + (y1 - y2) ** 2 < radius * radius;
+}

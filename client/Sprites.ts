@@ -375,6 +375,7 @@ class HomingEnemy extends SpriteWithPhysics {
      *      enemy continues walking/idling.
      */
     public handleMotion(homingDirection: "left" | "right" | null) {
+        if (this.attackState === AttackState.ATTACKING) return;
         if (homingDirection !== null) {
             this.semanticState = EnemyStates.HOMING;
             const velocity =
@@ -402,6 +403,19 @@ class HomingEnemy extends SpriteWithPhysics {
                     this.sprite.setVelocityX(0);
                 }
             }
+        }
+    }
+
+    public attack() {
+        this.sprite.setVelocityX(0);
+        this.attackState = AttackState.ATTACKING;
+        this.sprite.anims.play("attack", true);
+        if (this.combatManager) {
+            this.combatManager.processAttack(this, {
+                damage: 100,
+                aoe: false,
+                knockbackPrecedence: 0,
+            });
         }
     }
 }

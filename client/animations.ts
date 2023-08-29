@@ -57,5 +57,13 @@ export function initializeAnimations(
                 frameRate: 12,
                 repeat: 0,
             });
+            sprite.anims.create({
+                key: "attack",
+                frames: scene.anims.generateFrameNumbers(spriteKey, {
+                    frames: [17, 16, 15, 14, 13, 12],
+                }),
+                frameRate: 10,
+                repeat: 0,
+            });
     }
 }

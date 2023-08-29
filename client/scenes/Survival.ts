@@ -8,6 +8,8 @@ import {
     createTimer,
     createDarkenedOverlay,
     makeClickable,
+    intersect,
+    inRange,
 } from "../utils";
 import { Player, HomingEnemy, getMotions } from "../Sprites";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
@@ -122,6 +124,15 @@ class Survival extends Phaser.Scene {
         if (cursors === undefined || this.isPaused) return;
         this.player.handleMotion(getMotions(cursors));
         for (const enemy of this.enemies.values()) {
+            if (intersect(this.player, enemy)) {
+                enemy.attack();
+            } else if (inRange(this.player, enemy, 300)) {
+                enemy.handleMotion(
+                    this.player.getPosition().x < enemy.getPosition().x
+                        ? "left"
+                        : "right"
+                );
+            }
             enemy.handleMotion(null);
         }
     }
@@ -159,13 +170,11 @@ class Survival extends Phaser.Scene {
             `Enemies destroyed: ${this.numKilled}`,
             { ...menuTextStyleBase, fontSize: "32px" }
         );
-        const time = this.add.text(
-            0,
-            100,
-            `Time survived: ${this.timer.text}`,
-            { ...menuTextStyleBase, fontSize: "32px" }
-        );
-        const returnToMenu = this.add.text(0, 250, "Return to Main Menu", {
+        const time = this.add.text(0, 80, `Time survived: ${this.timer.text}`, {
+            ...menuTextStyleBase,
+            fontSize: "32px",
+        });
+        const returnToMenu = this.add.text(0, 200, "Return to Main Menu", {
             ...menuTextStyleBase,
             fontSize: "40px",
         });
@@ -178,6 +187,7 @@ class Survival extends Phaser.Scene {
                 item.setOrigin(0.5)
             )
         );
+        container.setDepth(100);
     }
 
     /**

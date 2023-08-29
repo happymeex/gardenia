@@ -1,7 +1,9 @@
 import Phaser from "phaser";
+import { intersect } from "./utils";
 
 export interface CanTakeDamage {
     name: string;
+    getPosition(): { x: number; y: number };
     getBounds(): Phaser.Geom.Rectangle;
     takeDamage(dmg: number): void;
 }
@@ -59,10 +61,11 @@ class CombatManager {
         for (const [participant, team] of this.teams.entries()) {
             if (attackerTeam === team) continue;
             if (
-                Phaser.Geom.Intersects.RectangleToRectangle(
-                    attacker.getBounds(),
-                    participant.getBounds()
-                )
+                intersect(attacker, participant)
+                //Phaser.Geom.Intersects.RectangleToRectangle(
+                //    attacker.getBounds(),
+                //    participant.getBounds()
+                //)
             ) {
                 participant.takeDamage(damage);
                 if (!aoe) break;
