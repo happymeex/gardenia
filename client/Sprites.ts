@@ -7,6 +7,9 @@ import {
     BasicBotFrames,
     SpriteMetaData,
     playerSpriteMetaData,
+    BASIC_BOT_DMG,
+    BASIC_BOT_HEALTH,
+    PLAYER_DEFAULT_HEALTH,
 } from "./constants";
 import { flashWhite } from "./utils";
 import CombatManager, { CanTakeDamage } from "./CombatManager";
@@ -75,9 +78,7 @@ class SpriteWithPhysics implements CanTakeDamage {
         this.sprite.on(
             "animationcomplete",
             (e: Phaser.Animations.Animation) => {
-                if (e.key === "attack") {
-                    this.attackState = AttackState.READY;
-                } else if (e.key === "death") {
+                if (e.key === "death") {
                     this.sprite.destroy();
                 }
             }
@@ -194,8 +195,23 @@ class Player extends SpriteWithPhysics {
         private setManaUI: (dmg: number) => void,
         direction: "left" | "right" = "right"
     ) {
-        super(name, scene, playerSpriteMetaData, x, y, 100, onDeath, direction);
+        super(
+            name,
+            scene,
+            playerSpriteMetaData,
+            x,
+            y,
+            PLAYER_DEFAULT_HEALTH,
+            onDeath,
+            direction
+        );
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
+        this.sprite.on(
+            "animationcomplete",
+            (e: Phaser.Animations.Animation) => {
+                if (e.key === "attack") this.attackState = AttackState.READY;
+            }
+        );
     }
 
     private makeCollider() {
@@ -340,8 +356,31 @@ class HomingEnemy extends SpriteWithPhysics {
         onDeath: (name: string) => void,
         direction: "left" | "right" = "right"
     ) {
-        super(name, scene, spriteData, x, y, 25, onDeath, direction);
+        super(
+            name,
+            scene,
+            spriteData,
+            x,
+            y,
+            BASIC_BOT_HEALTH,
+            onDeath,
+            direction
+        );
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
+        this.sprite.on(
+            "animationcomplete",
+            (e: Phaser.Animations.Animation) => {
+                if (e.key === "attack") {
+                    if (this.combatManager) {
+                        this.combatManager.processAttack(this, {
+                            damage: BASIC_BOT_DMG,
+                            aoe: false,
+                            knockbackPrecedence: 0,
+                        });
+                    }
+                }
+            }
+        );
     }
 
     /**
@@ -421,13 +460,6 @@ class HomingEnemy extends SpriteWithPhysics {
         this.sprite.setVelocityX(0);
         this.attackState = AttackState.ATTACKING;
         this.sprite.anims.play("attack", true);
-        if (this.combatManager) {
-            this.combatManager.processAttack(this, {
-                damage: 100,
-                aoe: false,
-                knockbackPrecedence: 0,
-            });
-        }
     }
 }
 

@@ -350,9 +350,10 @@ function assembleStatBar(
     outline.setFillStyle(0, 0); // transparent interior
     outline.setStrokeStyle(3, 0x000000);
 
+    const posX = outline.x;
     const setFill = (ratio: number) => {
         fill.setScale(ratio, 1);
-        fill.setPosition(x - (ratio * width) / 2, y);
+        fill.setPosition(posX - ((1 - ratio) * width) / 2, y);
     };
     container.add([base, fill, outline]);
     return setFill;

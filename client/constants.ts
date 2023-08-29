@@ -27,7 +27,7 @@ export enum MsgTypes {
     SPRITE = "s",
 }
 
-// player constants
+//////////////////////////////////////
 
 export enum AttackState {
     ATTACKING,
@@ -39,6 +39,13 @@ export enum PlayerFrames {
     /** Mugshot for use in healthbar/status UI. */
     ICON = 30,
 }
+
+export const PLAYER_DEFAULT_HEALTH = 100;
+export const PLAYER_PUNCH_DMG = 15;
+export const PLAYER_UPPERCUT_DMG = 20;
+export const PLAYER_KICK_DMG = 25;
+export const BASIC_BOT_HEALTH = 25;
+export const BASIC_BOT_DMG = 10;
 
 export enum BasicBotFrames {
     IDLE = 18,
