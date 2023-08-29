@@ -6,6 +6,8 @@ import {
     addPlayerStatusUI,
     createCanvasBoundaryWalls,
     createTimer,
+    createDarkenedOverlay,
+    makeClickable,
 } from "../utils";
 import { Player, HomingEnemy, getMotions } from "../Sprites";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
@@ -20,6 +22,7 @@ import {
     SpriteSheet,
 } from "../constants";
 import CombatManager from "../CombatManager";
+import { menuTextStyleBase } from "../ui";
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -28,7 +31,7 @@ class Survival extends Phaser.Scene {
     private combatManager: CombatManager;
     /** Maps names to enemy characters. */
     private readonly enemies: Map<string, HomingEnemy> = new Map();
-    private readonly maxEnemies = 10;
+    private readonly maxEnemies = 8;
     private numSpawned = 0;
     private numKilled = 0;
     private timer: Phaser.GameObjects.Text;
@@ -54,6 +57,9 @@ class Survival extends Phaser.Scene {
     create() {
         this.isPaused = false;
         this.enemies.clear();
+        this.numKilled = 0;
+        this.numSpawned = 0;
+        this.processes.clear();
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
         const platforms = this.physics.add.staticGroup();
@@ -138,11 +144,40 @@ class Survival extends Phaser.Scene {
             case "player":
                 return (name) => {
                     this.isPaused = true;
-                    // TODO: play game over UI and show stats
-                    this.makeFlowControlFunctions().leave();
-                    this.scene.start("main-menu");
+                    this.gameOver();
                 };
         }
+    }
+
+    private gameOver() {
+        createDarkenedOverlay(this);
+        const container = this.add.container(...CANVAS_CENTER);
+        const header = this.add.text(0, -100, "You Died", menuTextStyleBase);
+        const numKilled = this.add.text(
+            0,
+            0,
+            `Enemies destroyed: ${this.numKilled}`,
+            { ...menuTextStyleBase, fontSize: "32px" }
+        );
+        const time = this.add.text(
+            0,
+            100,
+            `Time survived: ${this.timer.text}`,
+            { ...menuTextStyleBase, fontSize: "32px" }
+        );
+        const returnToMenu = this.add.text(0, 250, "Return to Main Menu", {
+            ...menuTextStyleBase,
+            fontSize: "40px",
+        });
+        makeClickable(returnToMenu, this, () => {
+            this.makeFlowControlFunctions().leave();
+            this.scene.start("main-menu");
+        });
+        container.add(
+            [header, numKilled, time, returnToMenu].map((item) =>
+                item.setOrigin(0.5)
+            )
+        );
     }
 
     /**

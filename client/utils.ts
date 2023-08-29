@@ -43,10 +43,7 @@ export function configurePauseMenu(
         "settings-icon"
     );
     settingsButton.setDepth(98);
-    const darkenOverlay = scene.add.graphics();
-    darkenOverlay.fillStyle(0x000000, 0.5);
-    darkenOverlay.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    darkenOverlay.setDepth(99);
+    const darkenOverlay = createDarkenedOverlay(scene);
     darkenOverlay.setVisible(false);
     makeClickable(settingsButton, scene, () => {
         darkenOverlay.setVisible(true);
@@ -104,6 +101,23 @@ export function configurePauseMenu(
     );
 
     menuTextContainer.setVisible(false);
+}
+
+/**
+ * Creates and returns a semi-transparent darkened overlay covering the whole game canvas.
+ * By default, the overlay will be visible.
+ *
+ * @param scene
+ * @returns the overlay object
+ */
+export function createDarkenedOverlay(
+    scene: Phaser.Scene
+): Phaser.GameObjects.Graphics {
+    const darkenOverlay = scene.add.graphics();
+    darkenOverlay.fillStyle(0x000000, 0.5);
+    darkenOverlay.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    darkenOverlay.setDepth(99);
+    return darkenOverlay;
 }
 
 /**
