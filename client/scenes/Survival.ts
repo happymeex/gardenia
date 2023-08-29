@@ -90,6 +90,7 @@ class Survival extends Phaser.Scene {
         );
         this.player.registerAsCombatant(this.combatManager, "player");
         const createEnemy = () => {
+            if (this.isPaused) return;
             const numEnemies = this.enemies.size;
             if (numEnemies === this.maxEnemies) return;
             const name = `enemy-${this.numSpawned}`;
