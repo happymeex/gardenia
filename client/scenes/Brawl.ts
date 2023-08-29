@@ -1,11 +1,16 @@
 import Phaser from "phaser";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
-import forestPlatform from "../static/platform.png";
+import waterfallBackground from "../static/waterfall-bg.jpg";
+import platform from "../static/platform.png";
 import { loadSettingsIcon, configurePauseMenu } from "../utils";
-import { Field, MsgTypes } from "../constants";
-
+import { Field, MsgTypes, SpriteSheet, CANVAS_WIDTH } from "../constants";
+import {
+    createCanvasBoundaryWalls,
+    makeTransparentRectTexture,
+} from "../utils";
 import { Player, getMotions } from "../Sprites";
 import { PlayerBody } from "../SpriteBody";
+import { addWaterfallBackground } from "./backgrounds";
 
 class Brawl extends Phaser.Scene {
     private player: Player;
@@ -31,8 +36,9 @@ class Brawl extends Phaser.Scene {
     }
     preload() {
         loadSettingsIcon(this);
-        this.load.image("platform", forestPlatform);
-        this.load.spritesheet("player", playerSpritesheet, {
+        this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
+        this.load.image(SpriteSheet.PLATFORM, platform);
+        this.load.spritesheet(SpriteSheet.PLAYER, playerSpritesheet, {
             frameWidth: 128,
             frameHeight: 128,
         });
@@ -43,6 +49,8 @@ class Brawl extends Phaser.Scene {
         this.otherPlayers = new Map();
         this.socket = data.socket;
         this.uid = data.id;
+
+        const platforms = addWaterfallBackground(this);
 
         this.socket.onmessage = (e) => {
             const msg = JSON.parse(e.data);
@@ -68,16 +76,6 @@ class Brawl extends Phaser.Scene {
         }, 30); // 33 fps
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
-        const platforms = this.physics.add.staticGroup();
-
-        platforms.create(100, 800, "platform");
-        platforms.create(300, 800, "platform");
-        platforms.create(400, 800, "platform");
-        platforms.create(520, 800, "platform");
-        platforms.create(730, 800, "platform");
-        platforms.create(930, 800, "platform");
-        platforms.create(1130, 800, "platform");
-        platforms.create(1330, 800, "platform");
         data.idList.forEach((id, i) => {
             const x = 300 + 100 * i;
             const y = 300;

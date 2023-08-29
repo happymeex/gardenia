@@ -25,6 +25,7 @@ import {
 } from "../constants";
 import CombatManager from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
+import { addWaterfallBackground } from "./backgrounds";
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -65,12 +66,7 @@ class Survival extends Phaser.Scene {
         this.processes.clear();
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         this.settingsButton = configurePauseMenu(this, pause, resume, leave);
-        const platforms = this.physics.add.staticGroup();
-        this.add.image(...CANVAS_CENTER, SpriteSheet.WATERFALL);
-
-        makeTransparentRectTexture(this, "ground", CANVAS_WIDTH, 20);
-        createCanvasBoundaryWalls(platforms);
-        platforms.create(CANVAS_WIDTH / 2, 609, "ground");
+        const platforms = addWaterfallBackground(this);
 
         this.combatManager = new CombatManager();
         const { setHealthUI, setManaUI } = addPlayerStatusUI(
