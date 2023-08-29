@@ -22,26 +22,42 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 	uid := queryParams.Get("uid")
 	isHost := queryParams.Get("isHost") == "true"
 
+	sendErrorMessage := func(msg string) {
+		conn, err := upgrader.Upgrade(w, req, nil)
+		if err != nil {
+			return
+		}
+		conn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("error_%s", msg)))
+		conn.Close()
+	}
+
 	b, exists := AllBrawls[url]
 	if !exists {
 		// disallow creation of new brawls by users not designated as hosts
 		if !isHost {
+			sendErrorMessage("The requested brawl does not exist!")
 			return
-		}
+		} 
 		b = &BrawlNetwork{false, uid, make(map[string]*websocket.Conn)}
 		AllBrawls[url] = b;
+	}
+
+	if b.active {
+		sendErrorMessage("The requested brawl is already in progress!")
+		return
 	}
 
 	// disallow unauthorized users
 	_, userExists := AllUsers[uid]
 	if !userExists {
-		return
+		sendErrorMessage("You seem to be an unauthorized user. Refresh the page?")
 	}
 
 	// disallow multiple connections by the same user
 	_, alreadyConnected := b.sockets[uid]
 	if alreadyConnected {
-		return
+		sendErrorMessage("You have already joined this brawl!")
+		return;
 	}
 
 	conn, err := upgrader.Upgrade(w, req, nil)
@@ -49,6 +65,7 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 		conn.Close()
 		return
 	}
+	conn.WriteMessage(websocket.TextMessage, []byte("validate"))
 
 	// add the user to the network and let everyone know
 	b.sockets[uid] = conn;
@@ -59,10 +76,11 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 		_, rawMsg, err := conn.ReadMessage()
 		if err != nil {
 			delete(b.sockets, uid)
-			if isHost || len(b.sockets) == 0 { // length condition extraneous but wtv
-				// If the host errors, then close everything
+			if isHost && !b.active {
+				// host left before starting, so close all sockets
 				delete(AllBrawls, url)
 				for _, other := range b.sockets {
+					sendErrorMessage("The host aborted the game.")
 					other.Close();
 				}
 			} else {

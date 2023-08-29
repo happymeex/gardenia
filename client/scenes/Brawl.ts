@@ -63,6 +63,9 @@ class Brawl extends Phaser.Scene {
                 playerBody.setAppearance(msg[Field.APPEARANCE]);
             }
         };
+        this.socket.onclose = () => {
+            clearInterval(this.spritePinger);
+        };
         this.spritePinger = setInterval(() => {
             if (this.socket)
                 this.socket.send(

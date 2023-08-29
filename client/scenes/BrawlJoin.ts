@@ -110,20 +110,16 @@ class BrawlJoin extends Phaser.Scene {
     }
     private makeJoinHandler() {
         const id = getUserId();
+        if (id === null) throw new Error("Unexpected null id!");
         return () => {
             this.joinCodeInput.node.setAttribute("disabled", "");
             this.joinButton.disableInteractive();
             darkenText(this.joinButton);
             const socket = makeBrawlWebSocket(this.joinCode, id);
             this.socket = socket;
-            socket.onopen = (e) => {
-                undarkenText(this.joinButton);
-                this.joinButton.text =
-                    "Joined!\nWaiting for host to start the brawl...";
-            };
+            socket.onopen = (e) => {};
             socket.onmessage = (e) => {
                 console.log("got message:", e.data);
-                const msg = e.data as string;
                 const start = () => {
                     socket.send("begin_");
                     this.socket.onerror = () => {};
@@ -134,30 +130,36 @@ class BrawlJoin extends Phaser.Scene {
                         idList: this.idList,
                     });
                 };
-                if (msg.startsWith("idList")) {
-                    const idList: string[] = JSON.parse(
-                        msg.replace(new RegExp("idList_"), "")
-                    );
-                    this.idList = idList;
-                } else if (msg === "activate") {
+                const msg = e.data as string;
+                const [type, content] = msg.split("_", 2);
+                if (type === "validate") {
+                    undarkenText(this.joinButton);
+                    this.joinButton.text =
+                        "Joined!\nWaiting for host to start the brawl...";
+                } else if (type === "activate") {
                     start();
+                } else if (type === "idList") {
+                    const idList: string[] = JSON.parse(content);
+                    this.idList = idList;
+                } else if (type === "error") {
+                    showNotification(this, content);
                 }
             };
             socket.onerror = (e) => {
-                showNotification(
-                    this,
-                    "Brawl not found!\n(Or, you are attempting to join twice.)"
-                );
-                this.joinButton.setInteractive();
-                this.joinCodeInput.node.removeAttribute("disabled");
-                undarkenText(this.joinButton);
+                showNotification(this, "Unexpected connection error!");
+                this.allowClickJoin();
             };
             socket.onclose = (e) => {
-                this.joinButton.setInteractive();
-                this.joinCodeInput.node.removeAttribute("disabled");
-                undarkenText(this.joinButton);
+                this.allowClickJoin();
             };
         };
+    }
+    /** Resets state of the join button and join code input to allow interactivity. */
+    private allowClickJoin() {
+        this.joinButton.text = "Join";
+        this.joinButton.setInteractive();
+        this.joinCodeInput.node.removeAttribute("disabled");
+        undarkenText(this.joinButton);
     }
     shutdown() {
         this.joinCodeInput.destroy();
