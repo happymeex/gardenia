@@ -49,6 +49,7 @@ export function configurePauseMenu(
     makeClickable(settingsButton, scene, () => {
         darkenOverlay.setVisible(true);
         menuTextContainer.setVisible(true);
+        settingsButton.disableInteractive();
         onOpen();
     });
     //const menuPanel = makePauseMenu(scene, onClose, onLeave);
@@ -66,6 +67,7 @@ export function configurePauseMenu(
             onClick: () => {
                 darkenOverlay.setVisible(false);
                 menuTextContainer.setVisible(false);
+                settingsButton.setInteractive(true);
                 onClose();
             },
         },

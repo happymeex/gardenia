@@ -213,12 +213,10 @@ class Survival extends Phaser.Scene {
             pause: () => {
                 this.physics.pause();
                 this.isPaused = true;
-                this.settingsButton.disableInteractive();
             },
             resume: () => {
                 this.physics.resume();
                 this.isPaused = false;
-                this.settingsButton.setInteractive();
             },
             leave: () => {
                 for (const processNumber of this.processes.values())
