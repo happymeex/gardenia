@@ -135,17 +135,23 @@ class SpriteWithPhysics implements CanTakeDamage {
                 throw new Error(
                     "Unexpected undefined animation name despite animation playing"
                 );
-            ret = { type: "anim", value: currentAnimName };
+            ret = {
+                type: "anim",
+                value: currentAnimName,
+                direction: this.direction,
+            };
         } else {
             ret = {
                 type: "frame",
                 value: String(PlayerFrames.IDLE),
+                direction: this.direction,
             };
         }
         if (
             this.cachedAppearance &&
             ret.type === this.cachedAppearance.type &&
-            ret.value === this.cachedAppearance.value
+            ret.value === this.cachedAppearance.value &&
+            ret.direction === this.cachedAppearance.direction
         ) {
             return "same";
         }

@@ -5,6 +5,7 @@ import { PlayerFrames, SpriteSheet, playerSpriteMetaData } from "./constants";
 export type SpriteAppearance = {
     type: "anim" | "frame";
     value: string;
+    direction: "left" | "right";
 };
 
 class SpriteBody {
@@ -36,6 +37,8 @@ class SpriteBody {
                 this.sprite.anims.stop();
                 this.sprite.setFrame(Number(appearance.value));
         }
+        if (appearance.direction === "left") this.sprite.setFlipX(true);
+        else this.sprite.setFlipX(false);
     }
 }
 
