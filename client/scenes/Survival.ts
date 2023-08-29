@@ -24,7 +24,7 @@ import {
     SpriteSheet,
 } from "../constants";
 import CombatManager from "../CombatManager";
-import { menuTextStyleBase } from "../ui";
+import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -163,18 +163,33 @@ class Survival extends Phaser.Scene {
     private gameOver() {
         createDarkenedOverlay(this);
         const container = this.add.container(...CANVAS_CENTER);
-        const header = this.add.text(0, -100, "You Died", menuTextStyleBase);
-        const numKilled = this.add.text(
-            0,
-            0,
-            `Enemies destroyed: ${this.numKilled}`,
-            { ...menuTextStyleBase, fontSize: "32px" }
-        );
-        const time = this.add.text(0, 80, `Time survived: ${this.timer.text}`, {
+        const header = this.add.text(0, -100, "You Died", {
             ...menuTextStyleBase,
-            fontSize: "32px",
+            fontSize: "96px",
         });
-        const returnToMenu = this.add.text(0, 200, "Return to Main Menu", {
+        const LHS = this.add.text(
+            -60,
+            10,
+            "Enemies destroyed:\nTime survived:",
+            {
+                ...paragraphTextStyleBase,
+                fontSize: "32px",
+                lineSpacing: 6,
+                align: "right",
+            }
+        );
+        const RHS = this.add.text(
+            130,
+            10,
+            `${this.numKilled}\n${this.timer.text}`,
+            {
+                ...paragraphTextStyleBase,
+                fontSize: "32px",
+                lineSpacing: 6,
+                align: "center",
+            }
+        );
+        const returnToMenu = this.add.text(0, 190, "Return to Main Menu", {
             ...menuTextStyleBase,
             fontSize: "40px",
         });
@@ -183,9 +198,7 @@ class Survival extends Phaser.Scene {
             this.scene.start("main-menu");
         });
         container.add(
-            [header, numKilled, time, returnToMenu].map((item) =>
-                item.setOrigin(0.5)
-            )
+            [header, LHS, RHS, returnToMenu].map((item) => item.setOrigin(0.5))
         );
         container.setDepth(100);
     }
