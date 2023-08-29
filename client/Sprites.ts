@@ -378,6 +378,7 @@ class HomingEnemy extends SpriteWithPhysics {
                             knockbackPrecedence: 0,
                         });
                     }
+                    this.attackState = AttackState.READY;
                 }
             }
         );
@@ -432,11 +433,12 @@ class HomingEnemy extends SpriteWithPhysics {
                 this.walkspeed * (homingDirection === "right" ? 1 : -1);
             this.sprite.setVelocityX(velocity);
             this.sprite.setFlipX(homingDirection === "left");
+            this.direction = homingDirection;
             this.sprite.anims.play("walk", true);
         } else {
             // If we're transitioning from homing state, go to idle
             if (this.semanticState === EnemyStates.HOMING) {
-                this.semanticState = EnemyStates.IDLE;
+                this.setIdle();
             } else if (this.semanticState === EnemyStates.IDLE) {
                 if (Math.random() < this.IdleToWalkChance) {
                     this.semanticState = EnemyStates.WALKING;
@@ -447,13 +449,17 @@ class HomingEnemy extends SpriteWithPhysics {
                 }
             } else if (this.semanticState === EnemyStates.WALKING) {
                 if (Math.random() < this.walkToIdleChance) {
-                    this.semanticState = EnemyStates.IDLE;
-                    this.sprite.anims.stop();
-                    this.sprite.setFrame(BasicBotFrames.IDLE);
-                    this.sprite.setVelocityX(0);
+                    this.setIdle();
                 }
             }
         }
+    }
+
+    private setIdle() {
+        this.semanticState = EnemyStates.IDLE;
+        this.sprite.anims.stop();
+        this.sprite.setFrame(BasicBotFrames.IDLE);
+        this.sprite.setVelocityX(0);
     }
 
     public attack() {

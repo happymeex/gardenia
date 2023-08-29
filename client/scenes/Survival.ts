@@ -133,8 +133,7 @@ class Survival extends Phaser.Scene {
                         ? "left"
                         : "right"
                 );
-            }
-            enemy.handleMotion(null);
+            } else enemy.handleMotion(null);
         }
     }
 
