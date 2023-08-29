@@ -3,14 +3,10 @@ import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import platform from "../static/platform.png";
 import { loadSettingsIcon, configurePauseMenu } from "../utils";
-import { Field, MsgTypes, SpriteSheet, CANVAS_WIDTH } from "../constants";
-import {
-    createCanvasBoundaryWalls,
-    makeTransparentRectTexture,
-} from "../utils";
+import { Field, MsgTypes, SpriteSheet } from "../constants";
 import { Player, getMotions } from "../Sprites";
 import { PlayerBody } from "../SpriteBody";
-import { addWaterfallBackground } from "./backgrounds";
+import { addWaterfallBackground } from "../backgrounds";
 
 class Brawl extends Phaser.Scene {
     private player: Player;

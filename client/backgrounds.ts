@@ -1,8 +1,5 @@
-import {
-    makeTransparentRectTexture,
-    createCanvasBoundaryWalls,
-} from "../utils";
-import { CANVAS_WIDTH, CANVAS_CENTER, SpriteSheet } from "../constants";
+import { makeTransparentRectTexture, createCanvasBoundaryWalls } from "./utils";
+import { CANVAS_WIDTH, CANVAS_CENTER, SpriteSheet } from "./constants";
 
 // This file contains templates for gameplay scene layouts (backgrounds and platforms).
 

@@ -25,7 +25,7 @@ import {
 } from "../constants";
 import CombatManager from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
-import { addWaterfallBackground } from "./backgrounds";
+import { addWaterfallBackground } from "../backgrounds";
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
