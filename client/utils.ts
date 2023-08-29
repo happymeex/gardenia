@@ -29,13 +29,14 @@ export function loadSettingsIcon(scene: Phaser.Scene) {
  * @param onOpen
  * @param onClose
  * @param onLeave
+ * @returns the button object (so that the caller may enable/disable its interactivity as needed)
  */
 export function configurePauseMenu(
     scene: Phaser.Scene,
     onOpen = () => {},
     onClose = () => {},
     onLeave = () => {}
-) {
+): Phaser.GameObjects.Image {
     const offset = 50;
     const settingsButton = scene.add.image(
         scene.cameras.main.width - offset,
@@ -101,6 +102,7 @@ export function configurePauseMenu(
     );
 
     menuTextContainer.setVisible(false);
+    return settingsButton;
 }
 
 /**
@@ -142,6 +144,12 @@ export function makeClickable(
     item.setInteractive();
     item.on("pointerup", () => {
         onClick();
+        scene.tweens.add({
+            targets: item,
+            scaleX: 1,
+            scaleY: 1,
+            duration,
+        });
         document.body.style.cursor = "default";
     });
     item.on("pointerover", () => {

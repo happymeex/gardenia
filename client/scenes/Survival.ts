@@ -38,6 +38,7 @@ class Survival extends Phaser.Scene {
     private numKilled = 0;
     private timer: Phaser.GameObjects.Text;
     private processes: Map<string, number> = new Map();
+    private settingsButton: Phaser.GameObjects.Image;
 
     public constructor() {
         super({ key: "survival" });
@@ -63,7 +64,7 @@ class Survival extends Phaser.Scene {
         this.numSpawned = 0;
         this.processes.clear();
         const { pause, resume, leave } = this.makeFlowControlFunctions();
-        configurePauseMenu(this, pause, resume, leave);
+        this.settingsButton = configurePauseMenu(this, pause, resume, leave);
         const platforms = this.physics.add.staticGroup();
         this.add.image(...CANVAS_CENTER, SpriteSheet.WATERFALL);
 
@@ -162,6 +163,7 @@ class Survival extends Phaser.Scene {
 
     private gameOver() {
         createDarkenedOverlay(this);
+        this.settingsButton.disableInteractive();
         const container = this.add.container(...CANVAS_CENTER);
         const header = this.add.text(0, -100, "You Died", {
             ...menuTextStyleBase,
@@ -215,10 +217,12 @@ class Survival extends Phaser.Scene {
             pause: () => {
                 this.physics.pause();
                 this.isPaused = true;
+                this.settingsButton.disableInteractive();
             },
             resume: () => {
                 this.physics.resume();
                 this.isPaused = false;
+                this.settingsButton.setInteractive();
             },
             leave: () => {
                 for (const processNumber of this.processes.values())
