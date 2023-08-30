@@ -82,6 +82,10 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
     idleFrame: BasicBotFrames.IDLE,
 };
 
+/**
+ * Represents an entity that can be the target of an attack
+ * (but which does not necessarily maintain knowledge of its own health).
+ */
 export interface CanBeHit {
     name: string;
     getPosition(): { x: number; y: number };
@@ -89,6 +93,10 @@ export interface CanBeHit {
     takeDamage(dmg: number): void;
 }
 
+/**
+ * Represents an entity that 1) can be the target of an attack,
+ * and 2) maintains knowledge of its own health internally.
+ */
 export interface HasHealth extends CanBeHit {
     getHealthPercentage(): number;
 }

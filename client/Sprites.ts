@@ -10,7 +10,6 @@ import {
     BASIC_BOT_DMG,
     BASIC_BOT_HEALTH,
     PLAYER_DEFAULT_HEALTH,
-    CanBeHit,
     HasHealth,
 } from "./constants";
 import { flashWhite } from "./utils";
@@ -99,6 +98,10 @@ class SpriteWithPhysics implements HasHealth {
         if (this.health <= 0) this.die();
     }
 
+    /**
+     * Freezes sprite horizontally, calls the `onDeath` method passed into the constructor,
+     * plays the death animation, and then destroys the sprite from the scene.
+     */
     public die() {
         this.sprite.setVelocityX(0);
         this.onDeath(this.name);
@@ -106,6 +109,9 @@ class SpriteWithPhysics implements HasHealth {
         console.log(this.name, "died");
     }
 
+    /**
+     * @returns A value between 0 and 1 representing this entity's remaining health percentage.
+     */
     public getHealthPercentage(): number {
         return Math.max(this.health / this.maxHealth, 0);
     }
@@ -191,17 +197,18 @@ class SpriteWithPhysics implements HasHealth {
 
 class Player extends SpriteWithPhysics {
     /**
-     * Initiates a player in the given scene.
+     * Initiates a player-controlled sprite in the given scene.
      *
      * Assumes that the player spritesheet has been preloaded in the scene already.
      *
      * @param name
      * @param scene
      * @param platforms
-     * @param x
-     * @param y
-     * @param setHealthUI
-     * @param setManaUI
+     * @param x initial x-coordinate
+     * @param y initial y-coordinate
+     * @param onDeath callback executed when the player dies, before the sprite is destroyed from the scene.
+     * @param onHealthChange callback executed when the player's health changes.
+     * @param onManaChange callback executed when the player's mana changes.
      * @param direction initial direction that the player is facing. Defaults to "right".
      */
     public constructor(
@@ -211,8 +218,8 @@ class Player extends SpriteWithPhysics {
         x: number,
         y: number,
         onDeath: (name: string) => void,
-        private setHealthUI: (dmg: number) => void,
-        private setManaUI: (dmg: number) => void,
+        private onHealthChange: (ratio: number) => void,
+        private onManaChange: (ratio: number) => void,
         direction: "left" | "right" = "right"
     ) {
         super(
@@ -249,7 +256,7 @@ class Player extends SpriteWithPhysics {
      */
     public takeDamage(dmg: number) {
         const newRatio = Math.max((this.health - dmg) / this.maxHealth, 0);
-        this.setHealthUI(newRatio);
+        this.onHealthChange(newRatio);
         super.takeDamage(dmg);
     }
 
@@ -352,9 +359,10 @@ class HomingEnemy extends SpriteWithPhysics {
     private readonly walkspeed = 200;
 
     /**
-     * Creates an enemy that  wanders around, walking straight and pausing at random intervals,
+     * Creates an non-player-controlled enemy that wanders around,
+     * walking straight and pausing at random intervals,
      * only turning when it hits a wall. If given the signal, it can be instructed to walk
-     * in a given direction and attack a given player character. (last part TODO)
+     * in a given direction and attack a given player character.
      *
      * @param name Must be unique among sprites (players, enemies, ...) in the scene.
      * @param scene Scene to which this enemy belongs.

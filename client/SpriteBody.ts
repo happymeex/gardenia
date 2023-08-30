@@ -54,12 +54,26 @@ class SpriteBody implements CanBeHit {
         const { x, y } = this.getPosition();
         return new Phaser.Geom.Rectangle(x, y, this.width, this.height);
     }
+    /** Flashes the sprite white for 50ms. */
     public takeDamage(dmg: number): void {
         flashWhite(this.sprite);
     }
 }
 
 export class PlayerBody extends SpriteBody {
+    /**
+     * Adds a sprite representing a player character not controlled by *this* client
+     * (instead by some other human, e.g. in multiplayer mode). Does not carry
+     * logic for moving, attacking, or maintaining health; its appearance on-screen
+     * must be dictated by calling the appropriate methods with external data.
+     *
+     * @param name
+     * @param scene
+     * @param x
+     * @param y
+     * @param setHealthUI
+     * @param setManaUI
+     */
     public constructor(
         name: string,
         scene: Phaser.Scene,
