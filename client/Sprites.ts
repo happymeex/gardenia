@@ -89,10 +89,12 @@ class SpriteWithPhysics implements HasHealth {
     /**
      * Deals `dmg` damage to the character and flashes the sprite white to indicate so.
      * Calls `die` method if health becomes nonpositive.
+     * Does nothing if called when health is already nonpositive.
      *
      * @param dmg amount of damage taken
      */
     public takeDamage(dmg: number) {
+        if (this.health <= 0) return;
         flashWhite(this.sprite);
         this.health -= dmg;
         if (this.health <= 0) this.die();
