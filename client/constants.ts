@@ -100,3 +100,27 @@ export interface CanBeHit {
 export interface HasHealth extends CanBeHit {
     getHealthPercentage(): number;
 }
+
+/**
+ * Sentinel object.
+ */
+class NullAudio {
+    public play() {
+        throw new Error("Audio is currently null");
+    }
+    public resume() {
+        throw new Error("Audio is currently null");
+    }
+    public stop() {}
+    public destroy() {}
+    public isPlaying = false;
+}
+
+export type Audio =
+    | Phaser.Sound.NoAudioSound
+    | Phaser.Sound.HTML5AudioSound
+    | Phaser.Sound.WebAudioSound
+    | NullAudio;
+
+/** Global audio manager. */
+export let BGM: { audio: Audio } = { audio: new NullAudio() };
