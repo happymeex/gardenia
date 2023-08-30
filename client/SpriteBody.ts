@@ -1,6 +1,12 @@
 import Phaser from "phaser";
 import { initializeAnimations } from "./animations";
-import { PlayerFrames, SpriteSheet, playerSpriteMetaData } from "./constants";
+import {
+    PlayerFrames,
+    SpriteSheet,
+    playerSpriteMetaData,
+    CanBeHit,
+} from "./constants";
+import { flashWhite } from "./utils";
 
 export type SpriteAppearance = {
     type: "anim" | "frame";
@@ -8,13 +14,14 @@ export type SpriteAppearance = {
     direction: "left" | "right";
 };
 
-class SpriteBody {
+class SpriteBody implements CanBeHit {
     private readonly sprite: Phaser.GameObjects.Sprite;
     public constructor(
+        public readonly name: string,
         private readonly scene: Phaser.Scene,
         private readonly spritesheetName: string,
-        width: number,
-        height: number,
+        private readonly width: number,
+        private readonly height: number,
         x: number,
         y: number,
         initialFrame = 0
@@ -40,21 +47,35 @@ class SpriteBody {
         if (appearance.direction === "left") this.sprite.setFlipX(true);
         else this.sprite.setFlipX(false);
     }
+    public getPosition(): { x: number; y: number } {
+        return { x: this.sprite.x, y: this.sprite.y };
+    }
+    public getBounds(): Phaser.Geom.Rectangle {
+        const { x, y } = this.getPosition();
+        return new Phaser.Geom.Rectangle(x, y, this.width, this.height);
+    }
+    public takeDamage(dmg: number): void {
+        flashWhite(this.sprite);
+    }
 }
 
 export class PlayerBody extends SpriteBody {
     public constructor(
+        name: string,
         scene: Phaser.Scene,
-        locationX: number,
-        locationY: number
+        x: number,
+        y: number,
+        public readonly setHealthUI: (ratio: number) => void,
+        public readonly setManaUI: (ratio: number) => void
     ) {
         super(
+            name,
             scene,
             SpriteSheet.PLAYER,
             playerSpriteMetaData.width,
             playerSpriteMetaData.height,
-            locationX,
-            locationY,
+            x,
+            y,
             PlayerFrames.IDLE
         );
     }

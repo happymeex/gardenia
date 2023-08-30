@@ -2,11 +2,22 @@ import Phaser from "phaser";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import platform from "../static/platform.png";
-import { loadSettingsIcon, configurePauseMenu } from "../utils";
-import { Field, MsgTypes, SpriteSheet } from "../constants";
+import {
+    loadSettingsIcon,
+    configurePauseMenu,
+    addPlayerStatusUI,
+} from "../utils";
+import {
+    Field,
+    MsgTypes,
+    SpriteSheet,
+    CANVAS_HEIGHT,
+    CanBeHit,
+} from "../constants";
 import { Player, getMotions } from "../Sprites";
 import { PlayerBody } from "../SpriteBody";
 import { addWaterfallBackground } from "../backgrounds";
+import CombatManager from "../CombatManager";
 
 class Brawl extends Phaser.Scene {
     private player: Player;
@@ -50,13 +61,39 @@ class Brawl extends Phaser.Scene {
 
         this.socket.onmessage = (e) => {
             const msg = JSON.parse(e.data);
-            if (msg[Field.TYPE] === MsgTypes.SPRITE) {
-                if (msg[Field.SOURCE] === this.uid) return;
-                const playerBody = this.otherPlayers.get(msg[Field.SOURCE]);
-                if (playerBody === undefined) throw new Error();
+            const type = msg[Field.TYPE];
+            const sourceId = msg[Field.SOURCE];
+            if (type === MsgTypes.SPRITE) {
+                if (sourceId === this.uid) return; // ignore messages from self
+                const playerBody = this.otherPlayers.get(sourceId);
+                if (playerBody === undefined)
+                    throw new Error("Unknown sprite source");
                 const { x, y } = msg[Field.POSITION];
                 playerBody.setPosition(x, y);
                 playerBody.setAppearance(msg[Field.APPEARANCE]);
+            } else if (type === MsgTypes.DAMAGE) {
+                const targetId = msg[Field.TARGET];
+                if (targetId === this.uid) {
+                    this.player.takeDamage(msg[Field.VALUE]);
+                    this.socket?.send(
+                        `data_${JSON.stringify({
+                            [Field.SOURCE]: this.uid,
+                            [Field.TYPE]: MsgTypes.HEALTH,
+                            [Field.VALUE]: this.player.getHealthPercentage(),
+                        })}`
+                    );
+                } else {
+                    const target = this.otherPlayers.get(targetId);
+                    if (target === undefined)
+                        throw new Error("Unknown attack target");
+                    target.takeDamage(msg[Field.VALUE]);
+                }
+            } else if (type === MsgTypes.HEALTH) {
+                if (sourceId === this.uid) return;
+                const playerBody = this.otherPlayers.get(sourceId);
+                if (playerBody === undefined)
+                    throw new Error("Unknown health update");
+                playerBody.setHealthUI(msg[Field.VALUE]);
             }
         };
         this.socket.onclose = () => {
@@ -75,12 +112,51 @@ class Brawl extends Phaser.Scene {
         }, 30); // 33 fps
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
+        const combatManager = new CombatManager();
         data.idList.forEach((id, i) => {
-            const x = 300 + 100 * i;
+            const x = 300 + 200 * i;
             const y = 300;
+            const { setHealthUI, setManaUI } = addPlayerStatusUI(
+                this,
+                id,
+                x,
+                CANVAS_HEIGHT - 70
+            );
             if (id === this.uid) {
-                this.player = new Player(id, this, platforms, x, y, () => {}); // TODO: proper onDeath
-            } else this.otherPlayers.set(id, new PlayerBody(this, x, y));
+                this.player = new Player(
+                    id,
+                    this,
+                    platforms,
+                    x,
+                    y,
+                    () => {},
+                    setHealthUI,
+                    setManaUI
+                ); // TODO: proper onDeath
+                this.player.registerAsCombatant(combatManager, id);
+            } else {
+                const other = new PlayerBody(
+                    id,
+                    this,
+                    x,
+                    y,
+                    setHealthUI,
+                    setManaUI
+                );
+                this.otherPlayers.set(id, other);
+                combatManager.addParticipant(other, id, (dmg) => {
+                    if (this.socket) {
+                        this.socket.send(
+                            `data_${JSON.stringify({
+                                [Field.SOURCE]: this.uid,
+                                [Field.TYPE]: MsgTypes.DAMAGE,
+                                [Field.TARGET]: id,
+                                [Field.VALUE]: dmg,
+                            })}`
+                        );
+                    }
+                });
+            }
         });
     }
     update() {

@@ -19,12 +19,22 @@ export enum Field {
     TYPE = "t",
     POSITION = "p",
     APPEARANCE = "a",
+    VALUE = "v",
+    TARGET = "r",
 }
 
 /** Shorthands for message types. */
 export enum MsgTypes {
     /** For data containing a sprite's position and appearance. */
     SPRITE = "s",
+    /** For notifying that a player has hit another player and dealt damage. */
+    DAMAGE = "d",
+    /**
+     * For updates to a player's health UI. A message of type `DAMAGE` should be followed
+     * by a message of type `HEALTH` from the target player so that other clients can update
+     * their UIs accordingly.
+     */
+    HEALTH = "h",
 }
 
 //////////////////////////////////////
@@ -71,3 +81,14 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
     height: 105,
     idleFrame: BasicBotFrames.IDLE,
 };
+
+export interface CanBeHit {
+    name: string;
+    getPosition(): { x: number; y: number };
+    getBounds(): Phaser.Geom.Rectangle;
+    takeDamage(dmg: number): void;
+}
+
+export interface HasHealth extends CanBeHit {
+    getHealthPercentage(): number;
+}

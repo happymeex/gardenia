@@ -10,9 +10,11 @@ import {
     BASIC_BOT_DMG,
     BASIC_BOT_HEALTH,
     PLAYER_DEFAULT_HEALTH,
+    CanBeHit,
+    HasHealth,
 } from "./constants";
 import { flashWhite } from "./utils";
-import CombatManager, { CanTakeDamage } from "./CombatManager";
+import CombatManager from "./CombatManager";
 
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
 const ATTACK = "space";
@@ -37,7 +39,7 @@ export const NO_KEYS_PRESSED: KeyData = {
  * Class representing a physics-obeying sprite, with methods for reading its
  * current position and appearance.
  */
-class SpriteWithPhysics implements CanTakeDamage {
+class SpriteWithPhysics implements HasHealth {
     protected readonly sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     protected cachedAppearance: SpriteAppearance | null = null;
     protected attackState: AttackState = AttackState.READY;
@@ -101,18 +103,30 @@ class SpriteWithPhysics implements CanTakeDamage {
         this.sprite.setVelocityX(0);
         this.onDeath(this.name);
         this.sprite.anims.play("death");
+        console.log(this.name, "died");
+    }
+
+    public getHealthPercentage(): number {
+        return Math.max(this.health / this.maxHealth, 0);
     }
 
     /**
      * Attaches a combat manager to coordinate transmission and receival of attacks
-     * between scene combatants.
+     * between scene combatants. After the combat manager is attached, other combatants
+     * can be hit by this player's attacks.
      *
      * @param combatManager
      * @param team string used to determine which combatants should be able to hit which
-     *      others.
+     *      others. Friendly fire is disallowed.
+     * @param onHit optional callback executed when this player is hit, immediately after
+     *      its `takeDamage` method is called.
      */
-    public registerAsCombatant(combatManager: CombatManager, team: string) {
-        combatManager.addParticipant(this, team);
+    public registerAsCombatant(
+        combatManager: CombatManager,
+        team: string,
+        onHit?: (dmg: number) => void
+    ) {
+        combatManager.addParticipant(this, team, onHit);
         this.combatManager = combatManager;
     }
 
