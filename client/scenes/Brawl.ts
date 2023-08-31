@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import platform from "../static/platform.png";
+import battleTheme from "../static/battle_theme.mp3";
 import {
     loadSettingsIcon,
     configurePauseMenu,
@@ -12,7 +13,8 @@ import {
     MsgTypes,
     SpriteSheet,
     CANVAS_HEIGHT,
-    CanBeHit,
+    BGM,
+    Sound,
 } from "../constants";
 import { Player, getMotions } from "../Sprites";
 import { PlayerBody } from "../SpriteBody";
@@ -43,6 +45,7 @@ class Brawl extends Phaser.Scene {
     }
     preload() {
         loadSettingsIcon(this);
+        this.load.audio(Sound.BATTLE, battleTheme);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
         this.load.spritesheet(SpriteSheet.PLAYER, playerSpritesheet, {
@@ -52,6 +55,9 @@ class Brawl extends Phaser.Scene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
+        BGM.audio.stop();
+        BGM.audio = this.sound.add(Sound.BATTLE, { loop: true, volume: 0.7 });
+        BGM.audio.play();
         this.isPaused = false; // need to reset this in case this brawl isn't the first one of the sitting
         this.otherPlayers = new Map();
         this.socket = data.socket;

@@ -2,9 +2,7 @@ import Phaser from "phaser";
 import {
     loadSettingsIcon,
     configurePauseMenu,
-    makeTransparentRectTexture,
     addPlayerStatusUI,
-    createCanvasBoundaryWalls,
     createTimer,
     createDarkenedOverlay,
     makeClickable,
@@ -16,12 +14,15 @@ import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
 import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
+import battleTheme from "../static/battle_theme.mp3";
 import {
     basicBotSpriteMetaData,
     CANVAS_CENTER,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     SpriteSheet,
+    BGM,
+    Sound,
 } from "../constants";
 import CombatManager from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
@@ -46,6 +47,7 @@ class Survival extends Phaser.Scene {
     }
     preload() {
         loadSettingsIcon(this);
+        this.load.audio(Sound.BATTLE, battleTheme);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
         this.load.spritesheet(SpriteSheet.PLAYER, playerSpritesheet, {
@@ -64,6 +66,9 @@ class Survival extends Phaser.Scene {
         this.numKilled = 0;
         this.numSpawned = 0;
         this.processes.clear();
+        BGM.audio.stop();
+        BGM.audio = this.sound.add(Sound.BATTLE, { loop: true, volume: 0.7 });
+        BGM.audio.play();
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         this.settingsButton = configurePauseMenu(this, pause, resume, leave);
         const platforms = addWaterfallBackground(this);

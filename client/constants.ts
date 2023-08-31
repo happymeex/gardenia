@@ -10,6 +10,10 @@ export enum SpriteSheet {
     PLATFORM = "platform",
     WATERFALL = "waterfall-bg",
 }
+export enum Sound {
+    BATTLE = "battle-theme",
+    MENU = "menu-theme",
+}
 
 // Used to compress messages sent via websocket.
 

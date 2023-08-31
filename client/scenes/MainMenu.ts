@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { makeClickable } from "../utils";
 import { mainMenu } from "../ui";
-import { CANVAS_CENTER, BGM } from "../constants";
+import { CANVAS_CENTER, BGM, Sound } from "../constants";
 import menuTheme from "../static/menu_theme.mp3";
 
 const buttonData = [
@@ -21,11 +21,11 @@ class MainMenu extends Phaser.Scene {
         super({ key: "main-menu" });
     }
     preload() {
-        this.load.audio("menu-theme", menuTheme);
+        this.load.audio(Sound.MENU, menuTheme);
     }
     create() {
         if (!BGM.audio.isPlaying) {
-            BGM.audio = this.sound.add("menu-theme", {
+            BGM.audio = this.sound.add(Sound.MENU, {
                 loop: true,
                 volume: 0.7,
             });
