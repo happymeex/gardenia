@@ -100,6 +100,8 @@ export interface SpriteMetaData {
     /** A fallback frame indicating idle status; this frame is the first to appear when user transforms. */
     readonly idleFrame: number;
 
+    readonly iconFrame: number;
+
     readonly walkSpeed: number;
     readonly jumpVelocity: number;
     readonly attackData: AttackData;
@@ -110,6 +112,7 @@ export const playerSpriteMetaData: SpriteMetaData = {
     width: 64,
     height: 105,
     idleFrame: PlayerFrames.IDLE,
+    iconFrame: 0,
     walkSpeed: 300,
     jumpVelocity: 800,
     attackData: {
@@ -124,6 +127,7 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
     spriteKey: SpriteSheet.BASIC_BOT,
     width: 52,
     height: 105,
+    iconFrame: -1,
     idleFrame: BasicBotFrames.IDLE,
     walkSpeed: 200,
     jumpVelocity: 0,
@@ -139,6 +143,7 @@ const foxSpriteMetaData: SpriteMetaData = {
     spriteKey: SpriteSheet.FOX,
     width: 180,
     height: 100,
+    iconFrame: 1,
     idleFrame: 16,
     walkSpeed: 400,
     jumpVelocity: 900,
@@ -155,6 +160,7 @@ const bearSpriteMetaData: SpriteMetaData = {
     width: 100,
     height: 165,
     idleFrame: 14,
+    iconFrame: 2,
     walkSpeed: 175,
     jumpVelocity: 0,
     attackData: {

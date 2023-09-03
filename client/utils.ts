@@ -3,10 +3,12 @@ import {
     CANVAS_CENTER,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
+    getSpriteMetaData,
     PlayerFrames,
     SpriteSheet,
 } from "./constants";
 import settingsIcon from "./static/settings_icon.png";
+import iconSheet from "./static/icons.png";
 import {
     baseColor,
     darkenedColor,
@@ -284,14 +286,14 @@ export function createCanvasBoundaryWalls(
  * Creates a UI component showing the player's character icon (indicating their
  * current animal mode) and their health/mana bars.
  *
- * Assumes that the player spritesheet has been preloaded in `scene` already.
+ * Assumes that the icons spritesheet has been preloaded in `scene` already.
  *
  * @param scene
  * @param playerName
  * @param x horizontal position of the component
  * @param y vertical position of the component
- * @returns an object with properties `setHealthUI` and `setManaUI` whose values are
- *      functions that adjust the health and mana bars respectively, given a percentage input.
+ * @returns an object with properties `setHealthUI`, `setManaUI`, and `changeIcon` whose values are
+ *      functions that adjust the health bar, mana bar, and icon, respectively,
  */
 export function addPlayerStatusUI(
     scene: Phaser.Scene,
@@ -335,10 +337,14 @@ export function addPlayerStatusUI(
         0x35295e,
         0x5c3ac9
     );
+    const changeIcon = (target: SpriteSheet) => {
+        icon.setTexture(SpriteSheet.ICONS);
+        icon.setFrame(getSpriteMetaData(target).iconFrame);
+    };
 
     container.add([icon, name]);
     container.setDepth(50);
-    return { setHealthUI, setManaUI };
+    return { setHealthUI, setManaUI, changeIcon };
 }
 
 function assembleStatBar(

@@ -224,6 +224,7 @@ class Player extends SpriteWithPhysics {
         onDeath: (name: string) => void,
         private onHealthChange: (ratio: number) => void,
         private onManaChange: (ratio: number) => void,
+        private onTransform: (target: SpriteSheet) => void,
         direction: "left" | "right" = "right"
     ) {
         super(
@@ -349,6 +350,7 @@ class Player extends SpriteWithPhysics {
         this.sprite.setSize(newMetaData.width, newMetaData.height);
         this.sprite.y -= dy;
         this.sprite.setFrame(newMetaData.idleFrame);
+        this.onTransform(target);
     }
     /**
      * For the foxes' ranged attack.

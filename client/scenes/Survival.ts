@@ -95,7 +95,7 @@ class Survival extends Phaser.Scene {
         const platforms = addWaterfallBackground(this);
 
         this.combatManager = new CombatManager();
-        const { setHealthUI, setManaUI } = addPlayerStatusUI(
+        const { setHealthUI, setManaUI, changeIcon } = addPlayerStatusUI(
             this,
             "Meex",
             CANVAS_WIDTH / 2,
@@ -109,7 +109,8 @@ class Survival extends Phaser.Scene {
             300,
             this.makeDeathHandlers("player"),
             setHealthUI,
-            setManaUI
+            setManaUI,
+            changeIcon
         );
         this.player.registerAsCombatant(this.combatManager, "player");
         const createEnemy = () => {
