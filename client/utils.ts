@@ -7,6 +7,7 @@ import {
     SpriteSheet,
 } from "./constants";
 import settingsIcon from "./static/settings_icon.png";
+import iconSheet from "./static/icons.png";
 import {
     baseColor,
     darkenedColor,
@@ -309,7 +310,7 @@ export function addPlayerStatusUI(
     const icon = scene.add.sprite(
         -iconOffset,
         0,
-        SpriteSheet.PLAYER,
+        SpriteSheet.ICONS,
         PlayerFrames.ICON
     );
     const name = scene.add.text(nameOffset, -30, playerName, {

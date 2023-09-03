@@ -13,6 +13,7 @@ import { Player, HomingEnemy, getMotions } from "../Sprites";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
 import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
+import iconSheet from "../static/icons.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import battleTheme from "../static/battle_theme.mp3";
 import {
@@ -50,6 +51,10 @@ class Survival extends Phaser.Scene {
         this.load.audio(Sound.BATTLE, battleTheme);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
+        this.load.spritesheet(SpriteSheet.ICONS, iconSheet, {
+            frameWidth: 128,
+            frameHeight: 128,
+        });
         this.load.spritesheet(SpriteSheet.PLAYER, playerSpritesheet, {
             frameWidth: 128,
             frameHeight: 128,

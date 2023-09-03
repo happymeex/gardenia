@@ -39,6 +39,18 @@ export function initializeAnimations(
                 frameRate: 24,
                 repeat: 0,
             });
+            sprite.anims.create({
+                key: "death",
+                frames: scene.anims.generateFrameNumbers(spriteKey, {
+                    frames: [
+                        32, 33, 34, 35, 36, 36, 36, 36, 36, 36, 36, 37, 38, 39,
+                        31, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    ],
+                }),
+                frameRate: 15,
+                repeat: 0,
+            });
+            break;
         case SpriteSheet.BASIC_BOT:
             sprite.anims.create({
                 key: "walk",

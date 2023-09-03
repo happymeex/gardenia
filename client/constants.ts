@@ -9,6 +9,7 @@ export enum SpriteSheet {
     BASIC_BOT = "basic-bot",
     PLATFORM = "platform",
     WATERFALL = "waterfall-bg",
+    ICONS = "icon",
 }
 export enum Sound {
     BATTLE = "battle-theme",
@@ -50,8 +51,7 @@ export enum AttackState {
 
 export enum PlayerFrames {
     IDLE = 27,
-    /** Mugshot for use in healthbar/status UI. */
-    ICON = 30,
+    ICON = 0,
 }
 
 export const PLAYER_DEFAULT_HEALTH = 100;
