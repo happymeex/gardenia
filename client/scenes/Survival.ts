@@ -8,11 +8,16 @@ import {
     makeClickable,
     intersect,
     inRange,
+    handleTransformation,
+    SpecialKeys,
+    createSpecialKeys,
 } from "../utils";
 import { Player, HomingEnemy, getMotions } from "../Sprites";
 import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
 import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
+import foxSpritesheet from "../static/fox_spritesheet.png";
+import bearSpritesheet from "../static/bear_spritesheet.png";
 import iconSheet from "../static/icons.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import battleTheme from "../static/battle_theme.mp3";
@@ -42,6 +47,7 @@ class Survival extends Phaser.Scene {
     private timer: Phaser.GameObjects.Text;
     private processes: Map<string, number> = new Map();
     private settingsButton: Phaser.GameObjects.Image;
+    private specialKeys: SpecialKeys;
 
     public constructor() {
         super({ key: "survival" });
@@ -59,6 +65,14 @@ class Survival extends Phaser.Scene {
             frameWidth: 128,
             frameHeight: 128,
         });
+        this.load.spritesheet(SpriteSheet.FOX, foxSpritesheet, {
+            frameWidth: 192,
+            frameHeight: 128,
+        });
+        this.load.spritesheet(SpriteSheet.BEAR, bearSpritesheet, {
+            frameWidth: 128,
+            frameHeight: 192,
+        });
         this.load.spritesheet(SpriteSheet.BASIC_BOT, basicBotSpritesheet, {
             frameWidth: 96,
             frameHeight: 128,
@@ -74,6 +88,8 @@ class Survival extends Phaser.Scene {
         BGM.audio.stop();
         BGM.audio = this.sound.add(Sound.BATTLE, { loop: true, volume: 0.7 });
         BGM.audio.play();
+
+        this.specialKeys = createSpecialKeys(this);
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         this.settingsButton = configurePauseMenu(this, pause, resume, leave);
         const platforms = addWaterfallBackground(this);
@@ -130,6 +146,7 @@ class Survival extends Phaser.Scene {
     update() {
         const cursors = this.cursors; // holds keypress data
         if (cursors === undefined || this.isPaused) return;
+        handleTransformation(this.player, this.specialKeys);
         this.player.handleMotion(getMotions(cursors));
         for (const enemy of this.enemies.values()) {
             if (intersect(this.player, enemy)) {

@@ -14,6 +14,7 @@ import {
     paragraphTextStyleBase,
     pauseMenu,
 } from "./ui";
+import { Player } from "./Sprites";
 
 /** Loads the settings icon image into a scene. */
 export function loadSettingsIcon(scene: Phaser.Scene) {
@@ -443,4 +444,49 @@ export function inRange(
     const { x: x1, y: y1 } = sprite1.getPosition();
     const { x: x2, y: y2 } = sprite2.getPosition();
     return (x1 - x2) ** 2 + (y1 - y2) ** 2 < radius * radius;
+}
+
+export interface SpecialKeys {
+    foxKey: Phaser.Input.Keyboard.Key;
+    bearKey: Phaser.Input.Keyboard.Key;
+    humanKey: Phaser.Input.Keyboard.Key;
+}
+/**
+ * @param scene
+ * @returns an object containing references to key objects to be checked during each scene update.
+ *      If `foxKey.isDown`, then the player character should transform into fox mode.
+ *      Similar for `bearKey`.
+ */
+export function createSpecialKeys(scene: Phaser.Scene): SpecialKeys {
+    const keyboard = scene.input.keyboard;
+    if (!keyboard) throw Error("No Keyboard detected!");
+    const foxKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+    const bearKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
+    const humanKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G);
+    return { foxKey, bearKey, humanKey };
+}
+
+/**
+ * Checks for keypresses by the player and transforms the player sprite accordingly.
+ * Call this in the update method of a scene.
+ *
+ * @param player
+ * @param keys
+ * @returns True if a transformation should occur, false otherwise.
+ */
+export function handleTransformation(
+    player: Player,
+    keys: SpecialKeys
+): boolean {
+    if (keys.foxKey.isDown) {
+        player.transform(SpriteSheet.FOX);
+        return true;
+    } else if (keys.bearKey.isDown) {
+        player.transform(SpriteSheet.BEAR);
+        return true;
+    } else if (keys.humanKey.isDown) {
+        player.transform(SpriteSheet.PLAYER);
+        return true;
+    }
+    return false;
 }

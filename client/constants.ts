@@ -2,15 +2,17 @@ export const CANVAS_WIDTH = 1344;
 export const CANVAS_HEIGHT = 756;
 export const CANVAS_CENTER = [CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2] as const;
 
-// spritesheet keys
-
+/** Spritesheet keys. */
 export enum SpriteSheet {
     PLAYER = "player",
     BASIC_BOT = "basic-bot",
     PLATFORM = "platform",
     WATERFALL = "waterfall-bg",
+    FOX = "fox",
+    BEAR = "bear",
     ICONS = "icon",
 }
+
 export enum Sound {
     BATTLE = "battle-theme",
     MENU = "menu-theme",
@@ -66,25 +68,67 @@ export enum BasicBotFrames {
 }
 
 export interface SpriteMetaData {
-    readonly spriteSheet: SpriteSheet;
+    /** Key of the spritesheet texture. */
+    readonly spriteKey: SpriteSheet;
+
+    /** Width for physics/hitbox purposes. */
     readonly width: number;
+
+    /** Height for physics/hitbox purposes. */
     readonly height: number;
+
+    /** A fallback frame indicating idle status; this frame is the first to appear when user transforms. */
     readonly idleFrame: number;
+
+    readonly walkSpeed: number;
+    readonly jumpVelocity: number;
 }
 
 export const playerSpriteMetaData: SpriteMetaData = {
-    spriteSheet: SpriteSheet.PLAYER,
+    spriteKey: SpriteSheet.PLAYER,
     width: 64,
     height: 105,
     idleFrame: PlayerFrames.IDLE,
+    walkSpeed: 300,
+    jumpVelocity: 800,
 };
 
 export const basicBotSpriteMetaData: SpriteMetaData = {
-    spriteSheet: SpriteSheet.BASIC_BOT,
+    spriteKey: SpriteSheet.BASIC_BOT,
     width: 52,
     height: 105,
     idleFrame: BasicBotFrames.IDLE,
+    walkSpeed: 200,
+    jumpVelocity: 0,
 };
+
+export function getSpriteMetaData(asset: SpriteSheet): SpriteMetaData {
+    switch (asset) {
+        case SpriteSheet.PLAYER:
+            return playerSpriteMetaData;
+        case SpriteSheet.BASIC_BOT:
+            return basicBotSpriteMetaData;
+        case SpriteSheet.FOX:
+            return {
+                spriteKey: SpriteSheet.FOX,
+                width: 180,
+                height: 100,
+                idleFrame: 16,
+                walkSpeed: 400,
+                jumpVelocity: 900,
+            };
+        case SpriteSheet.BEAR:
+            return {
+                spriteKey: SpriteSheet.BEAR,
+                width: 100,
+                height: 165,
+                idleFrame: 14,
+                walkSpeed: 175,
+                jumpVelocity: 0,
+            };
+    }
+    throw new Error(`No metadata data associated with spritesheet ${asset}`);
+}
 
 /**
  * Represents an entity that can be the target of an attack

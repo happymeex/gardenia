@@ -11,14 +11,14 @@ import {
     BASIC_BOT_HEALTH,
     PLAYER_DEFAULT_HEALTH,
     HasHealth,
+    SpriteSheet,
+    getSpriteMetaData,
 } from "./constants";
 import { flashWhite } from "./utils";
 import CombatManager from "./CombatManager";
 
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
 const ATTACK = "space";
-const WALK_VELOCITY = 300;
-const JUMP_VELOCITY = 800;
 type CollisionObject =
     | Phaser.Types.Physics.Arcade.GameObjectWithBody
     | Phaser.Tilemaps.Tile;
@@ -60,7 +60,7 @@ class SpriteWithPhysics implements HasHealth {
     public constructor(
         public readonly name: string,
         scene: Phaser.Scene,
-        private spriteData: SpriteMetaData,
+        protected spriteData: SpriteMetaData,
         x: number,
         y: number,
         protected health: number,
@@ -71,10 +71,10 @@ class SpriteWithPhysics implements HasHealth {
         this.sprite = scene.physics.add.sprite(
             x,
             y,
-            spriteData.spriteSheet,
+            spriteData.spriteKey,
             spriteData.idleFrame
         );
-        initializeAnimations(this.sprite, spriteData.spriteSheet);
+        initializeAnimations(this.sprite, spriteData.spriteKey);
         this.sprite.setSize(spriteData.width, spriteData.height);
         this.sprite.on(
             "animationcomplete",
@@ -138,6 +138,9 @@ class SpriteWithPhysics implements HasHealth {
         this.combatManager = combatManager;
     }
 
+    /**
+     * @returns coordinates of the center of the sprite's (physics/hitbox) rectangle bounds
+     */
     public getPosition(): { x: number; y: number } {
         return { x: this.sprite.x, y: this.sprite.y };
     }
@@ -186,11 +189,10 @@ class SpriteWithPhysics implements HasHealth {
      *      the `spriteData` parameter passed to the constructor)
      */
     public getBounds(): Phaser.Geom.Rectangle {
-        //return this.sprite.getBounds();
         const { x, y } = this.getPosition();
         return new Phaser.Geom.Rectangle(
-            x,
-            y,
+            x - this.spriteData.width / 2,
+            y - this.spriteData.width / 2,
             this.spriteData.width,
             this.spriteData.height
         );
@@ -235,10 +237,12 @@ class Player extends SpriteWithPhysics {
             direction
         );
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
+        initializeAnimations(this.sprite, SpriteSheet.FOX, SpriteSheet.BEAR);
         this.sprite.on(
             "animationcomplete",
             (e: Phaser.Animations.Animation) => {
-                if (e.key === "attack") this.attackState = AttackState.READY;
+                if (e.key === `${this.spriteData.spriteKey}-attack`)
+                    this.attackState = AttackState.READY;
             }
         );
     }
@@ -268,18 +272,22 @@ class Player extends SpriteWithPhysics {
      * @param keyData indicates which keys are currently pressed
      */
     public handleMotion(keyData: KeyData) {
+        const {
+            spriteKey: spriteSheet,
+            walkSpeed,
+            jumpVelocity,
+        } = this.spriteData;
         // null indicates no change
         let anim: string | null = null,
             velocityX: number | null = null,
             velocityY: number | null = null,
-            flipX: boolean | null = null,
-            frame: PlayerFrames | null = null;
+            flipX: boolean | null = null;
         const horizontal: ("left" | "right")[][] = [
             ["left", "right"],
             ["right", "left"],
         ];
         if (keyData[ATTACK] && this.attackState === AttackState.READY) {
-            anim = "attack";
+            anim = `${spriteSheet}-attack`;
             this.attackState = AttackState.ATTACKING;
             if (this.combatManager !== null) {
                 this.combatManager.processAttack(this, {
@@ -291,8 +299,9 @@ class Player extends SpriteWithPhysics {
             if (!this.inAir) velocityX = 0;
         } else if (keyData.up) {
             if (!this.inAir) {
-                velocityY = -JUMP_VELOCITY;
+                velocityY = -jumpVelocity;
                 this.inAir = true;
+                anim = `${spriteSheet}-jump`;
             }
         }
         for (const [dir, opposite] of horizontal) {
@@ -301,25 +310,34 @@ class Player extends SpriteWithPhysics {
                     flipX = dir === "left"; // sprites are right-facing by default
                     this.direction = dir;
                 }
-                if (!this.inAir) anim = "walk";
-                velocityX = WALK_VELOCITY * (dir === "right" ? 1 : -1);
+                if (!this.inAir) anim = `${spriteSheet}-walk`;
+                velocityX = walkSpeed * (dir === "right" ? 1 : -1);
             }
         }
         if (anim === null && this.attackState !== AttackState.ATTACKING) {
-            if (!this.inAir) velocityX = 0;
-            anim = "stop";
-            frame = PlayerFrames.IDLE;
+            if (!this.inAir) {
+                velocityX = 0;
+                anim = `${spriteSheet}-idle`;
+            } else anim = `${spriteSheet}-jump`;
         }
 
         if (velocityX !== null) this.sprite.setVelocityX(velocityX);
         if (velocityY !== null) this.sprite.setVelocityY(velocityY);
-        if (anim === "stop") {
-            this.sprite.anims.stop();
-            if (frame === null)
-                throw new Error("expected non-null frame when anim is stop");
-            this.sprite.setFrame(frame);
-        } else if (anim !== null) this.sprite.anims.play(anim, true);
+        if (anim !== null) this.sprite.anims.play(anim, true);
         if (flipX !== null) this.sprite.setFlipX(flipX);
+    }
+
+    public transform(target: SpriteSheet) {
+        // note: when Phaser swaps the sprite's texture, it preserves
+        // the center of the bounding box
+        const newMetaData = getSpriteMetaData(target);
+        // vertical displacement so that feet of new sprite align with feet of old
+        const dy = (newMetaData.height - this.spriteData.height) / 2;
+        this.spriteData = newMetaData;
+        this.sprite.setTexture(target);
+        this.sprite.setSize(newMetaData.width, newMetaData.height);
+        this.sprite.y -= dy;
+        this.sprite.setFrame(newMetaData.idleFrame);
     }
 }
 
@@ -358,7 +376,6 @@ class HomingEnemy extends SpriteWithPhysics {
     /** Indicates what the bot is "trying" to do. */
     private semanticState: EnemyStates = EnemyStates.IDLE;
     /** Bot walk speed. */
-    private readonly walkspeed = 200;
 
     /**
      * Creates an non-player-controlled enemy that wanders around,
@@ -430,13 +447,13 @@ class HomingEnemy extends SpriteWithPhysics {
                 this.sprite.setFlipX(false);
                 this.direction = "right";
                 if (this.semanticState === EnemyStates.WALKING) {
-                    this.sprite.setVelocityX(this.walkspeed);
+                    this.sprite.setVelocityX(this.spriteData.walkSpeed);
                 }
             } else if (sprite.body.touching.right) {
                 this.sprite.setFlipX(true);
                 this.direction = "left";
                 if (this.semanticState === EnemyStates.WALKING) {
-                    this.sprite.setVelocityX(-this.walkspeed);
+                    this.sprite.setVelocityX(-this.spriteData.walkSpeed);
                 }
             }
         };
@@ -460,7 +477,8 @@ class HomingEnemy extends SpriteWithPhysics {
         if (homingDirection !== null) {
             this.semanticState = EnemyStates.HOMING;
             const velocity =
-                this.walkspeed * (homingDirection === "right" ? 1 : -1);
+                this.spriteData.walkSpeed *
+                (homingDirection === "right" ? 1 : -1);
             this.sprite.setVelocityX(velocity);
             this.sprite.setFlipX(homingDirection === "left");
             this.direction = homingDirection;
@@ -473,7 +491,8 @@ class HomingEnemy extends SpriteWithPhysics {
                 if (Math.random() < this.IdleToWalkChance) {
                     this.semanticState = EnemyStates.WALKING;
                     const velocity =
-                        this.walkspeed * (this.direction === "right" ? 1 : -1);
+                        this.spriteData.walkSpeed *
+                        (this.direction === "right" ? 1 : -1);
                     this.sprite.setVelocityX(velocity);
                     this.sprite.anims.play("walk", true);
                 }
