@@ -18,6 +18,26 @@ export enum Sound {
     MENU = "menu-theme",
 }
 
+export enum AttackType {
+    MELEE,
+    PROJECTILE,
+}
+
+/**
+ * Parameters describing an attack.
+ */
+export type AttackData = {
+    readonly damage: number;
+    /** If true, attack strikes all targets in range. */
+    readonly aoe: boolean;
+    /**
+     * A nonzero value indicates that the attack should knock back targets that are hit,
+     * unless the target has a knockback resistance value higher than this value.
+     */
+    readonly knockbackPrecedence: number;
+    readonly type: AttackType;
+};
+
 // Used to compress messages sent via websocket.
 
 /** Shorthands for object fields. */
@@ -82,6 +102,7 @@ export interface SpriteMetaData {
 
     readonly walkSpeed: number;
     readonly jumpVelocity: number;
+    readonly attackData: AttackData;
 }
 
 export const playerSpriteMetaData: SpriteMetaData = {
@@ -91,6 +112,12 @@ export const playerSpriteMetaData: SpriteMetaData = {
     idleFrame: PlayerFrames.IDLE,
     walkSpeed: 300,
     jumpVelocity: 800,
+    attackData: {
+        damage: 15,
+        aoe: false,
+        knockbackPrecedence: 0,
+        type: AttackType.MELEE,
+    },
 };
 
 export const basicBotSpriteMetaData: SpriteMetaData = {
@@ -100,6 +127,42 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
     idleFrame: BasicBotFrames.IDLE,
     walkSpeed: 200,
     jumpVelocity: 0,
+    attackData: {
+        damage: 10,
+        aoe: false,
+        knockbackPrecedence: 0,
+        type: AttackType.MELEE,
+    },
+};
+
+const foxSpriteMetaData: SpriteMetaData = {
+    spriteKey: SpriteSheet.FOX,
+    width: 180,
+    height: 100,
+    idleFrame: 16,
+    walkSpeed: 400,
+    jumpVelocity: 900,
+    attackData: {
+        damage: 10,
+        aoe: false,
+        knockbackPrecedence: 1,
+        type: AttackType.PROJECTILE,
+    },
+};
+
+const bearSpriteMetaData: SpriteMetaData = {
+    spriteKey: SpriteSheet.BEAR,
+    width: 100,
+    height: 165,
+    idleFrame: 14,
+    walkSpeed: 175,
+    jumpVelocity: 0,
+    attackData: {
+        damage: 30,
+        aoe: true,
+        knockbackPrecedence: 2,
+        type: AttackType.MELEE,
+    },
 };
 
 export function getSpriteMetaData(asset: SpriteSheet): SpriteMetaData {
@@ -109,23 +172,9 @@ export function getSpriteMetaData(asset: SpriteSheet): SpriteMetaData {
         case SpriteSheet.BASIC_BOT:
             return basicBotSpriteMetaData;
         case SpriteSheet.FOX:
-            return {
-                spriteKey: SpriteSheet.FOX,
-                width: 180,
-                height: 100,
-                idleFrame: 16,
-                walkSpeed: 400,
-                jumpVelocity: 900,
-            };
+            return foxSpriteMetaData;
         case SpriteSheet.BEAR:
-            return {
-                spriteKey: SpriteSheet.BEAR,
-                width: 100,
-                height: 165,
-                idleFrame: 14,
-                walkSpeed: 175,
-                jumpVelocity: 0,
-            };
+            return bearSpriteMetaData;
     }
     throw new Error(`No metadata data associated with spritesheet ${asset}`);
 }

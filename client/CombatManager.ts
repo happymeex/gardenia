@@ -1,20 +1,6 @@
 import Phaser from "phaser";
 import { intersect } from "./utils";
-import { CanBeHit } from "./constants";
-
-/**
- * Parameters describing an attack.
- */
-export type AttackData = {
-    damage: number;
-    /** If true, attack strikes all targets in range. */
-    aoe: boolean;
-    /**
-     * A nonzero value indicates that the attack should knock back targets that are hit,
-     * unless the target has a knockback resistance value higher than this value.
-     */
-    knockbackPrecedence: number;
-};
+import { CanBeHit, AttackData } from "./constants";
 
 /**
  * Class for managing attacks between in-game combatants (player-controlled or not).

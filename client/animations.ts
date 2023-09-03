@@ -106,6 +106,13 @@ export function initializeAnimations(
             repeat: -1,
         });
         sprite.anims.create({
+            key: `${spriteKey}-attack`,
+            frames: scene.anims.generateFrameNumbers(spriteKey, {
+                start: 8,
+                end: 15,
+            }),
+        });
+        sprite.anims.create({
             key: `${spriteKey}-idle`,
             frames: scene.anims.generateFrameNumbers(spriteKey, {
                 frames: [16, 17, 18, 19, 20],
@@ -133,6 +140,13 @@ export function initializeAnimations(
             }),
             frameRate: 8,
             repeat: -1,
+        });
+        sprite.anims.create({
+            key: `${spriteKey}-attack`,
+            frames: scene.anims.generateFrameNumbers(spriteKey, {
+                frames: [8, 9, 10, 11, 11, 11, 11, 12, 13, 14],
+            }),
+            frameRate: 10,
         });
         sprite.anims.create({
             key: `${spriteKey}-idle`,

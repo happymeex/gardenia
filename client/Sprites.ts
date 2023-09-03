@@ -276,6 +276,7 @@ class Player extends SpriteWithPhysics {
             spriteKey: spriteSheet,
             walkSpeed,
             jumpVelocity,
+            attackData,
         } = this.spriteData;
         // null indicates no change
         let anim: string | null = null,
@@ -290,35 +291,36 @@ class Player extends SpriteWithPhysics {
             anim = `${spriteSheet}-attack`;
             this.attackState = AttackState.ATTACKING;
             if (this.combatManager !== null) {
-                this.combatManager.processAttack(this, {
-                    damage: 15,
-                    aoe: false,
-                    knockbackPrecedence: 0,
-                });
+                this.combatManager.processAttack(this, attackData);
+            }
+            if (this.spriteData.spriteKey === SpriteSheet.FOX) {
+                this.dispatchProjectile();
             }
             if (!this.inAir) velocityX = 0;
-        } else if (keyData.up) {
-            if (!this.inAir) {
-                velocityY = -jumpVelocity;
-                this.inAir = true;
-                anim = `${spriteSheet}-jump`;
-            }
-        }
-        for (const [dir, opposite] of horizontal) {
-            if (keyData[dir] && this.attackState !== AttackState.ATTACKING) {
-                if (this.direction === opposite) {
-                    flipX = dir === "left"; // sprites are right-facing by default
-                    this.direction = dir;
+        } else if (this.attackState !== AttackState.ATTACKING) {
+            if (keyData.up) {
+                if (!this.inAir) {
+                    velocityY = -jumpVelocity;
+                    this.inAir = true;
+                    anim = `${spriteSheet}-jump`;
                 }
-                if (!this.inAir) anim = `${spriteSheet}-walk`;
-                velocityX = walkSpeed * (dir === "right" ? 1 : -1);
             }
-        }
-        if (anim === null && this.attackState !== AttackState.ATTACKING) {
-            if (!this.inAir) {
-                velocityX = 0;
-                anim = `${spriteSheet}-idle`;
-            } else anim = `${spriteSheet}-jump`;
+            for (const [dir, opposite] of horizontal) {
+                if (keyData[dir]) {
+                    if (this.direction === opposite) {
+                        flipX = dir === "left"; // sprites are right-facing by default
+                        this.direction = dir;
+                    }
+                    if (!this.inAir) anim = `${spriteSheet}-walk`;
+                    velocityX = walkSpeed * (dir === "right" ? 1 : -1);
+                }
+            }
+            if (anim === null) {
+                if (!this.inAir) {
+                    velocityX = 0;
+                    anim = `${spriteSheet}-idle`;
+                } else anim = `${spriteSheet}-jump`;
+            }
         }
 
         if (velocityX !== null) this.sprite.setVelocityX(velocityX);
@@ -338,6 +340,21 @@ class Player extends SpriteWithPhysics {
         this.sprite.setSize(newMetaData.width, newMetaData.height);
         this.sprite.y -= dy;
         this.sprite.setFrame(newMetaData.idleFrame);
+    }
+    /**
+     * For the foxes' ranged attack.
+     */
+    private dispatchProjectile() {
+        const { x, y } = this.getPosition();
+        const projectile = this.scene.physics.add.sprite(
+            x,
+            y,
+            SpriteSheet.ICONS,
+            3
+        );
+        const { x: vx, y: vy } = this.sprite.body.velocity;
+        const dir = this.direction === "left" ? -1 : 1;
+        projectile.setVelocity(dir * (vx + 900), vy - 200);
     }
 }
 
@@ -419,11 +436,10 @@ class HomingEnemy extends SpriteWithPhysics {
             (e: Phaser.Animations.Animation) => {
                 if (e.key === "attack") {
                     if (this.combatManager) {
-                        this.combatManager.processAttack(this, {
-                            damage: BASIC_BOT_DMG,
-                            aoe: false,
-                            knockbackPrecedence: 0,
-                        });
+                        this.combatManager.processAttack(
+                            this,
+                            this.spriteData.attackData
+                        );
                     }
                     this.attackState = AttackState.READY;
                 }

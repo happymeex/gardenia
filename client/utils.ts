@@ -7,7 +7,6 @@ import {
     SpriteSheet,
 } from "./constants";
 import settingsIcon from "./static/settings_icon.png";
-import iconSheet from "./static/icons.png";
 import {
     baseColor,
     darkenedColor,
@@ -54,7 +53,6 @@ export function configurePauseMenu(
         settingsButton.disableInteractive();
         onOpen();
     });
-    //const menuPanel = makePauseMenu(scene, onClose, onLeave);
     const menuTextContainer = scene.add.container(...CANVAS_CENTER);
     menuTextContainer.setDepth(100);
     const header = scene.add.text(
