@@ -211,6 +211,7 @@ class NullAudio {
     public stop() {}
     public destroy() {}
     public isPlaying = false;
+    public key = "";
 }
 
 export type Audio =

@@ -24,7 +24,8 @@ class MainMenu extends Phaser.Scene {
         this.load.audio(Sound.MENU, menuTheme);
     }
     create() {
-        if (!BGM.audio.isPlaying) {
+        if (BGM.audio.key !== Sound.MENU) {
+            BGM.audio.stop();
             BGM.audio = this.sound.add(Sound.MENU, {
                 loop: true,
                 volume: 0.7,
