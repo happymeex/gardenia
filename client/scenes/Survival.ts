@@ -29,7 +29,7 @@ import {
     BGM,
     Sound,
 } from "../constants";
-import CombatManager from "../CombatManager";
+import { CombatManager } from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
 import { addWaterfallBackground } from "../backgrounds";
 

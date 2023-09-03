@@ -1,8 +1,17 @@
 import Phaser from "phaser";
 import { BaseSprite, CollisionObject } from "./BaseSprite";
-import { SpriteSheet, playerSpriteMetaData, AttackState } from "./constants";
+import {
+    SpriteSheet,
+    playerSpriteMetaData,
+    AttackState,
+    HasLocation,
+    HasAppearance,
+    SpriteMetaData,
+    AttackData,
+} from "./constants";
 import { initializeAnimations } from "./animations";
 import { getSpriteMetaData } from "./constants";
+import { SpriteAppearance } from "./SpriteBody";
 
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
 const ATTACK = "space";
@@ -111,11 +120,10 @@ class Player extends BaseSprite {
         if (keyData[ATTACK] && this.attackState === AttackState.READY) {
             anim = `${spriteSheet}-attack`;
             this.attackState = AttackState.ATTACKING;
-            if (this.combatManager !== null) {
-                this.combatManager.processAttack(this, attackData);
-            }
             if (this.spriteData.spriteKey === SpriteSheet.FOX) {
-                this.dispatchProjectile();
+                this.dispatchProjectile(attackData);
+            } else {
+                this.combatManager.processAttack(this, attackData);
             }
             if (!this.inAir) velocityX = 0;
         } else if (this.attackState !== AttackState.ATTACKING) {
@@ -163,20 +171,86 @@ class Player extends BaseSprite {
         this.sprite.setFrame(newMetaData.idleFrame);
         this.onTransform(target);
     }
+
     /**
-     * For the foxes' ranged attack.
+     * Dispatches the foxes' projectile attack via the combat manager.
+     * @param attackData The data of the attack.
      */
-    private dispatchProjectile() {
+    private dispatchProjectile(attackData: AttackData) {
         const { x, y } = this.getPosition();
-        const projectile = this.scene.physics.add.sprite(
+        const dir = this.direction === "left" ? -1 : 1;
+        const { x: vx, y: vy } = this.sprite.body.velocity;
+        const teamName = this.combatManager.getTeam(this.name) ?? this.name;
+        const projectile = new Projectile(
+            teamName,
+            this.sprite.scene,
+            playerSpriteMetaData,
             x,
             y,
-            SpriteSheet.ICONS,
-            3
+            this.direction,
+            { vx: dir * (vx + 900), vy: vy - 200 }
         );
-        const { x: vx, y: vy } = this.sprite.body.velocity;
-        const dir = this.direction === "left" ? -1 : 1;
-        projectile.setVelocity(dir * (vx + 900), vy - 200);
+        const intersectionChecker = this.combatManager.registerProjectile(
+            projectile,
+            projectile.name,
+            attackData,
+            () => onHit()
+        );
+        const onHit = () => {
+            clearInterval(intersectionChecker);
+            projectile.remove();
+        };
+    }
+}
+
+class Projectile implements HasAppearance {
+    protected readonly sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    public constructor(
+        public readonly name: string,
+        scene: Phaser.Scene,
+        private spriteData: SpriteMetaData,
+        x: number,
+        y: number,
+        private direction: "left" | "right",
+        initialVelocity: { vx: number; vy: number }
+    ) {
+        this.sprite = scene.physics.add.sprite(
+            x,
+            y,
+            spriteData.spriteKey,
+            spriteData.idleFrame
+        );
+        const { vx, vy } = initialVelocity;
+        this.sprite.setVelocity(vx, vy);
+    }
+
+    public getAppearance(): SpriteAppearance {
+        return {
+            anim: "", // TODO
+            dir: this.direction,
+            sprite: this.spriteData.spriteKey,
+        };
+    }
+    public getBounds(): Phaser.Geom.Rectangle {
+        const { x, y } = this.getPosition();
+        return new Phaser.Geom.Rectangle(
+            x - this.spriteData.width / 2,
+            y - this.spriteData.height / 2,
+            this.spriteData.width,
+            this.spriteData.height
+        );
+    }
+    public getPosition(): { x: number; y: number } {
+        return { x: this.sprite.x, y: this.sprite.y };
+    }
+
+    /**
+     * Plays the projectile breaking animation and then removes the sprite object
+     * from the Phaser system.
+     */
+    public remove() {
+        // TODO: animation
+        this.sprite.destroy();
     }
 }
 

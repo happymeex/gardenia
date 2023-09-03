@@ -1,16 +1,13 @@
 import Phaser from "phaser";
 import { SpriteAppearance } from "./SpriteBody";
 import { initializeAnimations } from "./animations";
-import {
-    AttackState,
-    SpriteMetaData,
-    playerSpriteMetaData,
-    HasHealth,
-    SpriteSheet,
-    getSpriteMetaData,
-} from "./constants";
+import { AttackState, SpriteMetaData, HasHealth } from "./constants";
 import { flashWhite } from "./utils";
-import CombatManager from "./CombatManager";
+import {
+    CombatManager,
+    NullCombatManager,
+    ICombatManager,
+} from "./CombatManager";
 
 export type CollisionObject =
     | Phaser.Types.Physics.Arcade.GameObjectWithBody
@@ -24,7 +21,7 @@ export class BaseSprite implements HasHealth {
     protected readonly sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     protected attackState: AttackState = AttackState.READY;
     protected inAir = false;
-    protected combatManager: CombatManager | null = null;
+    protected combatManager: ICombatManager = new NullCombatManager();
     protected health: number;
     protected maxHealth: number;
 

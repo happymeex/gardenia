@@ -22,7 +22,7 @@ import {
 import { Player, getMotions } from "../Player";
 import { PlayerBody } from "../SpriteBody";
 import { addWaterfallBackground } from "../backgrounds";
-import CombatManager from "../CombatManager";
+import { CombatManager } from "../CombatManager";
 
 class Brawl extends Phaser.Scene {
     private player: Player;

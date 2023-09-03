@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import {
-    CANVAS_CENTER,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     getSpriteMetaData,
@@ -14,13 +13,9 @@ import basicBotSpritesheet from "./static/basic_bot_spritesheet.png";
 import foxSpritesheet from "./static/fox_spritesheet.png";
 import bearSpritesheet from "./static/bear_spritesheet.png";
 import iconSheet from "./static/icons.png";
-import {
-    baseColor,
-    darkenedColor,
-    paragraphTextStyleBase,
-    pauseMenu,
-} from "./ui";
+import { baseColor, darkenedColor, paragraphTextStyleBase } from "./ui";
 import { Player } from "./Player";
+import { HasLocation } from "./constants";
 
 /** Loads the settings icon image into a scene. */
 export function loadSettingsIcon(scene: Phaser.Scene) {
@@ -277,11 +272,6 @@ export function createTimer(
         timeText.text = convertSecondsToTime(numSecs);
     }, 1000);
     return { timeText, processNumber };
-}
-
-interface HasLocation {
-    getPosition(): { x: number; y: number };
-    getBounds(): Phaser.Geom.Rectangle;
 }
 
 export function intersect(sprite1: HasLocation, sprite2: HasLocation): boolean {

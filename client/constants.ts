@@ -1,3 +1,5 @@
+import { SpriteAppearance } from "./SpriteBody";
+
 export const CANVAS_WIDTH = 1344;
 export const CANVAS_HEIGHT = 756;
 export const CANVAS_CENTER = [CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2] as const;
@@ -199,14 +201,21 @@ export function getSpriteMetaData(asset: SpriteSheet): SpriteMetaData {
     throw new Error(`No metadata data associated with spritesheet ${asset}`);
 }
 
+export interface HasLocation {
+    name: string;
+    getPosition(): { x: number; y: number };
+    getBounds(): Phaser.Geom.Rectangle;
+}
+
+export interface HasAppearance extends HasLocation {
+    getAppearance(): SpriteAppearance;
+}
+
 /**
  * Represents an entity that can be the target of an attack
  * (but which does not necessarily maintain knowledge of its own health).
  */
-export interface CanBeHit {
-    name: string;
-    getPosition(): { x: number; y: number };
-    getBounds(): Phaser.Geom.Rectangle;
+export interface CanBeHit extends HasLocation {
     takeDamage(dmg: number): void;
 }
 
