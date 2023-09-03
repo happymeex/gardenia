@@ -39,7 +39,7 @@ export function initializeAnimations(
             repeat: 0,
         });
         sprite.anims.create({
-            key: `${key}-death`,
+            key: "death", // only one death animation: fox and bear modes transform back to human before death
             frames: scene.anims.generateFrameNumbers(key, {
                 frames: [
                     32, 33, 34, 35, 36, 36, 36, 36, 36, 36, 36, 37, 38, 39, 31,

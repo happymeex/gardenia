@@ -267,6 +267,15 @@ class Player extends SpriteWithPhysics {
     }
 
     /**
+     * Transforms the player sprite back to human form first before playing the death animation.
+     * @inheritdoc
+     */
+    public die() {
+        this.transform(SpriteSheet.PLAYER);
+        super.die();
+    }
+
+    /**
      * Moves and animates the player character appropriately given keypress data.
      *
      * @param keyData indicates which keys are currently pressed
