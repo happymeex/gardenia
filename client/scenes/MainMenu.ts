@@ -1,6 +1,5 @@
 import Phaser from "phaser";
-import { makeClickable } from "../utils";
-import { mainMenu } from "../ui";
+import { makeClickable, mainMenu } from "../ui";
 import { CANVAS_CENTER, BGM, Sound } from "../constants";
 import menuTheme from "../static/menu_theme.mp3";
 

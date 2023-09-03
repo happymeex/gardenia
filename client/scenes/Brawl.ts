@@ -1,17 +1,16 @@
 import Phaser from "phaser";
-import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import platform from "../static/platform.png";
 import battleTheme from "../static/battle_theme.mp3";
 import {
     loadSettingsIcon,
-    configurePauseMenu,
     addPlayerStatusUI,
     loadSprites,
     handleTransformation,
     SpecialKeys,
     createSpecialKeys,
 } from "../utils";
+import { configurePauseMenu } from "../ui";
 import {
     Field,
     MsgTypes,
@@ -20,7 +19,7 @@ import {
     BGM,
     Sound,
 } from "../constants";
-import { Player, getMotions } from "../Sprites";
+import { Player, getMotions } from "../Player";
 import { PlayerBody } from "../SpriteBody";
 import { addWaterfallBackground } from "../backgrounds";
 import CombatManager from "../CombatManager";

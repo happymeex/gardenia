@@ -71,17 +71,6 @@ export enum AttackState {
     READY,
 }
 
-export const PLAYER_DEFAULT_HEALTH = 100;
-export const PLAYER_PUNCH_DMG = 15;
-export const PLAYER_UPPERCUT_DMG = 20;
-export const PLAYER_KICK_DMG = 25;
-export const BASIC_BOT_HEALTH = 25;
-export const BASIC_BOT_DMG = 10;
-
-export enum BasicBotFrames {
-    IDLE = 18,
-}
-
 export const SpriteSheetSizes = {
     [SpriteSheet.PLAYER]: {
         frameWidth: 128,
@@ -118,8 +107,11 @@ export interface SpriteMetaData {
     /** A fallback frame indicating idle status; this frame is the first to appear when user transforms. */
     readonly idleFrame: number;
 
+    /** Frame number of this sprite's corresponding icon in the icon spritesheet. */
     readonly iconFrame: number;
 
+    /** Initial health. */
+    readonly health: number;
     readonly walkSpeed: number;
     readonly jumpVelocity: number;
     readonly attackData: AttackData;
@@ -132,6 +124,7 @@ export const playerSpriteMetaData: SpriteMetaData = {
     idleFrame: 27,
     iconFrame: 0,
     walkSpeed: 300,
+    health: 100,
     jumpVelocity: 800,
     attackData: {
         damage: 15,
@@ -148,6 +141,7 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
     iconFrame: -1,
     idleFrame: 18,
     walkSpeed: 200,
+    health: 25,
     jumpVelocity: 0,
     attackData: {
         damage: 10,
@@ -164,6 +158,7 @@ const foxSpriteMetaData: SpriteMetaData = {
     iconFrame: 1,
     idleFrame: 16,
     walkSpeed: 400,
+    health: 100,
     jumpVelocity: 900,
     attackData: {
         damage: 10,
@@ -179,6 +174,7 @@ const bearSpriteMetaData: SpriteMetaData = {
     height: 165,
     idleFrame: 14,
     iconFrame: 2,
+    health: 100,
     walkSpeed: 175,
     jumpVelocity: 0,
     attackData: {

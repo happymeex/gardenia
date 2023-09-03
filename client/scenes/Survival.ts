@@ -1,11 +1,8 @@
 import Phaser from "phaser";
 import {
     loadSettingsIcon,
-    configurePauseMenu,
     addPlayerStatusUI,
     createTimer,
-    createDarkenedOverlay,
-    makeClickable,
     intersect,
     inRange,
     handleTransformation,
@@ -13,7 +10,13 @@ import {
     createSpecialKeys,
     loadSprites,
 } from "../utils";
-import { Player, HomingEnemy, getMotions } from "../Sprites";
+import {
+    configurePauseMenu,
+    createDarkenedOverlay,
+    makeClickable,
+} from "../ui";
+import { Player, getMotions } from "../Player";
+import { HomingEnemy } from "../Enemies";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import battleTheme from "../static/battle_theme.mp3";

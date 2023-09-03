@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { CANVAS_CENTER, CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants";
 import {
-    baseColor,
+    makeClickable,
     largeParagraph,
     menuTextStyleBase,
     darkenedColor,
@@ -9,7 +9,6 @@ import {
 } from "../ui";
 import {
     getUserId,
-    makeClickable,
     makeBrawlWebSocket,
     darkenText,
     undarkenText,

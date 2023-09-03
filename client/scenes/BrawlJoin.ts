@@ -7,10 +7,10 @@ import {
     TextStyle,
     lowercaseFont,
     baseColor,
+    makeClickable,
 } from "../ui";
 import {
     getUserId,
-    makeClickable,
     makeBrawlWebSocket,
     undarkenText,
     darkenText,

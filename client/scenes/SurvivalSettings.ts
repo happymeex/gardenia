@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import { CANVAS_CENTER } from "../constants";
-import { menuTextStyleBase } from "../ui";
-import { makeClickable } from "../utils";
+import { menuTextStyleBase, makeClickable } from "../ui";
 
 class SurvivalSettings extends Phaser.Scene {
     public constructor() {
