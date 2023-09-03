@@ -7,6 +7,10 @@ import {
     loadSettingsIcon,
     configurePauseMenu,
     addPlayerStatusUI,
+    loadSprites,
+    handleTransformation,
+    SpecialKeys,
+    createSpecialKeys,
 } from "../utils";
 import {
     Field,
@@ -39,6 +43,7 @@ class Brawl extends Phaser.Scene {
      * when the player leaves the scene.
      */
     private spritePinger: number;
+    private specialKeys: SpecialKeys;
 
     public constructor() {
         super({ key: "brawl" });
@@ -48,10 +53,7 @@ class Brawl extends Phaser.Scene {
         this.load.audio(Sound.BATTLE, battleTheme);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
-        this.load.spritesheet(SpriteSheet.PLAYER, playerSpritesheet, {
-            frameWidth: 128,
-            frameHeight: 128,
-        });
+        loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
@@ -64,6 +66,7 @@ class Brawl extends Phaser.Scene {
         this.uid = data.id;
 
         const platforms = addWaterfallBackground(this);
+        this.specialKeys = createSpecialKeys(this);
 
         this.socket.onmessage = (e) => {
             const msg = JSON.parse(e.data);
@@ -122,7 +125,7 @@ class Brawl extends Phaser.Scene {
         data.idList.forEach((id, i) => {
             const x = 300 + 200 * i;
             const y = 300;
-            const { setHealthUI, setManaUI } = addPlayerStatusUI(
+            const { setHealthUI, setManaUI, changeIcon } = addPlayerStatusUI(
                 this,
                 id,
                 x,
@@ -137,7 +140,8 @@ class Brawl extends Phaser.Scene {
                     y,
                     () => {},
                     setHealthUI,
-                    setManaUI
+                    setManaUI,
+                    changeIcon
                 ); // TODO: proper onDeath
                 this.player.registerAsCombatant(combatManager, id);
             } else {
@@ -167,6 +171,7 @@ class Brawl extends Phaser.Scene {
     }
     update() {
         if (this.cursors === undefined || this.isPaused) return;
+        handleTransformation(this.player, this.specialKeys);
         const keysPressed = getMotions(this.cursors);
         this.player.handleMotion(keysPressed);
     }

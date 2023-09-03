@@ -11,14 +11,10 @@ import {
     handleTransformation,
     SpecialKeys,
     createSpecialKeys,
+    loadSprites,
 } from "../utils";
 import { Player, HomingEnemy, getMotions } from "../Sprites";
-import playerSpritesheet from "../static/gardenia_spritesheet.png";
 import platform from "../static/platform.png";
-import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
-import foxSpritesheet from "../static/fox_spritesheet.png";
-import bearSpritesheet from "../static/bear_spritesheet.png";
-import iconSheet from "../static/icons.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import battleTheme from "../static/battle_theme.mp3";
 import {
@@ -57,26 +53,7 @@ class Survival extends Phaser.Scene {
         this.load.audio(Sound.BATTLE, battleTheme);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
-        this.load.spritesheet(SpriteSheet.ICONS, iconSheet, {
-            frameWidth: 128,
-            frameHeight: 128,
-        });
-        this.load.spritesheet(SpriteSheet.PLAYER, playerSpritesheet, {
-            frameWidth: 128,
-            frameHeight: 128,
-        });
-        this.load.spritesheet(SpriteSheet.FOX, foxSpritesheet, {
-            frameWidth: 192,
-            frameHeight: 128,
-        });
-        this.load.spritesheet(SpriteSheet.BEAR, bearSpritesheet, {
-            frameWidth: 128,
-            frameHeight: 192,
-        });
-        this.load.spritesheet(SpriteSheet.BASIC_BOT, basicBotSpritesheet, {
-            frameWidth: 96,
-            frameHeight: 128,
-        });
+        loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {

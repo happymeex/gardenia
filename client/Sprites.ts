@@ -3,7 +3,6 @@ import { SpriteAppearance } from "./SpriteBody";
 import { initializeAnimations } from "./animations";
 import {
     AttackState,
-    PlayerFrames,
     BasicBotFrames,
     SpriteMetaData,
     playerSpriteMetaData,
@@ -154,29 +153,19 @@ class SpriteWithPhysics implements HasHealth {
      */
     public getAppearance(): SpriteAppearance | "same" {
         const currentAnimName = this.sprite.anims.currentAnim?.key;
-        let ret: SpriteAppearance;
-        if (this.sprite.anims.isPlaying) {
-            if (currentAnimName === undefined)
-                throw new Error(
-                    "Unexpected undefined animation name despite animation playing"
-                );
-            ret = {
-                type: "anim",
-                value: currentAnimName,
-                direction: this.direction,
-            };
-        } else {
-            ret = {
-                type: "frame",
-                value: String(PlayerFrames.IDLE),
-                direction: this.direction,
-            };
-        }
+        if (currentAnimName === undefined)
+            throw new Error(
+                "Unexpected undefined animation name despite animation playing"
+            );
+        const ret: SpriteAppearance = {
+            anim: currentAnimName,
+            dir: this.direction,
+            sprite: this.spriteData.spriteKey,
+        };
         if (
             this.cachedAppearance &&
-            ret.type === this.cachedAppearance.type &&
-            ret.value === this.cachedAppearance.value &&
-            ret.direction === this.cachedAppearance.direction
+            ret.anim === this.cachedAppearance.anim &&
+            ret.dir === this.cachedAppearance.dir
         ) {
             return "same";
         }

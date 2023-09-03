@@ -93,6 +93,14 @@ export function initializeAnimations(
             frameRate: 10,
             repeat: 0,
         });
+        sprite.anims.create({
+            key: "idle",
+            frames: scene.anims.generateFrameNumbers(spriteKey, {
+                frames: [18],
+            }),
+            frameRate: 1,
+            repeat: -1,
+        });
     }
     if (spriteKeys.includes(SpriteSheet.FOX)) {
         const spriteKey = SpriteSheet.FOX;

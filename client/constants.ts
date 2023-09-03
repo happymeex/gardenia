@@ -71,11 +71,6 @@ export enum AttackState {
     READY,
 }
 
-export enum PlayerFrames {
-    IDLE = 27,
-    ICON = 0,
-}
-
 export const PLAYER_DEFAULT_HEALTH = 100;
 export const PLAYER_PUNCH_DMG = 15;
 export const PLAYER_UPPERCUT_DMG = 20;
@@ -86,6 +81,29 @@ export const BASIC_BOT_DMG = 10;
 export enum BasicBotFrames {
     IDLE = 18,
 }
+
+export const SpriteSheetSizes = {
+    [SpriteSheet.PLAYER]: {
+        frameWidth: 128,
+        frameHeight: 128,
+    },
+    [SpriteSheet.BASIC_BOT]: {
+        frameWidth: 96,
+        frameHeight: 128,
+    },
+    [SpriteSheet.FOX]: {
+        frameWidth: 192,
+        frameHeight: 128,
+    },
+    [SpriteSheet.BEAR]: {
+        frameWidth: 128,
+        frameHeight: 192,
+    },
+    [SpriteSheet.ICONS]: {
+        frameWidth: 128,
+        frameHeight: 128,
+    },
+};
 
 export interface SpriteMetaData {
     /** Key of the spritesheet texture. */
@@ -111,7 +129,7 @@ export const playerSpriteMetaData: SpriteMetaData = {
     spriteKey: SpriteSheet.PLAYER,
     width: 64,
     height: 105,
-    idleFrame: PlayerFrames.IDLE,
+    idleFrame: 27,
     iconFrame: 0,
     walkSpeed: 300,
     jumpVelocity: 800,
@@ -128,7 +146,7 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
     width: 52,
     height: 105,
     iconFrame: -1,
-    idleFrame: BasicBotFrames.IDLE,
+    idleFrame: 18,
     walkSpeed: 200,
     jumpVelocity: 0,
     attackData: {

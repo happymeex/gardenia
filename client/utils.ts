@@ -4,10 +4,15 @@ import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     getSpriteMetaData,
-    PlayerFrames,
+    playerSpriteMetaData,
     SpriteSheet,
+    SpriteSheetSizes,
 } from "./constants";
 import settingsIcon from "./static/settings_icon.png";
+import playerSpritesheet from "./static/gardenia_spritesheet.png";
+import basicBotSpritesheet from "./static/basic_bot_spritesheet.png";
+import foxSpritesheet from "./static/fox_spritesheet.png";
+import bearSpritesheet from "./static/bear_spritesheet.png";
 import iconSheet from "./static/icons.png";
 import {
     baseColor,
@@ -312,7 +317,7 @@ export function addPlayerStatusUI(
         -iconOffset,
         0,
         SpriteSheet.ICONS,
-        PlayerFrames.ICON
+        playerSpriteMetaData.iconFrame
     );
     const name = scene.add.text(nameOffset, -30, playerName, {
         ...paragraphTextStyleBase,
@@ -494,3 +499,37 @@ export function handleTransformation(
     }
     return false;
 }
+
+/**
+ * Loads spritesheets.
+ *
+ * @param scene
+ * @param spriteList List of sprite keys to load. By default, loads player,
+ *      fox, bear, bot, and icon.
+ */
+export function loadSprites(
+    scene: Phaser.Scene,
+    spriteList = [
+        SpriteSheet.PLAYER,
+        SpriteSheet.FOX,
+        SpriteSheet.ICONS,
+        SpriteSheet.BASIC_BOT,
+        SpriteSheet.BEAR,
+    ]
+) {
+    spriteList.forEach((spriteKey) => {
+        scene.load.spritesheet(
+            spriteKey,
+            spriteSheetMap[spriteKey],
+            SpriteSheetSizes[spriteKey]
+        );
+    });
+}
+
+const spriteSheetMap = {
+    [SpriteSheet.PLAYER]: playerSpritesheet,
+    [SpriteSheet.FOX]: foxSpritesheet,
+    [SpriteSheet.BEAR]: bearSpritesheet,
+    [SpriteSheet.BASIC_BOT]: basicBotSpritesheet,
+    [SpriteSheet.ICONS]: iconSheet,
+};
