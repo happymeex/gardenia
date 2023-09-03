@@ -117,8 +117,9 @@ export function initializeAnimations(
             key: `${spriteKey}-attack`,
             frames: scene.anims.generateFrameNumbers(spriteKey, {
                 start: 8,
-                end: 15,
+                end: 14,
             }),
+            repeat: 0,
         });
         sprite.anims.create({
             key: `${spriteKey}-idle`,

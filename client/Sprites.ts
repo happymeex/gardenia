@@ -39,7 +39,6 @@ export const NO_KEYS_PRESSED: KeyData = {
  */
 class SpriteWithPhysics implements HasHealth {
     protected readonly sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-    protected cachedAppearance: SpriteAppearance | null = null;
     protected attackState: AttackState = AttackState.READY;
     protected inAir = false;
     protected combatManager: CombatManager | null = null;
@@ -151,7 +150,7 @@ class SpriteWithPhysics implements HasHealth {
      *          If `type` field is "frame", then `value` gives the spritesheet frame number.
      *          if `type` field is "anim", then `value` gives the name of the animation.
      */
-    public getAppearance(): SpriteAppearance | "same" {
+    public getAppearance(): SpriteAppearance {
         const currentAnimName = this.sprite.anims.currentAnim?.key;
         if (currentAnimName === undefined)
             throw new Error(
@@ -162,14 +161,6 @@ class SpriteWithPhysics implements HasHealth {
             dir: this.direction,
             sprite: this.spriteData.spriteKey,
         };
-        if (
-            this.cachedAppearance &&
-            ret.anim === this.cachedAppearance.anim &&
-            ret.dir === this.cachedAppearance.dir
-        ) {
-            return "same";
-        }
-        this.cachedAppearance = ret;
         return ret;
     }
 

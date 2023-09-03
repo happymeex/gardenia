@@ -53,8 +53,7 @@ class SpriteBody implements CanBeHit {
         this.sprite.setX(x);
         this.sprite.setY(y);
     }
-    public setAppearance(appearance: SpriteAppearance | "same"): void {
-        if (appearance === "same") return;
+    public setAppearance(appearance: SpriteAppearance): void {
         this.spriteData = getSpriteMetaData(appearance.sprite);
         this.sprite.anims.play(appearance.anim, true);
         if (appearance.dir === "left") this.sprite.setFlipX(true);
