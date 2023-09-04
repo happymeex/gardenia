@@ -216,6 +216,9 @@ export interface HasAppearance extends HasLocation {
  * (but which does not necessarily maintain knowledge of its own health).
  */
 export interface CanBeHit extends HasLocation {
+    /**
+     * @param dmg nonnegative value.
+     */
     takeDamage(dmg: number): void;
 }
 

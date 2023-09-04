@@ -9,6 +9,7 @@ import {
     handleTransformation,
     SpecialKeys,
     createSpecialKeys,
+    Pausable,
 } from "../utils";
 import { configurePauseMenu } from "../ui";
 import {
@@ -25,7 +26,7 @@ import { PlayerBody } from "../SpriteBody";
 import { addWaterfallBackground } from "../backgrounds";
 import { CombatManager } from "../CombatManager";
 
-class Brawl extends Phaser.Scene {
+class Brawl extends Phaser.Scene implements Pausable {
     private player: Player;
     /** Object used to read this player's keypress status.*/
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -198,6 +199,10 @@ class Brawl extends Phaser.Scene {
                 if (this.socket) this.socket.close(1000); // indicates normal closure
             },
         };
+    }
+
+    public getIsPaused() {
+        return this.isPaused;
     }
 }
 

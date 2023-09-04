@@ -240,7 +240,7 @@ function convertSecondsToTime(totalSeconds: number): string {
     return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-interface Pausable extends Phaser.Scene {
+export interface Pausable extends Phaser.Scene {
     getIsPaused(): boolean;
 }
 

@@ -4,7 +4,6 @@ import {
     SpriteSheet,
     playerSpriteMetaData,
     AttackState,
-    HasLocation,
     HasAppearance,
     SpriteMetaData,
     AttackData,
@@ -12,6 +11,9 @@ import {
 import { initializeAnimations } from "./animations";
 import { getSpriteMetaData } from "./constants";
 import { SpriteAppearance } from "./SpriteBody";
+import { Pausable } from "./utils";
+
+const MAX_MANA = 100;
 
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
 const ATTACK = "space";
@@ -28,6 +30,9 @@ const NO_KEYS_PRESSED: KeyData = {
 };
 
 class Player extends BaseSprite {
+    private mana: number = MAX_MANA;
+    private processes: Map<string, number> = new Map();
+
     /**
      * Initiates a player-controlled sprite in the given scene.
      *
@@ -46,7 +51,7 @@ class Player extends BaseSprite {
      */
     public constructor(
         name: string,
-        readonly scene: Phaser.Scene,
+        readonly scene: Pausable,
         readonly platforms: Phaser.Physics.Arcade.StaticGroup,
         x: number,
         y: number,
@@ -66,6 +71,45 @@ class Player extends BaseSprite {
                     this.attackState = AttackState.READY;
             }
         );
+        const regenHealth = setInterval(() => {
+            if (scene.scene.isActive()) {
+                if (!scene.getIsPaused()) this.regenHealth(1);
+            } else {
+                console.log("clearing health regen");
+                clearInterval(regenHealth);
+            }
+        }, 2500);
+        const regenMana = setInterval(() => {
+            if (scene.scene.isActive()) {
+                if (!scene.getIsPaused()) this.updateMana(1);
+            } else {
+                clearInterval(regenMana);
+            }
+        }, 1500);
+        this.processes.set("regenHealth", regenHealth);
+        this.processes.set("regenMana", regenMana);
+    }
+
+    /**
+     * Adds `health` to player's health, capped at `this.maxHealth`.
+     *
+     * @param health nonnegative value.
+     */
+    private regenHealth(health: number) {
+        this.health = Math.min(this.health + health, this.maxHealth);
+        const newRatio = this.health / this.maxHealth;
+        this.onHealthChange(newRatio);
+    }
+
+    /**
+     * Updates the player's mana amount, capped at 0 (lower) and `MAX_MANA` (upper).
+     *
+     * @param mana amount *added* to current mana. Possibly negative.
+     */
+    private updateMana(mana: number) {
+        this.mana = Math.min(0, Math.max(this.mana + mana, MAX_MANA));
+        const newRatio = this.mana / MAX_MANA;
+        this.onManaChange(newRatio);
     }
 
     private makeCollider() {
@@ -93,6 +137,9 @@ class Player extends BaseSprite {
      */
     public die() {
         this.transform(SpriteSheet.PLAYER);
+        for (const process of this.processes.values()) {
+            clearInterval(process);
+        }
         super.die();
     }
 

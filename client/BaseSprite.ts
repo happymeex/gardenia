@@ -23,7 +23,7 @@ export class BaseSprite implements HasHealth {
     protected inAir = false;
     protected combatManager: ICombatManager = new NullCombatManager();
     protected health: number;
-    protected maxHealth: number;
+    protected readonly maxHealth: number;
 
     /**
      * Initiates a physics-obeying sprite in the given scene. Does NOT define any collider logic.
