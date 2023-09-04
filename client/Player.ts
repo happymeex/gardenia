@@ -229,7 +229,6 @@ class Player extends BaseSprite {
     private dispatchProjectile(attackData: AttackData) {
         const { x, y } = this.getPosition();
         const dir = this.direction === "left" ? -1 : 1;
-        const { x: vx, y: vy } = this.sprite.body.velocity;
         const teamName = this.combatManager.getTeam(this.name) ?? this.name;
         const projectile = new Projectile(
             teamName,
@@ -238,7 +237,7 @@ class Player extends BaseSprite {
             x,
             y,
             this.direction,
-            { vx: dir * (vx + 900), vy: vy - 200 }
+            { vx: dir * 900, vy: 0.5 * this.sprite.body.velocity.y - 200 }
         );
         const intersectionChecker = this.combatManager.registerProjectile(
             projectile,

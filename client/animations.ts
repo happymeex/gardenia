@@ -182,7 +182,7 @@ export function initializeAnimations(
                 start: 1,
                 end: 6,
             }),
-            frameRate: 10,
+            frameRate: 12,
         });
     }
 }
