@@ -18,6 +18,7 @@ import {
     CANVAS_HEIGHT,
     BGM,
     Sound,
+    CANVAS_WIDTH,
 } from "../constants";
 import { Player, getMotions } from "../Player";
 import { PlayerBody } from "../SpriteBody";
@@ -121,14 +122,14 @@ class Brawl extends Phaser.Scene {
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
         const combatManager = new CombatManager();
+        const UIPositions = getStatusUIPositions(data.idList.length);
         data.idList.forEach((id, i) => {
-            const x = 300 + 200 * i;
-            const y = 300;
+            const { x, y } = UIPositions[i];
             const { setHealthUI, setManaUI, changeIcon } = addPlayerStatusUI(
                 this,
                 id,
                 x,
-                CANVAS_HEIGHT - 70
+                y
             );
             if (id === this.uid) {
                 this.player = new Player(
@@ -136,7 +137,7 @@ class Brawl extends Phaser.Scene {
                     this,
                     platforms,
                     x,
-                    y,
+                    400,
                     () => {},
                     setHealthUI,
                     setManaUI,
@@ -198,6 +199,28 @@ class Brawl extends Phaser.Scene {
             },
         };
     }
+}
+
+/**
+ * Returns the coordinates of the icon/health/mana UI statuses of the brawl players.
+ *
+ * @param numPlayers Assumed to be 2 or 3.
+ */
+function getStatusUIPositions(numPlayers: number): { x: number; y: number }[] {
+    const y = CANVAS_HEIGHT - 70;
+    if (numPlayers === 2) {
+        const xs = [CANVAS_WIDTH / 2 - 250, CANVAS_WIDTH / 2 + 250];
+        return xs.map((x) => ({ x, y }));
+    }
+    if (numPlayers === 3) {
+        const xs = [
+            CANVAS_WIDTH / 2 - 350,
+            CANVAS_WIDTH / 2,
+            CANVAS_WIDTH / 2 + 350,
+        ];
+        return xs.map((x) => ({ x, y }));
+    }
+    throw new Error(`Unexpected number of players: ${numPlayers}`);
 }
 
 export default Brawl;
