@@ -13,6 +13,7 @@ export enum SpriteSheet {
     FOX = "fox",
     BEAR = "bear",
     ICONS = "icon",
+    ROCK_PROJECTILE = "rock",
 }
 
 export enum Sound {
@@ -94,6 +95,10 @@ export const SpriteSheetSizes = {
     [SpriteSheet.ICONS]: {
         frameWidth: 128,
         frameHeight: 128,
+    },
+    [SpriteSheet.ROCK_PROJECTILE]: {
+        frameWidth: 64,
+        frameHeight: 64,
     },
 };
 
@@ -188,6 +193,24 @@ const bearSpriteMetaData: SpriteMetaData = {
     },
 };
 
+export const rockProjectileMetaData: SpriteMetaData = {
+    spriteKey: SpriteSheet.ROCK_PROJECTILE,
+    width: 30,
+    height: 30,
+    idleFrame: 0,
+    // assign meaningless values for the rest
+    iconFrame: -1,
+    health: 0,
+    walkSpeed: 0,
+    jumpVelocity: 0,
+    attackData: {
+        damage: 0,
+        aoe: false,
+        knockbackPrecedence: 0,
+        type: AttackType.MELEE,
+    },
+};
+
 export function getSpriteMetaData(asset: SpriteSheet): SpriteMetaData {
     switch (asset) {
         case SpriteSheet.PLAYER:
@@ -198,6 +221,8 @@ export function getSpriteMetaData(asset: SpriteSheet): SpriteMetaData {
             return foxSpriteMetaData;
         case SpriteSheet.BEAR:
             return bearSpriteMetaData;
+        case SpriteSheet.ROCK_PROJECTILE:
+            return rockProjectileMetaData;
     }
     throw new Error(`No metadata data associated with spritesheet ${asset}`);
 }

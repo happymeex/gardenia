@@ -7,6 +7,7 @@ import {
     HasAppearance,
     SpriteMetaData,
     AttackData,
+    rockProjectileMetaData,
 } from "./constants";
 import { initializeAnimations } from "./animations";
 import { getSpriteMetaData } from "./constants";
@@ -233,7 +234,7 @@ class Player extends BaseSprite {
         const projectile = new Projectile(
             teamName,
             this.sprite.scene,
-            playerSpriteMetaData,
+            rockProjectileMetaData,
             x,
             y,
             this.direction,
@@ -247,6 +248,7 @@ class Player extends BaseSprite {
         );
         const onHit = () => {
             clearInterval(intersectionChecker);
+            projectile.freeze();
             projectile.remove();
         };
     }
@@ -271,6 +273,13 @@ class Projectile implements HasAppearance {
         );
         const { vx, vy } = initialVelocity;
         this.sprite.setVelocity(vx, vy);
+        initializeAnimations(this.sprite, this.spriteData.spriteKey);
+        this.sprite.on(
+            "animationcomplete",
+            (e: Phaser.Animations.Animation) => {
+                if (e.key === "break") this.sprite.destroy();
+            }
+        );
     }
 
     public getAppearance(): SpriteAppearance {
@@ -293,13 +302,18 @@ class Projectile implements HasAppearance {
         return { x: this.sprite.x, y: this.sprite.y };
     }
 
+    /** Sets velocity to 0 */
+    public freeze() {
+        this.sprite.setVelocity(0, 0);
+    }
+
     /**
      * Plays the projectile breaking animation and then removes the sprite object
      * from the Phaser system.
      */
     public remove() {
         // TODO: animation
-        this.sprite.destroy();
+        this.sprite.anims.play("break");
     }
 }
 

@@ -13,6 +13,7 @@ import basicBotSpritesheet from "./static/basic_bot_spritesheet.png";
 import foxSpritesheet from "./static/fox_spritesheet.png";
 import bearSpritesheet from "./static/bear_spritesheet.png";
 import iconSheet from "./static/icons.png";
+import rockSpritesheet from "./static/rock_projectile_spritesheet.png";
 import { baseColor, darkenedColor, paragraphTextStyleBase } from "./ui";
 import { Player } from "./Player";
 import { HasLocation } from "./constants";
@@ -351,6 +352,7 @@ export function loadSprites(
         SpriteSheet.ICONS,
         SpriteSheet.BASIC_BOT,
         SpriteSheet.BEAR,
+        SpriteSheet.ROCK_PROJECTILE,
     ]
 ) {
     spriteList.forEach((spriteKey) => {
@@ -368,4 +370,5 @@ const spriteSheetMap = {
     [SpriteSheet.BEAR]: bearSpritesheet,
     [SpriteSheet.BASIC_BOT]: basicBotSpritesheet,
     [SpriteSheet.ICONS]: iconSheet,
+    [SpriteSheet.ROCK_PROJECTILE]: rockSpritesheet,
 };

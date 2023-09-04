@@ -166,4 +166,23 @@ export function initializeAnimations(
             repeat: -1,
         });
     }
+    if (spriteKeys.includes(SpriteSheet.ROCK_PROJECTILE)) {
+        const spriteKey = SpriteSheet.ROCK_PROJECTILE;
+        sprite.anims.create({
+            key: "idle",
+            frames: scene.anims.generateFrameNumbers(spriteKey, {
+                frames: [0],
+            }),
+            frameRate: 1,
+            repeat: -1,
+        });
+        sprite.anims.create({
+            key: "break",
+            frames: scene.anims.generateFrameNumbers(spriteKey, {
+                start: 1,
+                end: 6,
+            }),
+            frameRate: 10,
+        });
+    }
 }
