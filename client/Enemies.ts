@@ -95,10 +95,9 @@ class HomingEnemy extends BaseSprite {
 
     /**
      * Call this method with scene-update frequency to move and animate this
-     * enemy appropriately.
+     * enemy appropriately. Does nothing if this enemy has already died.
      *
      * If `homingDirection` is not null, then the enemy will move in the specified direction.
-     * TODO: configure attacks. Should they be controlled within this class or externally?
      *
      * If walking, then stops with some fixed probability, and if stopped,
      * starts walking with some different fixed probability.
@@ -107,6 +106,7 @@ class HomingEnemy extends BaseSprite {
      *      enemy continues walking/idling.
      */
     public handleMotion(homingDirection: "left" | "right" | null) {
+        if (this.health <= 0) return;
         if (this.attackState === AttackState.ATTACKING) return;
         if (homingDirection !== null) {
             this.semanticState = EnemyStates.HOMING;
@@ -145,7 +145,12 @@ class HomingEnemy extends BaseSprite {
         this.sprite.setVelocityX(0);
     }
 
-    public attack() {
+    /**
+     * Sets x-velocity to 0, makes enemy attack, plays attack animation.
+     * Does nothing if this enemy is already dead.
+     */
+    public attack(): void {
+        if (this.health <= 0) return;
         this.sprite.setVelocityX(0);
         this.attackState = AttackState.ATTACKING;
         this.sprite.anims.play("attack", true);
