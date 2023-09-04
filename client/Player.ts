@@ -43,7 +43,8 @@ class Player extends BaseSprite {
      * @param platforms
      * @param x initial x-coordinate
      * @param y initial y-coordinate
-     * @param onDeath callback executed when the player dies, before the sprite is destroyed from the scene.
+     * @param onDeath callback executed when the player dies, right before the death animation is played.
+     *      (thus, before the sprite is destroyed from the scene.)
      * @param onHealthChange callback executed when the player's health changes.
      * @param onManaChange callback executed when the player's mana changes.
      * @param onTransform callback executed when the player transforms.
@@ -107,7 +108,7 @@ class Player extends BaseSprite {
      * @param mana amount *added* to current mana. Possibly negative.
      */
     private updateMana(mana: number) {
-        this.mana = Math.min(0, Math.max(this.mana + mana, MAX_MANA));
+        this.mana = Math.max(0, Math.min(this.mana + mana, MAX_MANA));
         const newRatio = this.mana / MAX_MANA;
         this.onManaChange(newRatio);
     }
@@ -149,6 +150,7 @@ class Player extends BaseSprite {
      * @param keyData indicates which keys are currently pressed
      */
     public handleMotion(keyData: KeyData) {
+        if (this.health <= 0) return;
         const {
             spriteKey: spriteSheet,
             walkSpeed,

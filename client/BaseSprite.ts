@@ -59,6 +59,7 @@ export class BaseSprite implements HasHealth {
             "animationcomplete",
             (e: Phaser.Animations.Animation) => {
                 if (e.key === "death") {
+                    this.onDeath(this.name);
                     this.sprite.destroy();
                 }
             }
@@ -80,12 +81,12 @@ export class BaseSprite implements HasHealth {
     }
 
     /**
-     * Freezes sprite horizontally, calls the `onDeath` method passed into the constructor,
-     * plays the death animation, and then destroys the sprite from the scene.
+     * Freezes sprite horizontally and plays the death animation.
+     * The `onDeath` method passed into the constructor will be called
+     * immediately after the animation ends, right before destroying the sprite from the scene.
      */
     public die() {
         this.sprite.setVelocityX(0);
-        this.onDeath(this.name);
         this.sprite.anims.play("death");
         console.log(this.name, "died");
     }

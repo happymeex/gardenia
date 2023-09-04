@@ -75,6 +75,9 @@ class SpriteBody implements CanBeHit {
     public takeDamage(dmg: number): void {
         flashWhite(this.sprite);
     }
+    public remove() {
+        this.sprite.destroy();
+    }
 }
 
 export class PlayerBody extends SpriteBody {

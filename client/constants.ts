@@ -64,6 +64,7 @@ export enum MsgTypes {
      * their UIs accordingly.
      */
     HEALTH = "h",
+    DEATH = "x",
 }
 
 //////////////////////////////////////

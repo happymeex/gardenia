@@ -37,7 +37,7 @@ class Brawl extends Phaser.Scene implements Pausable {
     /** If true, the game is paused because the menu is open. */
     private isPaused: boolean;
     /** Websocket used to sync game state with server. */
-    private socket: WebSocket | undefined = undefined;
+    private socket: WebSocket | NullSocket = new NullSocket();
     /**
      * Id of the browser "process" responsible for pinging the server with this player's
      * sprite position/appearance every N milliseconds. Use this as the argument to clearInterval
@@ -59,6 +59,7 @@ class Brawl extends Phaser.Scene implements Pausable {
     }
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
         BGM.audio.stop();
+        BGM.audio.destroy();
         BGM.audio = this.sound.add(Sound.BATTLE, { loop: true, volume: 0.7 });
         BGM.audio.play();
         this.isPaused = false; // need to reset this in case this brawl isn't the first one of the sitting
@@ -70,7 +71,12 @@ class Brawl extends Phaser.Scene implements Pausable {
         this.specialKeys = createSpecialKeys(this);
 
         this.socket.onmessage = (e) => {
-            const msg = JSON.parse(e.data);
+            const raw = e.data as string;
+            if (raw.startsWith("idList")) {
+                console.log("new idList:", raw);
+                return;
+            }
+            const msg = JSON.parse(raw);
             const type = msg[Field.TYPE];
             const sourceId = msg[Field.SOURCE];
             if (type === MsgTypes.SPRITE) {
@@ -104,21 +110,28 @@ class Brawl extends Phaser.Scene implements Pausable {
                 if (playerBody === undefined)
                     throw new Error("Unknown health update");
                 playerBody.setHealthUI(msg[Field.VALUE]);
+            } else if (type === MsgTypes.DEATH) {
+                if (sourceId === this.uid) return;
+                const playerBody = this.otherPlayers.get(sourceId);
+                if (playerBody === undefined)
+                    throw new Error("Unknown death update");
+                combatManager.removeParticipant(playerBody.name);
+                playerBody.remove();
+                // TODO: darken UI
             }
         };
         this.socket.onclose = () => {
             clearInterval(this.spritePinger);
         };
         this.spritePinger = setInterval(() => {
-            if (this.socket)
-                this.socket.send(
-                    `data_${JSON.stringify({
-                        [Field.SOURCE]: this.uid,
-                        [Field.TYPE]: MsgTypes.SPRITE,
-                        [Field.POSITION]: this.player.getPosition(),
-                        [Field.APPEARANCE]: this.player.getAppearance(),
-                    })}`
-                );
+            this.socket.send(
+                `data_${JSON.stringify({
+                    [Field.SOURCE]: this.uid,
+                    [Field.TYPE]: MsgTypes.SPRITE,
+                    [Field.POSITION]: this.player.getPosition(),
+                    [Field.APPEARANCE]: this.player.getAppearance(),
+                })}`
+            );
         }, 30); // 33 fps
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
@@ -139,11 +152,29 @@ class Brawl extends Phaser.Scene implements Pausable {
                     platforms,
                     x,
                     400,
-                    () => {},
-                    setHealthUI,
+                    () => {
+                        clearInterval(this.spritePinger);
+                        this.socket.send(
+                            `data_${JSON.stringify({
+                                [Field.SOURCE]: this.uid,
+                                [Field.TYPE]: MsgTypes.DEATH,
+                            })}`
+                        );
+                    },
+                    (ratio) => {
+                        this.socket.send(
+                            `data_${JSON.stringify({
+                                [Field.SOURCE]: this.uid,
+                                [Field.TYPE]: MsgTypes.HEALTH,
+                                [Field.VALUE]:
+                                    this.player.getHealthPercentage(),
+                            })}`
+                        );
+                        setHealthUI(ratio);
+                    },
                     setManaUI,
                     changeIcon
-                ); // TODO: proper onDeath
+                );
                 this.player.registerAsCombatant(combatManager, id);
             } else {
                 const other = new PlayerBody(
@@ -156,16 +187,14 @@ class Brawl extends Phaser.Scene implements Pausable {
                 );
                 this.otherPlayers.set(id, other);
                 combatManager.addParticipant(other, id, (dmg) => {
-                    if (this.socket) {
-                        this.socket.send(
-                            `data_${JSON.stringify({
-                                [Field.SOURCE]: this.uid,
-                                [Field.TYPE]: MsgTypes.DAMAGE,
-                                [Field.TARGET]: id,
-                                [Field.VALUE]: dmg,
-                            })}`
-                        );
-                    }
+                    this.socket.send(
+                        `data_${JSON.stringify({
+                            [Field.SOURCE]: this.uid,
+                            [Field.TYPE]: MsgTypes.DAMAGE,
+                            [Field.TARGET]: id,
+                            [Field.VALUE]: dmg,
+                        })}`
+                    );
                 });
             }
         });
@@ -196,7 +225,7 @@ class Brawl extends Phaser.Scene implements Pausable {
             },
             leave: () => {
                 clearInterval(this.spritePinger);
-                if (this.socket) this.socket.close(1000); // indicates normal closure
+                this.socket.close(1000); // indicates normal closure
             },
         };
     }
@@ -226,6 +255,15 @@ function getStatusUIPositions(numPlayers: number): { x: number; y: number }[] {
         return xs.map((x) => ({ x, y }));
     }
     throw new Error(`Unexpected number of players: ${numPlayers}`);
+}
+
+/**
+ * Sentinel object.
+ */
+class NullSocket {
+    public send(msg: string) {}
+    public onmessage: () => {};
+    public close(code?: number) {}
 }
 
 export default Brawl;
