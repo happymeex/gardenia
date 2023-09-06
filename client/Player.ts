@@ -211,7 +211,16 @@ class Player extends BaseSprite {
         if (flipX !== null) this.sprite.setFlipX(flipX);
     }
 
-    public transform(target: SpriteSheet) {
+    /**
+     * If the player is attacking, does nothing. Otherwise, changes the sprite
+     * to the one corresponding to `target`, shifts the sprite vertically so that
+     * its feet level stays constant, sets the frame to the idle frame
+     * specified in the spritesheet metadata of `target`, and finally calls `this.onTransform`.
+     *
+     * @param target the key of the spritesheet to transform to
+     */
+    public transform(target: SpriteSheet): void {
+        if (this.attackState === AttackState.ATTACKING) return;
         // note: when Phaser swaps the sprite's texture, it preserves
         // the center of the bounding box
         const newMetaData = getSpriteMetaData(target);
