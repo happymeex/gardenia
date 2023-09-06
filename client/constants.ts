@@ -51,6 +51,8 @@ export enum Field {
     APPEARANCE = "a",
     VALUE = "v",
     TARGET = "r",
+    NAME = "n",
+    KEY = "k",
 }
 
 /** Shorthands for message types. */
@@ -66,6 +68,9 @@ export enum MsgTypes {
      */
     HEALTH = "h",
     DEATH = "x",
+    PROJECTILE_UPDATE = "u",
+    PROJECTILE_CREATE = "c",
+    PROJECTILE_REMOVE = "r",
 }
 
 //////////////////////////////////////
@@ -280,3 +285,12 @@ export type Audio =
 
 /** Global audio manager. */
 export let BGM: { audio: Audio } = { audio: new NullAudio() };
+
+/**
+ * Sentinel object.
+ */
+export class NullSocket {
+    public send(msg: string) {}
+    public onmessage: () => {};
+    public close(code?: number) {}
+}

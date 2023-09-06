@@ -20,9 +20,13 @@ import {
     BGM,
     Sound,
     CANVAS_WIDTH,
+    NullSocket,
+    HasLocation,
+    HasAppearance,
+    getSpriteMetaData,
 } from "../constants";
-import { Player, getMotions } from "../Player";
-import { PlayerBody } from "../SpriteBody";
+import { Player, getMotions, Projectile } from "../Player";
+import { PlayerBody, SpriteBody } from "../SpriteBody";
 import { addWaterfallBackground } from "../backgrounds";
 import { CombatManager } from "../CombatManager";
 
@@ -45,6 +49,8 @@ class Brawl extends Phaser.Scene implements Pausable {
      */
     private spritePinger: number;
     private specialKeys: SpecialKeys;
+    /** Tracks all projectiles spawned by *other* players. */
+    private projectiles: Map<string, SpriteBody> = new Map();
 
     public constructor() {
         super({ key: "brawl" });
@@ -66,6 +72,7 @@ class Brawl extends Phaser.Scene implements Pausable {
         this.otherPlayers = new Map();
         this.socket = data.socket;
         this.uid = data.id;
+        this.projectiles.clear();
 
         const platforms = addWaterfallBackground(this);
         this.specialKeys = createSpecialKeys(this);
@@ -118,6 +125,33 @@ class Brawl extends Phaser.Scene implements Pausable {
                 combatManager.removeParticipant(playerBody.name);
                 playerBody.remove();
                 // TODO: darken UI
+            } else if (type === MsgTypes.PROJECTILE_CREATE) {
+                if (sourceId === this.uid) return;
+                const { x, y } = msg[Field.POSITION];
+                const projectile = new SpriteBody(
+                    msg[Field.NAME],
+                    this,
+                    getSpriteMetaData(msg[Field.KEY]),
+                    [],
+                    x,
+                    y
+                );
+                this.projectiles.set(msg[Field.NAME], projectile);
+            } else if (type === MsgTypes.PROJECTILE_UPDATE) {
+                if (sourceId === this.uid) return;
+                const { x, y } = msg[Field.POSITION];
+                const projectile = this.projectiles.get(msg[Field.NAME]);
+                if (projectile === undefined)
+                    throw new Error("projectile not found");
+                projectile.setPosition(x, y);
+                projectile.setAppearance(msg[Field.APPEARANCE]);
+            } else if (type === MsgTypes.PROJECTILE_REMOVE) {
+                if (sourceId === this.uid) return;
+                const projectile = this.projectiles.get(msg[Field.NAME]);
+                if (projectile === undefined)
+                    throw new Error("projectile not found");
+                this.projectiles.delete(projectile.name);
+                projectile.remove();
             }
         };
         this.socket.onclose = () => {
@@ -136,6 +170,38 @@ class Brawl extends Phaser.Scene implements Pausable {
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
         const combatManager = new CombatManager();
+        combatManager.setProjectileHandler({
+            onUpdate: (projectile: Projectile) =>
+                this.socket.send(
+                    `data_${JSON.stringify({
+                        [Field.TYPE]: MsgTypes.PROJECTILE_UPDATE,
+                        [Field.SOURCE]: this.uid,
+                        [Field.NAME]: projectile.name,
+                        [Field.POSITION]: projectile.getPosition(),
+                        [Field.APPEARANCE]: projectile.getAppearance(),
+                    })}`
+                ),
+            onInit: (projectile: Projectile) => {
+                this.socket.send(
+                    `data_${JSON.stringify({
+                        [Field.TYPE]: MsgTypes.PROJECTILE_CREATE,
+                        [Field.SOURCE]: this.uid,
+                        [Field.NAME]: projectile.name,
+                        [Field.KEY]: projectile.spriteKey,
+                        [Field.POSITION]: projectile.getPosition(),
+                    })}`
+                );
+            },
+            onRemove: (projectile: Projectile) => {
+                this.socket.send(
+                    `data_${JSON.stringify({
+                        [Field.TYPE]: MsgTypes.PROJECTILE_REMOVE,
+                        [Field.SOURCE]: this.uid,
+                        [Field.NAME]: projectile.name,
+                    })}`
+                );
+            },
+        });
         const UIPositions = getStatusUIPositions(data.idList.length);
         data.idList.forEach((id, i) => {
             const { x, y } = UIPositions[i];
@@ -255,15 +321,6 @@ function getStatusUIPositions(numPlayers: number): { x: number; y: number }[] {
         return xs.map((x) => ({ x, y }));
     }
     throw new Error(`Unexpected number of players: ${numPlayers}`);
-}
-
-/**
- * Sentinel object.
- */
-class NullSocket {
-    public send(msg: string) {}
-    public onmessage: () => {};
-    public close(code?: number) {}
 }
 
 export default Brawl;

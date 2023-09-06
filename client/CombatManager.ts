@@ -1,6 +1,14 @@
 import Phaser from "phaser";
 import { intersect } from "./utils";
-import { CanBeHit, AttackData, HasLocation, AttackType } from "./constants";
+import {
+    CanBeHit,
+    AttackData,
+    HasLocation,
+    AttackType,
+    NullSocket,
+    HasAppearance,
+} from "./constants";
+import { Projectile } from "./Player";
 
 export interface ICombatManager {
     getTeam(name: string): string | null;
@@ -15,7 +23,8 @@ export interface ICombatManager {
     /**
      * Enters a projectile into the combat system: sets up checker that determines
      * if the projectile has hit (intersects) any of the combatants in the system
-     * and enacts the appropriate damage/effects.
+     * and enacts the appropriate damage/effects. The checker calls projectile handlers `onInit`
+     * and `onUpdate` appropriately.
      *
      * @param projectile
      * @param projectileTeam team name used to determine projectile's targets/non-targets
@@ -25,11 +34,18 @@ export interface ICombatManager {
      *      the projectile should no longer be able to strike targets.
      */
     registerProjectile(
-        projectile: HasLocation,
+        projectile: Projectile,
         projectileTeam: string,
         attackData: AttackData,
         onProjectileHit?: () => void
     ): number;
+
+    /**
+     * @returns Projectile handlers `onInit`, `onUpdate`, and `onRemove`, to be called
+     *      on creating the projectile, on each projectile frame update, and on projecile removal
+     *      (removal here means literally when the sprite needs to be destroyed).
+     */
+    getProjectileHandlers(): ProjectileHandlers;
 }
 /**
  * Class for managing attacks between in-game combatants (player-controlled or not).
@@ -42,7 +58,7 @@ class CombatManager implements ICombatManager {
     > = new Map();
     /** Maps participant names to participants. */
     private nameTracker: Map<string, CanBeHit> = new Map();
-
+    private projectileHandlers = voidProjectileHandlers;
     public getTeam(name: string): string | null {
         const participant = this.nameTracker.get(name);
         if (participant === undefined) return null;
@@ -101,19 +117,36 @@ class CombatManager implements ICombatManager {
         }
     }
 
+    /**
+     * Updates the projectile handlers.
+     */
+    public setProjectileHandler(handlers: {
+        onUpdate: (projectile: HasLocation) => void;
+        onInit: (projectile: HasLocation) => void;
+        onRemove: (projectile: HasLocation) => void;
+    }) {
+        this.projectileHandlers = handlers;
+    }
+    public getProjectileHandlers() {
+        return this.projectileHandlers;
+    }
+
     public registerProjectile(
-        projectile: HasLocation,
+        projectile: Projectile,
         projectileTeam: string,
         attackData: AttackData,
         onProjectileHit = () => {}
     ): number {
+        this.projectileHandlers.onInit(projectile);
         const { type, damage, aoe, knockbackPrecedence } = attackData;
         if (type !== AttackType.PROJECTILE)
             throw new Error(
                 "Cannot call `registerProjectile` on a non-projectile attack"
             );
         const process = setInterval(() => {
+            this.projectileHandlers.onUpdate(projectile);
             let isHit = false;
+            if (projectile.getAppearance().anim === "break") return;
             for (const [participant, { team, onHit }] of this.teams.entries()) {
                 if (team === projectileTeam) continue;
                 if (intersect(projectile, participant)) {
@@ -126,7 +159,7 @@ class CombatManager implements ICombatManager {
             if (isHit) {
                 onProjectileHit();
             }
-        }, 70);
+        }, 33);
         return process;
     }
 }
@@ -146,7 +179,7 @@ class NullCombatManager implements ICombatManager {
         return;
     }
     registerProjectile(
-        projectile: HasLocation,
+        projectile: Projectile,
         projectileTeam: string,
         attackData: AttackData
     ): number {
@@ -155,6 +188,32 @@ class NullCombatManager implements ICombatManager {
     getTeam(name: string): string | null {
         return null;
     }
+    getProjectileHandlers() {
+        return voidProjectileHandlers;
+    }
 }
+
+export interface ProjectileHandlers {
+    /**
+     * Method to be called on each frame update of `projectile`.
+     */
+    onUpdate(projectile: HasLocation): void;
+    /**
+     * Method to be called when the projectile is created.
+     */
+    onInit(projetile: HasLocation): void;
+    /**
+     * Callback to be executed the moment the projectile sprite needs to be destroyed.
+     * Note that the combat manager does not handle projectile removal,
+     * so clients will need to call this method themselves.
+     */
+    onRemove(projectile: HasLocation): void;
+}
+
+const voidProjectileHandlers: ProjectileHandlers = {
+    onUpdate: (projectile: HasLocation) => {},
+    onInit: (projectile: HasLocation) => {},
+    onRemove: (projectile: HasLocation) => {},
+};
 
 export { CombatManager, NullCombatManager };

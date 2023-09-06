@@ -33,6 +33,7 @@ const NO_KEYS_PRESSED: KeyData = {
 class Player extends BaseSprite {
     private mana: number = MAX_MANA;
     private processes: Map<string, number> = new Map();
+    private numProjectiles = 0;
 
     /**
      * Initiates a player-controlled sprite in the given scene.
@@ -231,9 +232,9 @@ class Player extends BaseSprite {
         const dir = this.direction === "left" ? -1 : 1;
         const teamName = this.combatManager.getTeam(this.name) ?? this.name;
         const projectile = new Projectile(
-            teamName,
+            `${this.name}-p${this.numProjectiles}`,
             this.sprite.scene,
-            rockProjectileMetaData,
+            SpriteSheet.ROCK_PROJECTILE,
             x,
             y,
             this.direction,
@@ -241,29 +242,36 @@ class Player extends BaseSprite {
         );
         const intersectionChecker = this.combatManager.registerProjectile(
             projectile,
-            projectile.name,
+            teamName,
             attackData,
             () => onHit()
         );
         const onHit = () => {
-            clearInterval(intersectionChecker);
             projectile.freeze();
-            projectile.remove();
+            projectile.remove(() => {
+                this.combatManager.getProjectileHandlers().onRemove(projectile);
+                clearInterval(intersectionChecker);
+            });
         };
+        this.numProjectiles++;
     }
 }
 
-class Projectile implements HasAppearance {
+export class Projectile implements HasAppearance {
     protected readonly sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    private onDestroy = () => {};
+    private spriteData: SpriteMetaData;
     public constructor(
         public readonly name: string,
         scene: Phaser.Scene,
-        private spriteData: SpriteMetaData,
+        public readonly spriteKey: SpriteSheet,
         x: number,
         y: number,
-        private direction: "left" | "right",
-        initialVelocity: { vx: number; vy: number }
+        public direction: "left" | "right",
+        public initialVelocity: { vx: number; vy: number }
     ) {
+        const spriteData = getSpriteMetaData(spriteKey);
+        this.spriteData = spriteData;
         this.sprite = scene.physics.add.sprite(
             x,
             y,
@@ -276,14 +284,18 @@ class Projectile implements HasAppearance {
         this.sprite.on(
             "animationcomplete",
             (e: Phaser.Animations.Animation) => {
-                if (e.key === "break") this.sprite.destroy();
+                if (e.key === "break") {
+                    this.onDestroy();
+                    this.sprite.destroy();
+                }
             }
         );
     }
 
     public getAppearance(): SpriteAppearance {
+        const animName = this.sprite.anims.currentAnim?.key;
         return {
-            anim: "", // TODO
+            anim: animName === undefined ? "idle" : animName,
             dir: this.direction,
             sprite: this.spriteData.spriteKey,
         };
@@ -301,17 +313,20 @@ class Projectile implements HasAppearance {
         return { x: this.sprite.x, y: this.sprite.y };
     }
 
-    /** Sets velocity to 0 */
+    /** Sets velocity to 0 and disables physics on the projectile. */
     public freeze() {
         this.sprite.setVelocity(0, 0);
+        this.sprite.disableBody();
     }
 
     /**
      * Plays the projectile breaking animation and then removes the sprite object
      * from the Phaser system.
+     * @param onDestroy Optional callback function executed after the death animation has finished,
+     *      right before destroying the sprite.
      */
-    public remove() {
-        // TODO: animation
+    public remove(onDestroy?: () => void) {
+        if (onDestroy) this.onDestroy = onDestroy;
         this.sprite.anims.play("break");
     }
 }

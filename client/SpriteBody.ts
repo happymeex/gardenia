@@ -15,7 +15,7 @@ export type SpriteAppearance = {
     sprite: SpriteSheet;
 };
 
-class SpriteBody implements CanBeHit {
+export class SpriteBody implements CanBeHit {
     private readonly sprite: Phaser.GameObjects.Sprite;
     /**
      * Instantiates a sprite in the given scene. The sprite does not carry
