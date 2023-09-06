@@ -21,14 +21,14 @@ import {
     Sound,
     CANVAS_WIDTH,
     NullSocket,
-    HasLocation,
-    HasAppearance,
     getSpriteMetaData,
 } from "../constants";
 import { Player, getMotions, Projectile } from "../Player";
 import { PlayerBody, SpriteBody } from "../SpriteBody";
 import { addWaterfallBackground } from "../backgrounds";
 import { CombatManager } from "../CombatManager";
+
+const SPRITE_PINGER_PROCESS_NAME = "*sprite-pinger";
 
 class Brawl extends Phaser.Scene implements Pausable {
     private player: Player;
@@ -42,15 +42,10 @@ class Brawl extends Phaser.Scene implements Pausable {
     private isPaused: boolean;
     /** Websocket used to sync game state with server. */
     private socket: WebSocket | NullSocket = new NullSocket();
-    /**
-     * Id of the browser "process" responsible for pinging the server with this player's
-     * sprite position/appearance every N milliseconds. Use this as the argument to clearInterval
-     * when the player leaves the scene.
-     */
-    private spritePinger: number;
     private specialKeys: SpecialKeys;
     /** Tracks all projectiles spawned by *other* players. */
     private projectiles: Map<string, SpriteBody> = new Map();
+    private processes: Map<string, number> = new Map();
 
     public constructor() {
         super({ key: "brawl" });
@@ -73,6 +68,7 @@ class Brawl extends Phaser.Scene implements Pausable {
         this.socket = data.socket;
         this.uid = data.id;
         this.projectiles.clear();
+        this.processes.clear();
 
         const platforms = addWaterfallBackground(this);
         this.specialKeys = createSpecialKeys(this);
@@ -155,9 +151,10 @@ class Brawl extends Phaser.Scene implements Pausable {
             }
         };
         this.socket.onclose = () => {
-            clearInterval(this.spritePinger);
+            const spritePinger = this.processes.get(SPRITE_PINGER_PROCESS_NAME);
+            if (spritePinger !== undefined) clearInterval(spritePinger);
         };
-        this.spritePinger = setInterval(() => {
+        const spritePinger = setInterval(() => {
             this.socket.send(
                 `data_${JSON.stringify({
                     [Field.SOURCE]: this.uid,
@@ -167,6 +164,7 @@ class Brawl extends Phaser.Scene implements Pausable {
                 })}`
             );
         }, 30); // 33 fps
+        this.processes.set(SPRITE_PINGER_PROCESS_NAME, spritePinger);
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
         const combatManager = new CombatManager();
@@ -219,7 +217,11 @@ class Brawl extends Phaser.Scene implements Pausable {
                     x,
                     400,
                     () => {
-                        clearInterval(this.spritePinger);
+                        const spritePinger = this.processes.get(
+                            SPRITE_PINGER_PROCESS_NAME
+                        );
+                        if (spritePinger !== undefined)
+                            clearInterval(spritePinger);
                         this.socket.send(
                             `data_${JSON.stringify({
                                 [Field.SOURCE]: this.uid,
@@ -290,7 +292,8 @@ class Brawl extends Phaser.Scene implements Pausable {
                 this.isPaused = false;
             },
             leave: () => {
-                clearInterval(this.spritePinger);
+                for (const processNumber of this.processes.values())
+                    clearInterval(processNumber);
                 this.socket.close(1000); // indicates normal closure
             },
         };
@@ -298,6 +301,10 @@ class Brawl extends Phaser.Scene implements Pausable {
 
     public getIsPaused() {
         return this.isPaused;
+    }
+
+    public addProcess(processName: string, process: number): void {
+        this.processes.set(processName, process);
     }
 }
 

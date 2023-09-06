@@ -142,6 +142,10 @@ class Survival extends Phaser.Scene {
         }
     }
 
+    public addProcess(processName: string, process: number) {
+        this.processes.set(processName, process);
+    }
+
     /** @returns pause status of the survival scene. */
     public getIsPaused() {
         return this.isPaused;

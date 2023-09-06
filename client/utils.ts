@@ -243,6 +243,7 @@ function convertSecondsToTime(totalSeconds: number): string {
 
 export interface Pausable extends Phaser.Scene {
     getIsPaused(): boolean;
+    addProcess(processName: string, process: number): void;
 }
 
 /**

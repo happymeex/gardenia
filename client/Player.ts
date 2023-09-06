@@ -15,6 +15,8 @@ import { SpriteAppearance } from "./SpriteBody";
 import { Pausable } from "./utils";
 
 const MAX_MANA = 100;
+/** Prefix string for all projectile names. */
+const PROJECTILE_PREFIX = "*PRJCT";
 
 const DIRECTIONS = ["left", "right", "up", "down"] as const;
 const ATTACK = "space";
@@ -230,9 +232,10 @@ class Player extends BaseSprite {
     private dispatchProjectile(attackData: AttackData) {
         const { x, y } = this.getPosition();
         const dir = this.direction === "left" ? -1 : 1;
+        const projectileName = `${PROJECTILE_PREFIX}-${this.name}-${this.numProjectiles}`;
         const teamName = this.combatManager.getTeam(this.name) ?? this.name;
         const projectile = new Projectile(
-            `${this.name}-p${this.numProjectiles}`,
+            projectileName,
             this.sprite.scene,
             SpriteSheet.ROCK_PROJECTILE,
             x,
@@ -254,6 +257,7 @@ class Player extends BaseSprite {
             });
         };
         this.numProjectiles++;
+        this.scene.addProcess(projectileName, intersectionChecker);
     }
 }
 
