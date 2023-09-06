@@ -233,6 +233,7 @@ class Survival extends Phaser.Scene {
             leave: () => {
                 for (const processNumber of this.processes.values())
                     clearInterval(processNumber);
+                this.game.input.keyboard?.clearCaptures();
             },
         };
     }

@@ -295,6 +295,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
                 for (const processNumber of this.processes.values())
                     clearInterval(processNumber);
                 this.socket.close(1000); // indicates normal closure
+                this.game.input.keyboard?.clearCaptures();
             },
         };
     }
