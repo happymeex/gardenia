@@ -319,21 +319,18 @@ export function createSpecialKeys(scene: Phaser.Scene): SpecialKeys {
  *
  * @param player
  * @param keys
- * @returns True if a transformation should occur, false otherwise.
+ * @returns True if a transformation occurred, false otherwise.
  */
 export function handleTransformation(
     player: Player,
     keys: SpecialKeys
 ): boolean {
     if (keys.foxKey.isDown) {
-        player.transform(SpriteSheet.FOX);
-        return true;
+        return player.transform(SpriteSheet.FOX);
     } else if (keys.bearKey.isDown) {
-        player.transform(SpriteSheet.BEAR);
-        return true;
+        return player.transform(SpriteSheet.BEAR);
     } else if (keys.humanKey.isDown) {
-        player.transform(SpriteSheet.PLAYER);
-        return true;
+        return player.transform(SpriteSheet.PLAYER);
     }
     return false;
 }

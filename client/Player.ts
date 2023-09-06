@@ -218,9 +218,10 @@ class Player extends BaseSprite {
      * specified in the spritesheet metadata of `target`, and finally calls `this.onTransform`.
      *
      * @param target the key of the spritesheet to transform to
+     * @returns true if the transformation occurs, false otherwise
      */
-    public transform(target: SpriteSheet): void {
-        if (this.attackState === AttackState.ATTACKING) return;
+    public transform(target: SpriteSheet): boolean {
+        if (this.attackState === AttackState.ATTACKING) return false;
         // note: when Phaser swaps the sprite's texture, it preserves
         // the center of the bounding box
         const newMetaData = getSpriteMetaData(target);
@@ -232,6 +233,7 @@ class Player extends BaseSprite {
         this.sprite.y -= dy;
         this.sprite.setFrame(newMetaData.idleFrame);
         this.onTransform(target);
+        return true;
     }
 
     /**
