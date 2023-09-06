@@ -12,7 +12,7 @@ import {
 import { initializeAnimations } from "./animations";
 import { getSpriteMetaData } from "./constants";
 import { SpriteAppearance } from "./SpriteBody";
-import { Pausable } from "./utils";
+import { BattleScene } from "./utils";
 
 const MAX_MANA = 100;
 /** Prefix string for all projectile names. */
@@ -56,7 +56,7 @@ class Player extends BaseSprite {
      */
     public constructor(
         name: string,
-        readonly scene: Pausable,
+        readonly scene: BattleScene,
         readonly platforms: Phaser.Physics.Arcade.StaticGroup,
         x: number,
         y: number,

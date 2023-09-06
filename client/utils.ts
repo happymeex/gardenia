@@ -241,7 +241,7 @@ function convertSecondsToTime(totalSeconds: number): string {
     return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-export interface Pausable extends Phaser.Scene {
+export interface BattleScene extends Phaser.Scene {
     getIsPaused(): boolean;
     addProcess(processName: string, process: number): void;
 }
@@ -259,7 +259,7 @@ export interface Pausable extends Phaser.Scene {
  *      this process (e.g. when changing scenes)
  */
 export function createTimer(
-    scene: Pausable,
+    scene: BattleScene,
     x: number,
     y: number
 ): { timeText: Phaser.GameObjects.Text; processNumber: number } {

@@ -9,7 +9,7 @@ import {
     handleTransformation,
     SpecialKeys,
     createSpecialKeys,
-    Pausable,
+    BattleScene,
 } from "../utils";
 import { configurePauseMenu } from "../ui";
 import {
@@ -30,7 +30,7 @@ import { CombatManager } from "../CombatManager";
 
 const SPRITE_PINGER_PROCESS_NAME = "*sprite-pinger";
 
-class Brawl extends Phaser.Scene implements Pausable {
+class Brawl extends Phaser.Scene implements BattleScene {
     private player: Player;
     /** Object used to read this player's keypress status.*/
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
