@@ -27,13 +27,33 @@ export function initializeAnimations(
             repeat: -1,
         });
         sprite.anims.create({
-            key: `${key}-attack`,
+            key: `${key}-attack-0`,
             frames: scene.anims.generateFrameNumbers(key, {
-                frames: [
-                    10, 11, 11, 11, 11, 11, 11, 12, 13, 14, 14, 14, 14, 14, 14,
-                    15, 16, 16, 17, 18, 18, 18, 18, 18, 19, 20, 21, 22, 23, 23,
-                    23, 24, 25, 26, 27,
-                ],
+                frames: [10, 11, 11, 11, 11, 11, 11],
+            }),
+            frameRate: 24,
+            repeat: 0,
+        });
+        sprite.anims.create({
+            key: `${key}-attack-1`,
+            frames: scene.anims.generateFrameNumbers(key, {
+                frames: [12, 13, 14, 14, 14, 14, 14, 14],
+            }),
+            frameRate: 24,
+            repeat: 0,
+        });
+        sprite.anims.create({
+            key: `${key}-attack-2`,
+            frames: scene.anims.generateFrameNumbers(key, {
+                frames: [15, 16, 16, 17, 18, 18, 18, 18, 18],
+            }),
+            frameRate: 24,
+            repeat: 0,
+        });
+        sprite.anims.create({
+            key: `${key}-attack-3`,
+            frames: scene.anims.generateFrameNumbers(key, {
+                frames: [19, 20, 21, 22, 23, 23, 23, 24, 25, 26, 27],
             }),
             frameRate: 24,
             repeat: 0,

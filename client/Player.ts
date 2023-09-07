@@ -35,7 +35,10 @@ const NO_KEYS_PRESSED: KeyData = {
 class Player extends BaseSprite {
     private mana: number = MAX_MANA;
     private processes: Map<string, number> = new Map();
+    private timers: Map<string, number> = new Map();
     private numProjectiles = 0;
+    /** Used for human-mode attack animation. */
+    private comboCounter = 0;
 
     /**
      * Initiates a player-controlled sprite in the given scene.
@@ -72,21 +75,28 @@ class Player extends BaseSprite {
         this.sprite.on(
             "animationcomplete",
             (e: Phaser.Animations.Animation) => {
-                if (e.key === `${this.spriteData.spriteKey}-attack`)
+                if (e.key.startsWith(`${this.spriteData.spriteKey}-attack`)) {
                     this.attackState = AttackState.READY;
+                    if (this.spriteData.spriteKey === SpriteSheet.PLAYER) {
+                        this.comboCounter = (this.comboCounter + 1) % 4;
+                        const comboWindowTimer = setTimeout(() => {
+                            this.comboCounter = 0;
+                        }, 200);
+                        this.timers.set("comboWindow", comboWindowTimer);
+                    }
+                }
             }
         );
         const regenHealth = setInterval(() => {
             if (scene.scene.isActive()) {
                 if (!scene.getIsPaused()) this.regenHealth(1);
             } else {
-                console.log("clearing health regen");
                 clearInterval(regenHealth);
             }
         }, 2500);
         const regenMana = setInterval(() => {
             if (scene.scene.isActive()) {
-                if (!scene.getIsPaused()) this.updateMana(1);
+                if (!scene.getIsPaused()) this.updateMana(1.5);
             } else {
                 clearInterval(regenMana);
             }
@@ -197,6 +207,12 @@ class Player extends BaseSprite {
             if (this.spriteData.spriteKey === SpriteSheet.FOX) {
                 this.dispatchProjectile(attackData);
             } else if (!this.spriteData.attackData.hitFrame) {
+                // handle combo attack for human mode
+                if (this.spriteData.spriteKey === SpriteSheet.PLAYER) {
+                    const prevTimer = this.timers.get("comboWindow");
+                    if (prevTimer !== undefined) clearTimeout(prevTimer);
+                    anim += `-${this.comboCounter}`;
+                }
                 // attacks with hitFrame are handled by the animationupdate listener in the constructor
                 this.combatManager.processAttack(this, attackData);
             }
