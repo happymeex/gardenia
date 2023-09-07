@@ -39,6 +39,12 @@ export type AttackData = {
      */
     readonly knockbackPrecedence: number;
     readonly type: AttackType;
+    /**
+     * If defined, then the attack should register only when the frame with index `hitFrame`
+     * is reached in the attack animation. Otherwise, the attack should register as soon
+     * as the animation is initiated.
+     */
+    readonly hitFrame?: number;
 };
 
 // Used to compress messages sent via websocket.
@@ -195,6 +201,7 @@ const bearSpriteMetaData: SpriteMetaData = {
         aoe: true,
         knockbackPrecedence: 2,
         type: AttackType.MELEE,
+        hitFrame: 3,
     },
 };
 

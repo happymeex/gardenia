@@ -93,6 +93,27 @@ class Player extends BaseSprite {
         }, 1500);
         this.processes.set("regenHealth", regenHealth);
         this.processes.set("regenMana", regenMana);
+
+        this.sprite.on(
+            "animationupdate",
+            (
+                animation: Phaser.Animations.Animation,
+                frame: Phaser.Animations.AnimationFrame,
+                gameObject: Phaser.GameObjects.GameObject
+            ) => {
+                const { hitFrame } = this.spriteData.attackData;
+                if (hitFrame === undefined) return;
+                if (
+                    animation.key === `${this.spriteData.spriteKey}-attack` &&
+                    frame.index === hitFrame
+                ) {
+                    this.combatManager.processAttack(
+                        this,
+                        this.spriteData.attackData
+                    );
+                }
+            }
+        );
     }
 
     /**
@@ -175,7 +196,8 @@ class Player extends BaseSprite {
             this.attackState = AttackState.ATTACKING;
             if (this.spriteData.spriteKey === SpriteSheet.FOX) {
                 this.dispatchProjectile(attackData);
-            } else {
+            } else if (!this.spriteData.attackData.hitFrame) {
+                // attacks with hitFrame are handled by the animationupdate listener in the constructor
                 this.combatManager.processAttack(this, attackData);
             }
             if (!this.inAir) velocityX = 0;
