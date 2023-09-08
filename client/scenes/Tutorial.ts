@@ -20,6 +20,7 @@ import { basicBotSpriteMetaData } from "../constants";
 
 const SECONDS_BETWEEN_ENEMY_SPAWN = 10;
 
+/** Sequence of text to display. Pressing enter should move to the next one. */
 const TUTORIAL_TEXT = [
     "Use the arrow keys to walk and jump.",
     "Press SPACE to attack.",
@@ -38,7 +39,7 @@ class Tutorial extends Phaser.Scene implements BattleScene {
     private specialKeys: SpecialKeys;
     private currTextIndex = 0;
     /** The tutorial text currently on screen. */
-    private currText: Phaser.GameObjects.Text | null = null;
+    private currText: Phaser.GameObjects.Container | null = null;
     private enterKey: Phaser.Input.Keyboard.Key | undefined = undefined;
     private platforms: Phaser.Physics.Arcade.StaticGroup;
     private UIContainer: Phaser.GameObjects.Container;
@@ -58,6 +59,7 @@ class Tutorial extends Phaser.Scene implements BattleScene {
     create() {
         this.numSpawned = 0;
         this.isPaused = false;
+        this.enemies.clear();
         this.processes.clear();
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
@@ -88,7 +90,7 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         if (this.enterKey) {
             this.enterKey.on("down", () => {
                 if (this.isPaused) return;
-                this.currText = this.addTutorialText(
+                this.addTutorialText(
                     TUTORIAL_TEXT[this.currTextIndex + 1] ?? ""
                 );
                 this.currTextIndex++;
@@ -219,21 +221,33 @@ class Tutorial extends Phaser.Scene implements BattleScene {
      * Displays `text` at the bottom center of the game screen, along with
      * "(Press ENTER to continue)" underneath. Also removes the text that was there previously.
      *
-     * @param text Text to be displayed. If empty string, then no new text is added and `null` is returned.
-     * @returns the text object that was added
+     * @param text Text to be displayed. If empty string, then no new text is added.
      */
-    private addTutorialText(text: string): Phaser.GameObjects.Text | null {
+    private addTutorialText(text: string): void {
         if (this.currText) this.currText.destroy();
-        if (text === "") return null;
-        return (this.currText = this.add
-            .text(
-                CANVAS_WIDTH / 2,
-                CANVAS_HEIGHT - 80,
-                [text, "(Press ENTER to continue)"],
-                paragraphTextStyleBase
-            )
+        if (text === "") return;
+        this.currText = this.add.container(
+            CANVAS_WIDTH / 2,
+            CANVAS_HEIGHT - 80
+        );
+        const content = this.add
+            .text(0, 0, text, paragraphTextStyleBase)
             .setAlign("center")
-            .setOrigin(0.5));
+            .setOrigin(0.5, 1);
+
+        const blinkingText = this.add
+            .text(0, 0, "(Press ENTER to continue)", paragraphTextStyleBase)
+            .setAlign("center")
+            .setOrigin(0.5, 0);
+
+        this.add.tween({
+            targets: blinkingText,
+            alpha: 0,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+        });
+        this.currText.add([content, blinkingText]);
     }
 }
 
