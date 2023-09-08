@@ -139,8 +139,9 @@ export function createCanvasBoundaryWalls(
  * @param playerName
  * @param x horizontal position of the component
  * @param y vertical position of the component
- * @returns an object with properties `setHealthUI`, `setManaUI`, and `changeIcon` whose values are
- *      functions that adjust the health bar, mana bar, and icon, respectively,
+ * @returns an object with properties `container`, `setHealthUI`, `setManaUI`, and `changeIcon`.
+ *      `container` is the game object corresponding to the whole UI object itself, and
+ *      the others are functions that adjust the health bar, mana bar, and icon, respectively,
  */
 export function addPlayerStatusUI(
     scene: Phaser.Scene,
@@ -191,7 +192,7 @@ export function addPlayerStatusUI(
 
     container.add([icon, name]);
     container.setDepth(50);
-    return { setHealthUI, setManaUI, changeIcon };
+    return { setHealthUI, setManaUI, changeIcon, container };
 }
 
 function assembleStatBar(

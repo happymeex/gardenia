@@ -1,5 +1,5 @@
-import Phaser from "phaser";
-import { configurePauseMenu } from "../ui";
+import Phaser, { CANVAS } from "phaser";
+import { configurePauseMenu, paragraphTextStyleBase } from "../ui";
 import {
     BattleScene,
     loadSettingsIcon,
@@ -16,6 +16,17 @@ import { CombatManager } from "../CombatManager";
 import { Player, getMotions } from "../Player";
 import { HomingEnemy } from "../Enemies";
 import { handleTransformation, intersect, inRange } from "../utils";
+import { basicBotSpriteMetaData } from "../constants";
+
+const SECONDS_BETWEEN_ENEMY_SPAWN = 10;
+
+const TUTORIAL_TEXT = [
+    "Use the arrow keys to walk and jump.",
+    "Press SPACE to attack.",
+    "Your health and mana bars are shown in green and blue, respectively.\nThey automatically regenerate over time.",
+    "Press F, B, and G to switch between Fox, Bear, and Human modes.\nNote that each transformation costs mana!",
+    "Click the icon in the top right to pause the game.",
+];
 
 class Tutorial extends Phaser.Scene implements BattleScene {
     private isPaused = false;
@@ -25,6 +36,15 @@ class Tutorial extends Phaser.Scene implements BattleScene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private readonly enemies: Map<string, HomingEnemy> = new Map();
     private specialKeys: SpecialKeys;
+    private currTextIndex = 0;
+    /** The tutorial text currently on screen. */
+    private currText: Phaser.GameObjects.Text | null = null;
+    private enterKey: Phaser.Input.Keyboard.Key | undefined = undefined;
+    private platforms: Phaser.Physics.Arcade.StaticGroup;
+    private UIContainer: Phaser.GameObjects.Container;
+    private readonly maxEnemies = 3;
+    private numSpawned = 0;
+
     public constructor() {
         super({ key: "tutorial" });
     }
@@ -36,19 +56,18 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {
+        this.numSpawned = 0;
         this.isPaused = false;
         this.processes.clear();
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         configurePauseMenu(this, pause, resume, leave);
         const platforms = addWaterfallBackground(this);
+        this.platforms = platforms;
         this.specialKeys = createSpecialKeys(this);
         this.combatManager = new CombatManager();
-        const { setHealthUI, setManaUI, changeIcon } = addPlayerStatusUI(
-            this,
-            USER.name,
-            CANVAS_WIDTH / 2,
-            CANVAS_HEIGHT - 70
-        );
+        const { setHealthUI, setManaUI, changeIcon, container } =
+            addPlayerStatusUI(this, USER.name, 110, 50);
+        this.UIContainer = container;
         this.player = new Player(
             USER.name,
             this,
@@ -61,7 +80,45 @@ class Tutorial extends Phaser.Scene implements BattleScene {
             changeIcon
         );
         this.player.registerAsCombatant(this.combatManager, "player");
+        this.currTextIndex = 0;
+        this.addTutorialText(TUTORIAL_TEXT[0]);
+        this.enterKey = this.input.keyboard?.addKey(
+            Phaser.Input.Keyboard.KeyCodes.ENTER
+        );
+        if (this.enterKey) {
+            this.enterKey.on("down", () => {
+                if (this.isPaused) return;
+                this.currText = this.addTutorialText(
+                    TUTORIAL_TEXT[this.currTextIndex + 1] ?? ""
+                );
+                this.currTextIndex++;
+            });
+        }
+        const createEnemy = () => {
+            if (this.isPaused) return;
+            const numEnemies = this.enemies.size;
+            if (numEnemies === this.maxEnemies) return;
+            const name = `enemy-${this.numSpawned}`;
+            const enemy = new HomingEnemy(
+                name,
+                this,
+                platforms,
+                basicBotSpriteMetaData,
+                CANVAS_WIDTH / 2,
+                -500,
+                this.makeDeathHandlers("enemy")
+            );
+            this.enemies.set(name, enemy);
+            enemy.registerAsCombatant(this.combatManager, "enemy");
+            this.numSpawned++;
+        };
+        const spawner = setInterval(
+            createEnemy,
+            SECONDS_BETWEEN_ENEMY_SPAWN * 1000
+        );
+        this.processes.set("enemy-spawner", spawner);
     }
+
     update() {
         const cursors = this.cursors; // holds keypress data
         if (cursors === undefined || this.isPaused) return;
@@ -103,7 +160,33 @@ class Tutorial extends Phaser.Scene implements BattleScene {
                 };
             case "player":
                 return (name) => {
-                    //this.isPaused = true;
+                    this.combatManager.removeParticipant(name);
+                    // respawn player after slight delay
+                    setTimeout(() => {
+                        this.UIContainer.destroy();
+                        const {
+                            setHealthUI,
+                            setManaUI,
+                            changeIcon,
+                            container,
+                        } = addPlayerStatusUI(this, USER.name, 110, 50);
+                        this.UIContainer = container;
+                        this.player = new Player(
+                            USER.name,
+                            this,
+                            this.platforms,
+                            300,
+                            -100,
+                            this.makeDeathHandlers("player"),
+                            setHealthUI,
+                            setManaUI,
+                            changeIcon
+                        );
+                        this.player.registerAsCombatant(
+                            this.combatManager,
+                            "player"
+                        );
+                    }, 1000);
                 };
         }
     }
@@ -132,7 +215,26 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         };
     }
 
-    private addTutorialText() {}
+    /**
+     * Displays `text` at the bottom center of the game screen, along with
+     * "(Press ENTER to continue)" underneath. Also removes the text that was there previously.
+     *
+     * @param text Text to be displayed. If empty string, then no new text is added and `null` is returned.
+     * @returns the text object that was added
+     */
+    private addTutorialText(text: string): Phaser.GameObjects.Text | null {
+        if (this.currText) this.currText.destroy();
+        if (text === "") return null;
+        return (this.currText = this.add
+            .text(
+                CANVAS_WIDTH / 2,
+                CANVAS_HEIGHT - 80,
+                [text, "(Press ENTER to continue)"],
+                paragraphTextStyleBase
+            )
+            .setAlign("center")
+            .setOrigin(0.5));
+    }
 }
 
 export default Tutorial;

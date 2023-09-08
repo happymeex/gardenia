@@ -52,6 +52,7 @@ if (id === null) {
         });
 } else {
     console.log("existing id:", id);
+    USER.name = id;
     fetch(`/auth?id=${id}`);
 }
 

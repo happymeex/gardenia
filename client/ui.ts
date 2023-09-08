@@ -43,9 +43,9 @@ export const mainMenu: MenuStyle = {
     },
     optionStyle: {
         ...menuTextStyleBase,
-        fontSize: "56px",
+        fontSize: "40px",
     },
-    optionSpacing: 80,
+    optionSpacing: 60,
     headerMarginBottom: 128,
 };
 
