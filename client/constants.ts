@@ -38,6 +38,8 @@ export type AttackData = {
      * unless the target has a knockback resistance value higher than this value.
      */
     readonly knockbackPrecedence: number;
+    /** Amount of mana required to execute this attack. If insufficient, attack should not initiate. */
+    readonly manaUsage: number;
     readonly type: AttackType;
     /**
      * If defined, then the attack should register only when the frame with index `hitFrame`
@@ -148,6 +150,7 @@ export const playerSpriteMetaData: SpriteMetaData = {
     attackData: {
         damage: 15,
         aoe: false,
+        manaUsage: 0,
         knockbackPrecedence: 0,
         type: AttackType.MELEE,
     },
@@ -166,6 +169,7 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
         damage: 10,
         aoe: false,
         knockbackPrecedence: 0,
+        manaUsage: 0,
         type: AttackType.MELEE,
     },
 };
@@ -182,6 +186,7 @@ const foxSpriteMetaData: SpriteMetaData = {
     attackData: {
         damage: 10,
         aoe: false,
+        manaUsage: 20,
         knockbackPrecedence: 1,
         type: AttackType.PROJECTILE,
     },
@@ -200,6 +205,7 @@ const bearSpriteMetaData: SpriteMetaData = {
         damage: 30,
         aoe: true,
         knockbackPrecedence: 2,
+        manaUsage: 0,
         type: AttackType.MELEE,
         hitFrame: 3,
     },
@@ -218,6 +224,7 @@ export const rockProjectileMetaData: SpriteMetaData = {
     attackData: {
         damage: 0,
         aoe: false,
+        manaUsage: 0,
         knockbackPrecedence: 0,
         type: AttackType.MELEE,
     },

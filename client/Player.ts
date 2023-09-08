@@ -15,6 +15,9 @@ import { SpriteAppearance } from "./SpriteBody";
 import { BattleScene } from "./utils";
 
 const MAX_MANA = 100;
+const MANA_REGEN_PER_SEC = 2.2;
+const HEALTH_REGEN_PER_SEC = 0.4;
+const TRANSFORM_MANA_COST = 15;
 /** Prefix string for all projectile names. */
 const PROJECTILE_PREFIX = "*PRJCT";
 
@@ -34,7 +37,9 @@ const NO_KEYS_PRESSED: KeyData = {
 
 class Player extends BaseSprite {
     private mana: number = MAX_MANA;
+    /** Tracks ids of `setInterval` calls. */
     private processes: Map<string, number> = new Map();
+    /** Tracks ids of `setTimeout` calls. */
     private timers: Map<string, number> = new Map();
     private numProjectiles = 0;
     /** Used for human-mode attack animation. */
@@ -89,14 +94,16 @@ class Player extends BaseSprite {
         );
         const regenHealth = setInterval(() => {
             if (scene.scene.isActive()) {
-                if (!scene.getIsPaused()) this.regenHealth(1);
+                if (!scene.getIsPaused())
+                    this.regenHealth(2.5 * HEALTH_REGEN_PER_SEC);
             } else {
                 clearInterval(regenHealth);
             }
         }, 2500);
         const regenMana = setInterval(() => {
             if (scene.scene.isActive()) {
-                if (!scene.getIsPaused()) this.updateMana(1.5);
+                if (!scene.getIsPaused())
+                    this.updateMana(1.5 * MANA_REGEN_PER_SEC);
             } else {
                 clearInterval(regenMana);
             }
@@ -139,6 +146,7 @@ class Player extends BaseSprite {
 
     /**
      * Updates the player's mana amount, capped at 0 (lower) and `MAX_MANA` (upper).
+     * Also calls `this.onManaChange` to handle any external effects.
      *
      * @param mana amount *added* to current mana. Possibly negative.
      */
@@ -202,6 +210,8 @@ class Player extends BaseSprite {
             ["right", "left"],
         ];
         if (keyData[ATTACK] && this.attackState === AttackState.READY) {
+            if (this.spriteData.attackData.manaUsage > this.mana) return;
+            this.updateMana(-this.spriteData.attackData.manaUsage);
             anim = `${spriteSheet}-attack`;
             this.attackState = AttackState.ATTACKING;
             if (this.spriteData.spriteKey === SpriteSheet.FOX) {
@@ -259,7 +269,11 @@ class Player extends BaseSprite {
      * @returns true if the transformation occurs, false otherwise
      */
     public transform(target: SpriteSheet): boolean {
-        if (this.attackState === AttackState.ATTACKING) return false;
+        if (
+            this.attackState === AttackState.ATTACKING ||
+            target === this.spriteData.spriteKey
+        )
+            return false;
         // note: when Phaser swaps the sprite's texture, it preserves
         // the center of the bounding box
         const newMetaData = getSpriteMetaData(target);
@@ -271,6 +285,7 @@ class Player extends BaseSprite {
         this.sprite.y -= dy;
         this.sprite.setFrame(newMetaData.idleFrame);
         this.onTransform(target);
+        this.updateMana(-TRANSFORM_MANA_COST);
         return true;
     }
 
