@@ -55,8 +55,8 @@ class Player extends BaseSprite {
      * @param platforms
      * @param x initial x-coordinate
      * @param y initial y-coordinate
-     * @param onDeath callback executed when the player dies, right before the death animation is played.
-     *      (thus, before the sprite is destroyed from the scene.)
+     * @param onDeath callback executed when the player dies, right after the death animation is played.
+     *      (and right before the sprite is destroyed from the scene.)
      * @param onHealthChange callback executed when the player's health changes.
      * @param onManaChange callback executed when the player's mana changes.
      * @param onTransform callback executed when the player transforms.

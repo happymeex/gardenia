@@ -336,11 +336,12 @@ export function handleTransformation(
 }
 
 /**
- * Loads spritesheets.
+ * Loads spritesheets. By default, loads all spritesheets needed for
+ * the player character: human, fox, bear, bot, icons (for UI component),
+ * rock projectile.
  *
  * @param scene
- * @param spriteList List of sprite keys to load. By default, loads player,
- *      fox, bear, bot, and icon.
+ * @param spriteList List of sprite keys to load. Default value as described above.
  */
 export function loadSprites(
     scene: Phaser.Scene,

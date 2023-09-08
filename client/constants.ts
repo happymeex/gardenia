@@ -308,3 +308,8 @@ export class NullSocket {
     public onmessage: () => {};
     public close(code?: number) {}
 }
+
+/** Global holder of user info. */
+export const USER = {
+    name: "Anonymous",
+};

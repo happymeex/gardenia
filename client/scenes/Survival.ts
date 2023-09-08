@@ -151,6 +151,12 @@ class Survival extends Phaser.Scene {
         return this.isPaused;
     }
 
+    /**
+     * Returns a handler function to be run when either a player or enemy character dies.
+     *
+     * @param type indicator of which type of sprite character to make the handler for
+     * @returns a function taking in a string name identifying the character
+     */
     private makeDeathHandlers(
         type: "player" | "enemy"
     ): (name: string) => void {
@@ -214,9 +220,8 @@ class Survival extends Phaser.Scene {
     }
 
     /**
-     * Creates two handler functions that pause and resume the scene.
-     * Specifically: pausing/resuming the physics engine, and toggling
-     * `this.isPause`.
+     * Creates handler functions that should be called when the scene is paused, resumed,
+     * or left.
      *
      * @returns Object whose values are the appropriate pause and resume functions
      */
