@@ -287,18 +287,27 @@ export function getSpriteMetaData(asset: SpriteSheet): SpriteMetaData {
     throw new Error(`No metadata data associated with spritesheet ${asset}`);
 }
 
+/** Represents an entity that has a location. */
 export interface HasLocation {
+    /**
+     * Identifier for the entity, e.g. player's name, enemy label.
+     * Should be unique among entities in the scene.
+     */
     name: string;
+    /** Returns the position of the entity's midpoint. */
     getPosition(): { x: number; y: number };
+    /** Returns the bounding rectangle of the entity. Used to determine hitbox/physics. */
     getBounds(): Phaser.Geom.Rectangle;
 }
 
+/** Represents a character whose appearance can be described by an animation and a direction. */
 export interface HasAppearance extends HasLocation {
+    /** Returns the character's currently-playing animation, its direction, and its spritesheet. */
     getAppearance(): SpriteAppearance;
 }
 
 /**
- * Represents an entity that can be the target of an attack
+ * Represents a character that can be the target of an attack
  * (but which does not necessarily maintain knowledge of its own health).
  */
 export interface CanBeHit extends HasLocation {
@@ -309,7 +318,7 @@ export interface CanBeHit extends HasLocation {
 }
 
 /**
- * Represents an entity that 1) can be the target of an attack,
+ * Represents a character that 1) can be the target of an attack,
  * and 2) maintains knowledge of its own health internally.
  */
 export interface HasHealth extends CanBeHit {

@@ -5,6 +5,7 @@ import {
     AttackState,
     basicBotSpriteMetaData,
     bombBotMetaData,
+    HasLocation,
 } from "./constants";
 enum EnemyStates {
     WALKING,
@@ -239,7 +240,7 @@ class BombBot extends BaseSprite implements Enemy {
     }
 }
 
-interface Enemy {
+interface Enemy extends HasLocation {
     name: string;
     /**
      * Call this method with scene-update frequency to move and animate this
@@ -254,6 +255,11 @@ interface Enemy {
      *      enemy continues walking/idling.
      */
     handleMotion(homingDirection: "left" | "right" | null): void;
+    /**
+     * Initiates the enemy's attack animation and transmits the attack to the target via
+     * a combat manager. The timing of the latter relative to the former may vary based
+     * on the type of enemy.
+     */
     attack(): void;
     getBounds(): Phaser.Geom.Rectangle;
     getPosition(): { x: number; y: number };
