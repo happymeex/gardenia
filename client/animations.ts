@@ -205,4 +205,22 @@ export function initializeAnimations(
             frameRate: 12,
         });
     }
+    if (spriteKeys.includes(SpriteSheet.BOMB_BOT)) {
+        const spriteKey = SpriteSheet.BOMB_BOT;
+        sprite.anims.create({
+            key: "walk",
+            frames: scene.anims.generateFrameNumbers(spriteKey, {
+                frames: [0, 1, 2, 3, 3, 2, 1, 0, 4, 5, 6, 6, 5, 4],
+            }),
+            frameRate: 12,
+            repeat: -1,
+        });
+        sprite.anims.create({
+            key: "death",
+            frames: scene.anims.generateFrameNumbers(spriteKey, {
+                frames: [8, 9, 10, 11, 12, 13, 14, 15],
+            }),
+            frameRate: 16,
+        });
+    }
 }

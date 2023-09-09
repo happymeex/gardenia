@@ -14,6 +14,7 @@ export enum SpriteSheet {
     BEAR = "bear",
     ICONS = "icon",
     ROCK_PROJECTILE = "rock",
+    BOMB_BOT = "bomb-bot",
 }
 
 export enum Sound {
@@ -131,6 +132,10 @@ export const SpriteSheetSizes = {
         frameWidth: 64,
         frameHeight: 64,
     },
+    [SpriteSheet.BOMB_BOT]: {
+        frameWidth: 96,
+        frameHeight: 96,
+    },
 };
 
 export interface SpriteMetaData {
@@ -244,6 +249,24 @@ export const rockProjectileMetaData: SpriteMetaData = {
         aoe: false,
         manaUsage: 0,
         knockbackPrecedence: 0,
+        type: AttackType.MELEE,
+    },
+};
+
+export const bombBotMetaData: SpriteMetaData = {
+    spriteKey: SpriteSheet.BOMB_BOT,
+    width: 50,
+    height: 50,
+    idleFrame: 0,
+    iconFrame: -1,
+    health: 1,
+    walkSpeed: 200,
+    jumpVelocity: 0,
+    attackData: {
+        damage: 60,
+        aoe: true,
+        manaUsage: 0,
+        knockbackPrecedence: 1,
         type: AttackType.MELEE,
     },
 };

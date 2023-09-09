@@ -16,13 +16,12 @@ import {
     makeClickable,
 } from "../ui";
 import { Player, getMotions } from "../Player";
-import { HomingEnemy } from "../Enemies";
+import { BombBot, Enemy, BasicBot } from "../Enemies";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import battleTheme from "../static/battle_theme.mp3";
 import whoosh from "../static/whoosh.mp3";
 import {
-    basicBotSpriteMetaData,
     CANVAS_CENTER,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
@@ -34,13 +33,15 @@ import { CombatManager } from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
 import { addWaterfallBackground } from "../backgrounds";
 
+const INITIAL_SPAWN_PERIOD = 10;
+
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private player: Player;
     private isPaused: boolean;
     private combatManager: CombatManager;
     /** Maps names to enemy characters. */
-    private readonly enemies: Map<string, HomingEnemy> = new Map();
+    private readonly enemies: Map<string, Enemy> = new Map();
     private readonly maxEnemies = 8;
     private numSpawned = 0;
     private numKilled = 0;
@@ -101,21 +102,32 @@ class Survival extends Phaser.Scene {
             const numEnemies = this.enemies.size;
             if (numEnemies === this.maxEnemies) return;
             const name = `enemy-${this.numSpawned}`;
-            const enemy = new HomingEnemy(
-                name,
-                this,
-                platforms,
-                basicBotSpriteMetaData,
-                CANVAS_WIDTH / 2,
-                -500,
-                this.makeDeathHandlers("enemy")
-            );
+            let enemy: BasicBot | BombBot;
+            if (Math.random() < 0.5) {
+                enemy = new BasicBot(
+                    name,
+                    this,
+                    platforms,
+                    CANVAS_WIDTH / 2,
+                    -500,
+                    this.makeDeathHandlers("enemy")
+                );
+            } else {
+                enemy = new BombBot(
+                    name,
+                    this,
+                    platforms,
+                    CANVAS_WIDTH / 2,
+                    -500,
+                    this.makeDeathHandlers("enemy")
+                );
+            }
             this.enemies.set(name, enemy);
             enemy.registerAsCombatant(this.combatManager, "enemy");
             this.numSpawned++;
         };
         createEnemy();
-        const spawner = setInterval(createEnemy, 15 * 1000);
+        const spawner = setInterval(createEnemy, INITIAL_SPAWN_PERIOD * 1000);
 
         const { timeText, processNumber } = createTimer(
             this,

@@ -15,15 +15,13 @@ import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     USER,
-    Audio,
 } from "../constants";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import { CombatManager } from "../CombatManager";
 import { Player, getMotions } from "../Player";
-import { HomingEnemy } from "../Enemies";
+import { BasicBot } from "../Enemies";
 import { handleTransformation, intersect, inRange } from "../utils";
-import { basicBotSpriteMetaData } from "../constants";
 import whoosh from "../static/whoosh.mp3";
 
 const SECONDS_BETWEEN_ENEMY_SPAWN = 10;
@@ -43,7 +41,7 @@ class Tutorial extends Phaser.Scene implements BattleScene {
     private combatManager: CombatManager;
     private player: Player;
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
-    private readonly enemies: Map<string, HomingEnemy> = new Map();
+    private readonly enemies: Map<string, BasicBot> = new Map();
     private specialKeys: SpecialKeys;
     private currTextIndex = 0;
     /** The tutorial text currently on screen. */
@@ -111,11 +109,10 @@ class Tutorial extends Phaser.Scene implements BattleScene {
             const numEnemies = this.enemies.size;
             if (numEnemies === this.maxEnemies) return;
             const name = `enemy-${this.numSpawned}`;
-            const enemy = new HomingEnemy(
+            const enemy = new BasicBot(
                 name,
                 this,
                 platforms,
-                basicBotSpriteMetaData,
                 CANVAS_WIDTH / 2,
                 -500,
                 this.makeDeathHandlers("enemy")

@@ -14,6 +14,7 @@ import foxSpritesheet from "./static/fox_spritesheet.png";
 import bearSpritesheet from "./static/bear_spritesheet.png";
 import iconSheet from "./static/icons.png";
 import rockSpritesheet from "./static/rock_projectile_spritesheet.png";
+import bombBotSpritesheet from "./static/bomb_bot_spritesheet.png";
 import { baseColor, darkenedColor, paragraphTextStyleBase } from "./ui";
 import { Player } from "./Player";
 import { HasLocation } from "./constants";
@@ -338,7 +339,7 @@ export function handleTransformation(
 
 /**
  * Loads spritesheets. By default, loads all spritesheets needed for
- * the player character: human, fox, bear, bot, icons (for UI component),
+ * the player character: human, fox, bear, basic and bomb bot enemies, icons (for UI component),
  * rock projectile.
  *
  * @param scene
@@ -353,6 +354,7 @@ export function loadSprites(
         SpriteSheet.BASIC_BOT,
         SpriteSheet.BEAR,
         SpriteSheet.ROCK_PROJECTILE,
+        SpriteSheet.BOMB_BOT,
     ]
 ) {
     spriteList.forEach((spriteKey) => {
@@ -371,4 +373,5 @@ const spriteSheetMap = {
     [SpriteSheet.BASIC_BOT]: basicBotSpritesheet,
     [SpriteSheet.ICONS]: iconSheet,
     [SpriteSheet.ROCK_PROJECTILE]: rockSpritesheet,
+    [SpriteSheet.BOMB_BOT]: bombBotSpritesheet,
 };
