@@ -9,6 +9,7 @@ import {
     SpecialKeys,
     createSpecialKeys,
     loadSprites,
+    loadAudio,
 } from "../utils";
 import {
     configurePauseMenu,
@@ -19,8 +20,6 @@ import { Player, getMotions } from "../Player";
 import { BombBot, Enemy, BasicBot } from "../Enemies";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
-import battleTheme from "../static/battle_theme.mp3";
-import whoosh from "../static/whoosh.mp3";
 import {
     CANVAS_CENTER,
     CANVAS_HEIGHT,
@@ -55,10 +54,14 @@ class Survival extends Phaser.Scene {
     }
     preload() {
         loadSettingsIcon(this);
-        this.load.audio(Sound.BATTLE, battleTheme);
+        loadAudio(this, [
+            Sound.BATTLE,
+            Sound.WHOOSH,
+            Sound.EXPLODE,
+            Sound.DAMAGE,
+        ]);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
-        this.load.audio(Sound.WHOOSH, whoosh);
         loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }

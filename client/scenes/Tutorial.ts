@@ -7,6 +7,7 @@ import {
     addPlayerStatusUI,
     SpecialKeys,
     createSpecialKeys,
+    loadAudio,
 } from "../utils";
 import { addWaterfallBackground } from "../backgrounds";
 import {
@@ -22,7 +23,6 @@ import { CombatManager } from "../CombatManager";
 import { Player, getMotions } from "../Player";
 import { BasicBot } from "../Enemies";
 import { handleTransformation, intersect, inRange } from "../utils";
-import whoosh from "../static/whoosh.mp3";
 
 const SECONDS_BETWEEN_ENEMY_SPAWN = 10;
 
@@ -60,7 +60,7 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         this.load.image(SpriteSheet.PLATFORM, platform);
         loadSettingsIcon(this);
         loadSprites(this);
-        this.load.audio(Sound.WHOOSH, whoosh);
+        loadAudio(this, [Sound.DAMAGE, Sound.WHOOSH]);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {

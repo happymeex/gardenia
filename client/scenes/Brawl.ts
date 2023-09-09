@@ -1,8 +1,6 @@
 import Phaser from "phaser";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import platform from "../static/platform.png";
-import battleTheme from "../static/battle_theme.mp3";
-import whoosh from "../static/whoosh.mp3";
 import {
     loadSettingsIcon,
     addPlayerStatusUI,
@@ -11,6 +9,7 @@ import {
     SpecialKeys,
     createSpecialKeys,
     BattleScene,
+    loadAudio,
 } from "../utils";
 import { configurePauseMenu } from "../ui";
 import {
@@ -54,10 +53,14 @@ class Brawl extends Phaser.Scene implements BattleScene {
     }
     preload() {
         loadSettingsIcon(this);
-        this.load.audio(Sound.BATTLE, battleTheme);
+        loadAudio(this, [
+            Sound.BATTLE,
+            Sound.WHOOSH,
+            Sound.DAMAGE,
+            Sound.EXPLODE,
+        ]);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
-        this.load.audio(Sound.WHOOSH, whoosh);
         loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }

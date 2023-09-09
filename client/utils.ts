@@ -4,6 +4,7 @@ import {
     CANVAS_WIDTH,
     getSpriteMetaData,
     playerSpriteMetaData,
+    Sound,
     SpriteSheet,
     SpriteSheetSizes,
 } from "./constants";
@@ -15,6 +16,11 @@ import bearSpritesheet from "./static/bear_spritesheet.png";
 import iconSheet from "./static/icons.png";
 import rockSpritesheet from "./static/rock_projectile_spritesheet.png";
 import bombBotSpritesheet from "./static/bomb_bot_spritesheet.png";
+import battleMusic from "./static/battle_theme.mp3";
+import menuTheme from "./static/menu_theme.mp3";
+import whooshSound from "./static/whoosh.mp3";
+import damageSound from "./static/damage.mp3";
+import explosionSound from "./static/explode.mp3";
 import { baseColor, darkenedColor, paragraphTextStyleBase } from "./ui";
 import { Player } from "./Player";
 import { HasLocation } from "./constants";
@@ -347,31 +353,43 @@ export function handleTransformation(
  */
 export function loadSprites(
     scene: Phaser.Scene,
-    spriteList = [
-        SpriteSheet.PLAYER,
-        SpriteSheet.FOX,
-        SpriteSheet.ICONS,
-        SpriteSheet.BASIC_BOT,
-        SpriteSheet.BEAR,
-        SpriteSheet.ROCK_PROJECTILE,
-        SpriteSheet.BOMB_BOT,
-    ]
+    spriteList = spriteSheetMap.keys()
 ) {
-    spriteList.forEach((spriteKey) => {
-        scene.load.spritesheet(
-            spriteKey,
-            spriteSheetMap[spriteKey],
-            SpriteSheetSizes[spriteKey]
-        );
+    [...spriteList].forEach((spriteKey) => {
+        const URL = spriteSheetMap.get(spriteKey);
+        scene.load.spritesheet(spriteKey, URL, SpriteSheetSizes[spriteKey]);
     });
 }
 
-const spriteSheetMap = {
-    [SpriteSheet.PLAYER]: playerSpritesheet,
-    [SpriteSheet.FOX]: foxSpritesheet,
-    [SpriteSheet.BEAR]: bearSpritesheet,
-    [SpriteSheet.BASIC_BOT]: basicBotSpritesheet,
-    [SpriteSheet.ICONS]: iconSheet,
-    [SpriteSheet.ROCK_PROJECTILE]: rockSpritesheet,
-    [SpriteSheet.BOMB_BOT]: bombBotSpritesheet,
-};
+const spriteSheetMap = new Map([
+    [SpriteSheet.PLAYER, playerSpritesheet],
+    [SpriteSheet.FOX, foxSpritesheet],
+    [SpriteSheet.BEAR, bearSpritesheet],
+    [SpriteSheet.BASIC_BOT, basicBotSpritesheet],
+    [SpriteSheet.ICONS, iconSheet],
+    [SpriteSheet.ROCK_PROJECTILE, rockSpritesheet],
+    [SpriteSheet.BOMB_BOT, bombBotSpritesheet],
+]);
+
+/**
+ * Call this method in the `preload` method of a scene. Loads the audio
+ * specified by `audioList` into the scene and assigns each audio the
+ * appropriate key.
+ *
+ * @param scene
+ * @param audioList List of keys identifying sounds that should be loaded.
+ */
+export function loadAudio(scene: Phaser.Scene, audioList: Sound[]) {
+    audioList.forEach((sound) => {
+        const URL = audioMap.get(sound);
+        scene.load.audio(sound, URL);
+    });
+}
+
+const audioMap = new Map([
+    [Sound.BATTLE, battleMusic],
+    [Sound.MENU, menuTheme],
+    [Sound.WHOOSH, whooshSound],
+    [Sound.DAMAGE, damageSound],
+    [Sound.EXPLODE, explosionSound],
+]);

@@ -4,7 +4,10 @@ export const CANVAS_WIDTH = 1344;
 export const CANVAS_HEIGHT = 756;
 export const CANVAS_CENTER = [CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2] as const;
 
-/** Spritesheet keys. */
+/**
+ * Spritesheet keys (i.e. each item in this enum corresponds to one .png/.jpg file
+ * that can be loaded into a scene).
+ */
 export enum SpriteSheet {
     PLAYER = "player",
     BASIC_BOT = "basic-bot",
@@ -17,10 +20,16 @@ export enum SpriteSheet {
     BOMB_BOT = "bomb-bot",
 }
 
+/**
+ * Identifying keys for sounds (i.e. each item in this enum corresponds to
+ * one .mp3 file that can be loaded into a scene).
+ */
 export enum Sound {
-    BATTLE = "battle-theme",
-    MENU = "menu-theme",
-    WHOOSH = "whoosh",
+    BATTLE = "b",
+    MENU = "m",
+    WHOOSH = "w",
+    DAMAGE = "d",
+    EXPLODE = "e",
 }
 
 /** Keys for identifying particular sound effects. */
@@ -28,7 +37,7 @@ export enum SoundFX {
     PLAYER_ATTACK,
 }
 
-/** Holds data for all sound effects. */
+/** Holds data for all sound effects, indexed by keys of type `SoundFX`. */
 export const soundFXMap = new Map<
     SoundFX,
     { sound: Sound; config: Phaser.Types.Sound.SoundConfig }
