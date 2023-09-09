@@ -19,6 +19,7 @@ export enum SpriteSheet {
 export enum Sound {
     BATTLE = "battle-theme",
     MENU = "menu-theme",
+    WHOOSH = "whoosh",
 }
 
 export enum AttackType {

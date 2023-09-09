@@ -8,6 +8,8 @@ import {
     SpriteMetaData,
     AttackData,
     rockProjectileMetaData,
+    Sound,
+    USER,
 } from "./constants";
 import { initializeAnimations } from "./animations";
 import { getSpriteMetaData } from "./constants";
@@ -214,6 +216,14 @@ class Player extends BaseSprite {
             this.updateMana(-this.spriteData.attackData.manaUsage);
             anim = `${spriteSheet}-attack`;
             this.attackState = AttackState.ATTACKING;
+            if (USER.getSettings().soundFX) {
+                this.scene.sound
+                    .add(Sound.WHOOSH, {
+                        loop: false,
+                        volume: 0.8,
+                    })
+                    .play();
+            }
             if (this.spriteData.spriteKey === SpriteSheet.FOX) {
                 this.dispatchProjectile(attackData);
             } else if (!this.spriteData.attackData.hitFrame) {

@@ -1,4 +1,4 @@
-import Phaser, { CANVAS } from "phaser";
+import Phaser from "phaser";
 import { configurePauseMenu, paragraphTextStyleBase } from "../ui";
 import {
     BattleScene,
@@ -9,7 +9,14 @@ import {
     createSpecialKeys,
 } from "../utils";
 import { addWaterfallBackground } from "../backgrounds";
-import { SpriteSheet, CANVAS_HEIGHT, CANVAS_WIDTH, USER } from "../constants";
+import {
+    SpriteSheet,
+    Sound,
+    CANVAS_HEIGHT,
+    CANVAS_WIDTH,
+    USER,
+    Audio,
+} from "../constants";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import { CombatManager } from "../CombatManager";
@@ -17,6 +24,7 @@ import { Player, getMotions } from "../Player";
 import { HomingEnemy } from "../Enemies";
 import { handleTransformation, intersect, inRange } from "../utils";
 import { basicBotSpriteMetaData } from "../constants";
+import whoosh from "../static/whoosh.mp3";
 
 const SECONDS_BETWEEN_ENEMY_SPAWN = 10;
 
@@ -54,6 +62,7 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         this.load.image(SpriteSheet.PLATFORM, platform);
         loadSettingsIcon(this);
         loadSprites(this);
+        this.load.audio(Sound.WHOOSH, whoosh);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {

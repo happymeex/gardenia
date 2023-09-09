@@ -112,6 +112,11 @@ class Checkbox {
         );
     }
 
+    /**
+     * Adds the checkbox to `container`. Note that the coordinates `x`, `y` passed into
+     * the constructor become relative to the container's position.
+     *
+     */
     public addToContainer(container: Phaser.GameObjects.Container) {
         container.add([this.outerBox, this.innerFill]);
     }
