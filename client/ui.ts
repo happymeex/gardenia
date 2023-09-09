@@ -182,6 +182,7 @@ export function makeClickable(
     item: Phaser.GameObjects.GameObject,
     scene: Phaser.Scene,
     onClick: () => void,
+    revertCursorOnClick = true,
     scaleX = 1.05,
     scaleY = 1.05,
     duration = 150
@@ -195,7 +196,7 @@ export function makeClickable(
             scaleY: 1,
             duration,
         });
-        document.body.style.cursor = "default";
+        if (revertCursorOnClick) document.body.style.cursor = "default";
     });
     item.on("pointerover", () => {
         document.body.style.cursor = "pointer";

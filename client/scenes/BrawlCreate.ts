@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants";
+import { CANVAS_CENTER, USER } from "../constants";
 import {
     makeClickable,
     largeParagraph,
@@ -57,8 +57,7 @@ class BrawlCreate extends Phaser.Scene {
             color: darkenedColor,
         });
 
-        const id = getUserId();
-        if (id === null) throw new Error("Unexpected null id"); // TODO: better error handling?
+        const id = USER.name;
         fetch(`/new-brawl-id?id=${id}`)
             .then((res) => res.text())
             .then((brawlId) => {

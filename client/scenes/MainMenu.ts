@@ -17,6 +17,10 @@ const buttonData = [
         label: "Tutorial",
         nextScene: "tutorial",
     },
+    {
+        label: "Options",
+        nextScene: "options",
+    },
 ];
 
 class MainMenu extends Phaser.Scene {

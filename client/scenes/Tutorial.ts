@@ -68,10 +68,10 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         this.specialKeys = createSpecialKeys(this);
         this.combatManager = new CombatManager();
         const { setHealthUI, setManaUI, changeIcon, container } =
-            addPlayerStatusUI(this, USER.name, 110, 50);
+            addPlayerStatusUI(this, USER.getName(), 110, 50);
         this.UIContainer = container;
         this.player = new Player(
-            USER.name,
+            USER.getName(),
             this,
             platforms,
             300,
@@ -171,10 +171,10 @@ class Tutorial extends Phaser.Scene implements BattleScene {
                             setManaUI,
                             changeIcon,
                             container,
-                        } = addPlayerStatusUI(this, USER.name, 110, 50);
+                        } = addPlayerStatusUI(this, USER.getName(), 110, 50);
                         this.UIContainer = container;
                         this.player = new Player(
-                            USER.name,
+                            USER.getName(),
                             this,
                             this.platforms,
                             300,

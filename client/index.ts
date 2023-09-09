@@ -8,6 +8,7 @@ import BrawlSettings from "./scenes/BrawlSettings";
 import BrawlJoin from "./scenes/BrawlJoin";
 import BrawlCreate from "./scenes/BrawlCreate";
 import Tutorial from "./scenes/Tutorial";
+import Options from "./scenes/Options";
 import { getUserId, setUserId } from "./utils";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
 import { USER } from "./constants";
@@ -26,6 +27,7 @@ const config: Phaser.Types.Core.GameConfig = {
         BrawlJoin,
         BrawlCreate,
         Tutorial,
+        Options,
     ],
     physics: {
         default: "arcade",
@@ -46,13 +48,13 @@ if (id === null) {
     fetch("/new-id")
         .then((res) => res.text())
         .then((id) => {
-            USER.name = id;
+            USER.setName(id);
             console.log("got id:", id);
             setUserId(id);
         });
 } else {
     console.log("existing id:", id);
-    USER.name = id;
+    USER.setName(id);
     fetch(`/auth?id=${id}`);
 }
 
