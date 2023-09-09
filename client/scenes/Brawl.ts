@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import platform from "../static/platform.png";
 import battleTheme from "../static/battle_theme.mp3";
+import whoosh from "../static/whoosh.mp3";
 import {
     loadSettingsIcon,
     addPlayerStatusUI,
@@ -22,6 +23,7 @@ import {
     CANVAS_WIDTH,
     NullSocket,
     getSpriteMetaData,
+    soundFXMap,
 } from "../constants";
 import { Player, getMotions, Projectile } from "../Player";
 import { PlayerBody, SpriteBody } from "../SpriteBody";
@@ -55,6 +57,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.load.audio(Sound.BATTLE, battleTheme);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
+        this.load.audio(Sound.WHOOSH, whoosh);
         loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
@@ -148,6 +151,12 @@ class Brawl extends Phaser.Scene implements BattleScene {
                     throw new Error("projectile not found");
                 this.projectiles.delete(projectile.name);
                 projectile.remove();
+            } else if (type === MsgTypes.SOUND) {
+                if (sourceId === this.uid) return;
+                const soundData = soundFXMap.get(msg[Field.VALUE]);
+                if (soundData === undefined)
+                    throw new Error("Sound not found!");
+                this.sound.add(soundData.sound, soundData.config).play();
             }
         };
         this.socket.onclose = () => {
@@ -241,7 +250,16 @@ class Brawl extends Phaser.Scene implements BattleScene {
                         setHealthUI(ratio);
                     },
                     setManaUI,
-                    changeIcon
+                    changeIcon,
+                    (sound) => {
+                        this.socket.send(
+                            `data_${JSON.stringify({
+                                [Field.SOURCE]: this.uid,
+                                [Field.TYPE]: MsgTypes.SOUND,
+                                [Field.VALUE]: sound,
+                            })}`
+                        );
+                    }
                 );
                 this.player.registerAsCombatant(combatManager, id);
             } else {

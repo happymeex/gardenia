@@ -88,7 +88,8 @@ class Tutorial extends Phaser.Scene implements BattleScene {
             this.makeDeathHandlers("player"),
             setHealthUI,
             setManaUI,
-            changeIcon
+            changeIcon,
+            () => {}
         );
         this.player.registerAsCombatant(this.combatManager, "player");
         this.currTextIndex = 0;
@@ -191,7 +192,8 @@ class Tutorial extends Phaser.Scene implements BattleScene {
                             this.makeDeathHandlers("player"),
                             setHealthUI,
                             setManaUI,
-                            changeIcon
+                            changeIcon,
+                            () => {}
                         );
                         this.player.registerAsCombatant(
                             this.combatManager,

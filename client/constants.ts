@@ -22,6 +22,22 @@ export enum Sound {
     WHOOSH = "whoosh",
 }
 
+/** Keys for identifying particular sound effects. */
+export enum SoundFX {
+    PLAYER_ATTACK,
+}
+
+/** Holds data for all sound effects. */
+export const soundFXMap = new Map<
+    SoundFX,
+    { sound: Sound; config: Phaser.Types.Sound.SoundConfig }
+>([
+    [
+        SoundFX.PLAYER_ATTACK,
+        { sound: Sound.WHOOSH, config: { loop: false, volume: 0.7 } },
+    ],
+]);
+
 export enum AttackType {
     MELEE,
     PROJECTILE,
@@ -67,19 +83,20 @@ export enum Field {
 /** Shorthands for message types. */
 export enum MsgTypes {
     /** For data containing a sprite's position and appearance. */
-    SPRITE = "s",
+    SPRITE = "a",
     /** For notifying that a player has hit another player and dealt damage. */
-    DAMAGE = "d",
+    DAMAGE = "b",
     /**
      * For updates to a player's health UI. A message of type `DAMAGE` should be followed
      * by a message of type `HEALTH` from the target player so that other clients can update
      * their UIs accordingly.
      */
-    HEALTH = "h",
-    DEATH = "x",
-    PROJECTILE_UPDATE = "u",
-    PROJECTILE_CREATE = "c",
-    PROJECTILE_REMOVE = "r",
+    HEALTH = "c",
+    DEATH = "d",
+    PROJECTILE_UPDATE = "e",
+    PROJECTILE_CREATE = "f",
+    PROJECTILE_REMOVE = "g",
+    SOUND = "h",
 }
 
 //////////////////////////////////////

@@ -10,6 +10,8 @@ import {
     rockProjectileMetaData,
     Sound,
     USER,
+    SoundFX,
+    soundFXMap,
 } from "./constants";
 import { initializeAnimations } from "./animations";
 import { getSpriteMetaData } from "./constants";
@@ -74,6 +76,7 @@ class Player extends BaseSprite {
         private onHealthChange: (ratio: number) => void,
         private onManaChange: (ratio: number) => void,
         private onTransform: (target: SpriteSheet) => void,
+        private onSound: (sound: SoundFX) => void,
         direction: "left" | "right" = "right"
     ) {
         super(name, scene, playerSpriteMetaData, x, y, onDeath, direction);
@@ -217,12 +220,13 @@ class Player extends BaseSprite {
             anim = `${spriteSheet}-attack`;
             this.attackState = AttackState.ATTACKING;
             if (USER.getSettings().soundFX) {
-                this.scene.sound
-                    .add(Sound.WHOOSH, {
-                        loop: false,
-                        volume: 0.8,
-                    })
-                    .play();
+                this.onSound(SoundFX.PLAYER_ATTACK);
+                const soundData = soundFXMap.get(SoundFX.PLAYER_ATTACK);
+                if (soundData !== undefined) {
+                    this.scene.sound
+                        .add(soundData.sound, soundData.config)
+                        .play();
+                }
             }
             if (this.spriteData.spriteKey === SpriteSheet.FOX) {
                 this.dispatchProjectile(attackData);

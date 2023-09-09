@@ -20,6 +20,7 @@ import { HomingEnemy } from "../Enemies";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import battleTheme from "../static/battle_theme.mp3";
+import whoosh from "../static/whoosh.mp3";
 import {
     basicBotSpriteMetaData,
     CANVAS_CENTER,
@@ -56,6 +57,7 @@ class Survival extends Phaser.Scene {
         this.load.audio(Sound.BATTLE, battleTheme);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
+        this.load.audio(Sound.WHOOSH, whoosh);
         loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
@@ -90,7 +92,8 @@ class Survival extends Phaser.Scene {
             this.makeDeathHandlers("player"),
             setHealthUI,
             setManaUI,
-            changeIcon
+            changeIcon,
+            () => {}
         );
         this.player.registerAsCombatant(this.combatManager, "player");
         const createEnemy = () => {
