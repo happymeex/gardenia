@@ -73,20 +73,22 @@ export class BaseSprite implements HasHealth {
     }
 
     /**
-     * Deals `dmg` damage to the character and flashes the sprite white to indicate so.
+     * Deals damage to the character and flashes the sprite white to indicate so.
      * Calls `die` method if health becomes nonpositive.
      * Does nothing if called when health is already nonpositive.
      *
-     * @param dmg amount of damage taken
+     * @param dmg amount of damage dealt by incoming attack. (The actual amount of damage
+     *      taken is computed based on the defense multiplier stat.)
      */
     public takeDamage(dmg: number) {
         if (this.health <= 0) return;
         flashWhite(this.sprite);
-        this.health -= dmg;
+        this.health -= this.spriteData.defenseMultiplier * dmg;
         if (this.health <= 0) this.die();
     }
 
-    protected playSound(sound: SoundFX) {
+    protected playSound(sound: SoundFX): void {
+        if (!this.sprite.scene) return;
         const soundData = soundFXMap.get(sound);
         if (soundData !== undefined) {
             this.sprite.scene.sound

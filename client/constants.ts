@@ -175,6 +175,8 @@ export interface SpriteMetaData {
 
     /** Initial health. */
     readonly health: number;
+    /** Multiplier to compute damage taken from incoming attacks. */
+    readonly defenseMultiplier: number;
     readonly walkSpeed: number;
     readonly jumpVelocity: number;
     readonly attackData: AttackData;
@@ -188,6 +190,7 @@ export const playerSpriteMetaData: SpriteMetaData = {
     iconFrame: 0,
     walkSpeed: 300,
     health: 100,
+    defenseMultiplier: 1,
     jumpVelocity: 800,
     attackData: {
         damage: 15,
@@ -205,6 +208,7 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
     iconFrame: -1,
     idleFrame: 18,
     walkSpeed: 200,
+    defenseMultiplier: 1,
     health: 25,
     jumpVelocity: 0,
     attackData: {
@@ -224,6 +228,7 @@ const foxSpriteMetaData: SpriteMetaData = {
     idleFrame: 16,
     walkSpeed: 400,
     health: 100,
+    defenseMultiplier: 1.1,
     jumpVelocity: 900,
     attackData: {
         damage: 10,
@@ -242,6 +247,7 @@ const bearSpriteMetaData: SpriteMetaData = {
     iconFrame: 2,
     health: 100,
     walkSpeed: 175,
+    defenseMultiplier: 0.6,
     jumpVelocity: 0,
     attackData: {
         damage: 30,
@@ -263,6 +269,7 @@ export const rockProjectileMetaData: SpriteMetaData = {
     health: 0,
     walkSpeed: 0,
     jumpVelocity: 0,
+    defenseMultiplier: 0,
     attackData: {
         damage: 0,
         aoe: false,
@@ -279,6 +286,7 @@ export const bombBotMetaData: SpriteMetaData = {
     idleFrame: 0,
     iconFrame: -1,
     health: 1,
+    defenseMultiplier: 1,
     walkSpeed: 200,
     jumpVelocity: 0,
     attackData: {

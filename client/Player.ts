@@ -7,8 +7,6 @@ import {
     HasAppearance,
     SpriteMetaData,
     AttackData,
-    rockProjectileMetaData,
-    Sound,
     USER,
     SoundFX,
     soundFXMap,
@@ -175,7 +173,11 @@ class Player extends BaseSprite {
      * @inheritdoc
      */
     public takeDamage(dmg: number) {
-        const newRatio = Math.max((this.health - dmg) / this.maxHealth, 0);
+        const newRatio = Math.max(
+            (this.health - dmg * this.spriteData.defenseMultiplier) /
+                this.maxHealth,
+            0
+        );
         this.onHealthChange(newRatio);
         super.takeDamage(dmg);
         this.playSound(SoundFX.DAMAGE);
