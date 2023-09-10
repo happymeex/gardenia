@@ -35,6 +35,8 @@ export enum Sound {
 /** Keys for identifying particular sound effects. */
 export enum SoundFX {
     PLAYER_ATTACK,
+    EXPLODE,
+    DAMAGE,
 }
 
 /** Holds data for all sound effects, indexed by keys of type `SoundFX`. */
@@ -45,6 +47,14 @@ export const soundFXMap = new Map<
     [
         SoundFX.PLAYER_ATTACK,
         { sound: Sound.WHOOSH, config: { loop: false, volume: 0.7 } },
+    ],
+    [
+        SoundFX.EXPLODE,
+        { sound: Sound.EXPLODE, config: { loop: false, volume: 0.8 } },
+    ],
+    [
+        SoundFX.DAMAGE,
+        { sound: Sound.DAMAGE, config: { loop: false, volume: 0.8 } },
     ],
 ]);
 

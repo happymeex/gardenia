@@ -6,6 +6,9 @@ import {
     basicBotSpriteMetaData,
     bombBotMetaData,
     HasLocation,
+    Sound,
+    soundFXMap,
+    SoundFX,
 } from "./constants";
 enum EnemyStates {
     WALKING,
@@ -143,6 +146,16 @@ class BasicBot extends BaseSprite implements Enemy {
         this.attackState = AttackState.ATTACKING;
         this.sprite.anims.play("attack", true);
     }
+
+    /**
+     * Plays a damage sound effect.
+     * @inheritdoc
+     * @param dmg
+     */
+    public takeDamage(dmg: number): void {
+        super.takeDamage(dmg);
+        this.playSound(SoundFX.DAMAGE);
+    }
 }
 
 class BombBot extends BaseSprite implements Enemy {
@@ -162,16 +175,26 @@ class BombBot extends BaseSprite implements Enemy {
             this.spriteData.walkSpeed * (this.direction === "right" ? 1 : -1);
         this.sprite.setVelocityX(velocity);
         this.sprite.anims.play("walk", true);
-        this.sprite.setOffset(0, 20);
+        this.sprite.setOffset(0, 38);
+    }
+
+    /**
+     * Plays a damage sound effect.
+     * @inheritdoc
+     * @param dmg
+     */
+    public takeDamage(dmg: number): void {
+        super.takeDamage(dmg);
+        this.playSound(SoundFX.EXPLODE); // bomb bot dies when any damage is taken
     }
 
     public attack() {
         if (this.attackState === AttackState.ATTACKING) return;
-        console.log("ok");
         this.attackState = AttackState.ATTACKING;
         this.sprite.setVelocity(0);
         this.sprite.anims.play("death");
         this.combatManager.processAttack(this, this.spriteData.attackData);
+        this.playSound(SoundFX.EXPLODE);
     }
     /**
      * @returns a handler function for collisions (contact) between this enemy and
@@ -216,7 +239,6 @@ class BombBot extends BaseSprite implements Enemy {
     public handleMotion(homingDirection: "left" | "right" | null) {
         if (this.health <= 0) return;
         if (this.attackState === AttackState.ATTACKING) return;
-        console.log("still going");
         if (homingDirection !== null) {
             this.semanticState = EnemyStates.HOMING;
             const velocity =

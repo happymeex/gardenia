@@ -171,13 +171,14 @@ class Player extends BaseSprite {
     }
 
     /**
-     * Adjusts the healthbar UI accordingly.
+     * Adjusts the healthbar UI accordingly and plays a damage sound.
      * @inheritdoc
      */
     public takeDamage(dmg: number) {
         const newRatio = Math.max((this.health - dmg) / this.maxHealth, 0);
         this.onHealthChange(newRatio);
         super.takeDamage(dmg);
+        this.playSound(SoundFX.DAMAGE);
     }
 
     /**

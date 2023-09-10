@@ -1,7 +1,13 @@
 import Phaser from "phaser";
 import { SpriteAppearance } from "./SpriteBody";
 import { initializeAnimations } from "./animations";
-import { AttackState, SpriteMetaData, HasHealth } from "./constants";
+import {
+    AttackState,
+    SpriteMetaData,
+    HasHealth,
+    SoundFX,
+    soundFXMap,
+} from "./constants";
 import { flashWhite } from "./utils";
 import {
     CombatManager,
@@ -78,6 +84,15 @@ export class BaseSprite implements HasHealth {
         flashWhite(this.sprite);
         this.health -= dmg;
         if (this.health <= 0) this.die();
+    }
+
+    protected playSound(sound: SoundFX) {
+        const soundData = soundFXMap.get(sound);
+        if (soundData !== undefined) {
+            this.sprite.scene.sound
+                .add(soundData.sound, soundData.config)
+                .play();
+        }
     }
 
     /**
