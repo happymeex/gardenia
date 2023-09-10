@@ -1,10 +1,14 @@
 import Phaser from "phaser";
 import {
+    BGM,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     getSpriteMetaData,
+    NullAudio,
     playerSpriteMetaData,
     Sound,
+    SoundKey,
+    soundTracks,
     SpriteSheet,
     SpriteSheetSizes,
 } from "./constants";
@@ -17,6 +21,7 @@ import iconSheet from "./static/icons.png";
 import rockSpritesheet from "./static/rock_projectile_spritesheet.png";
 import bombBotSpritesheet from "./static/bomb_bot_spritesheet.png";
 import battleMusic from "./static/battle_theme.mp3";
+import tutorialTheme from "./static/tutorial_theme.mp3";
 import menuTheme from "./static/menu_theme.mp3";
 import whooshSound from "./static/whoosh.mp3";
 import damageSound from "./static/damage.mp3";
@@ -379,7 +384,7 @@ const spriteSheetMap = new Map([
  * @param scene
  * @param audioList List of keys identifying sounds that should be loaded.
  */
-export function loadAudio(scene: Phaser.Scene, audioList: Sound[]) {
+export function loadAudio(scene: Phaser.Scene, audioList: SoundKey[]) {
     audioList.forEach((sound) => {
         const URL = audioMap.get(sound);
         scene.load.audio(sound, URL);
@@ -387,9 +392,31 @@ export function loadAudio(scene: Phaser.Scene, audioList: Sound[]) {
 }
 
 const audioMap = new Map([
-    [Sound.BATTLE, battleMusic],
-    [Sound.MENU, menuTheme],
-    [Sound.WHOOSH, whooshSound],
-    [Sound.DAMAGE, damageSound],
-    [Sound.EXPLODE, explosionSound],
+    [SoundKey.BATTLE, battleMusic],
+    [SoundKey.MENU, menuTheme],
+    [SoundKey.WHOOSH, whooshSound],
+    [SoundKey.DAMAGE, damageSound],
+    [SoundKey.EXPLODE, explosionSound],
+    [SoundKey.TUTORIAL, tutorialTheme],
 ]);
+
+/**
+ * Stops and destroys any existing audio attached to the `BGM` global
+ * audio manager, attaches the soundtrack specified by `sound`,
+ * and plays it. If the soundtrack doesn't exist, sets `BGM.audio` to
+ * `NullAudio` instead.
+ *
+ * @param scene
+ * @param sound
+ */
+export function playBGM(scene: Phaser.Scene, sound: Sound) {
+    BGM.audio.stop();
+    BGM.audio.destroy();
+    const soundData = soundTracks.get(sound);
+    if (soundData) {
+        BGM.audio = scene.sound.add(soundData.sound, soundData.config);
+        BGM.audio.play();
+    } else {
+        BGM.audio = new NullAudio();
+    }
+}

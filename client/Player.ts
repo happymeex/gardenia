@@ -8,8 +8,8 @@ import {
     SpriteMetaData,
     AttackData,
     USER,
-    SoundFX,
-    soundFXMap,
+    Sound,
+    soundTracks,
 } from "./constants";
 import { initializeAnimations } from "./animations";
 import { getSpriteMetaData } from "./constants";
@@ -74,7 +74,7 @@ class Player extends BaseSprite {
         private onHealthChange: (ratio: number) => void,
         private onManaChange: (ratio: number) => void,
         private onTransform: (target: SpriteSheet) => void,
-        private onSound: (sound: SoundFX) => void,
+        private onSound: (sound: Sound) => void,
         direction: "left" | "right" = "right"
     ) {
         super(name, scene, playerSpriteMetaData, x, y, onDeath, direction);
@@ -180,7 +180,7 @@ class Player extends BaseSprite {
         );
         this.onHealthChange(newRatio);
         super.takeDamage(dmg);
-        this.playSound(SoundFX.DAMAGE);
+        this.playSound(Sound.DAMAGE);
     }
 
     public getManaPercentage(): number {
@@ -227,8 +227,8 @@ class Player extends BaseSprite {
             anim = `${spriteSheet}-attack`;
             this.attackState = AttackState.ATTACKING;
             if (USER.getSettings().soundFX) {
-                this.onSound(SoundFX.PLAYER_ATTACK);
-                const soundData = soundFXMap.get(SoundFX.PLAYER_ATTACK);
+                this.onSound(Sound.PLAYER_ATTACK);
+                const soundData = soundTracks.get(Sound.PLAYER_ATTACK);
                 if (soundData !== undefined) {
                     this.scene.sound
                         .add(soundData.sound, soundData.config)

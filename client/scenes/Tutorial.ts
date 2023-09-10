@@ -8,14 +8,18 @@ import {
     SpecialKeys,
     createSpecialKeys,
     loadAudio,
+    playBGM,
 } from "../utils";
 import { addWaterfallBackground } from "../backgrounds";
 import {
     SpriteSheet,
-    Sound,
+    SoundKey,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     USER,
+    BGM,
+    soundTracks,
+    Sound,
 } from "../constants";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
@@ -60,10 +64,12 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         this.load.image(SpriteSheet.PLATFORM, platform);
         loadSettingsIcon(this);
         loadSprites(this);
-        loadAudio(this, [Sound.DAMAGE, Sound.WHOOSH]);
+        loadAudio(this, [SoundKey.DAMAGE, SoundKey.WHOOSH, SoundKey.TUTORIAL]);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {
+        playBGM(this, Sound.TUTORIAL_THEME);
+
         this.numSpawned = 0;
         this.isPaused = false;
         this.enemies.clear();

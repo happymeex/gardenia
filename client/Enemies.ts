@@ -6,9 +6,9 @@ import {
     basicBotSpriteMetaData,
     bombBotMetaData,
     HasLocation,
+    SoundKey,
+    soundTracks,
     Sound,
-    soundFXMap,
-    SoundFX,
 } from "./constants";
 enum EnemyStates {
     WALKING,
@@ -154,7 +154,7 @@ class BasicBot extends BaseSprite implements Enemy {
      */
     public takeDamage(dmg: number): void {
         super.takeDamage(dmg);
-        this.playSound(SoundFX.DAMAGE);
+        this.playSound(Sound.DAMAGE);
     }
 }
 
@@ -185,7 +185,7 @@ class BombBot extends BaseSprite implements Enemy {
      */
     public takeDamage(dmg: number): void {
         super.takeDamage(dmg);
-        this.playSound(SoundFX.EXPLODE); // bomb bot dies when any damage is taken
+        this.playSound(Sound.EXPLODE); // bomb bot dies when any damage is taken
     }
 
     public attack() {
@@ -194,7 +194,7 @@ class BombBot extends BaseSprite implements Enemy {
         this.sprite.setVelocity(0);
         this.sprite.anims.play("death");
         this.combatManager.processAttack(this, this.spriteData.attackData);
-        this.playSound(SoundFX.EXPLODE);
+        this.playSound(Sound.EXPLODE);
     }
     /**
      * @returns a handler function for collisions (contact) between this enemy and

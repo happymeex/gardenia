@@ -5,8 +5,8 @@ import {
     AttackState,
     SpriteMetaData,
     HasHealth,
-    SoundFX,
-    soundFXMap,
+    Sound,
+    soundTracks,
 } from "./constants";
 import { flashWhite } from "./utils";
 import {
@@ -87,9 +87,9 @@ export class BaseSprite implements HasHealth {
         if (this.health <= 0) this.die();
     }
 
-    protected playSound(sound: SoundFX): void {
+    protected playSound(sound: Sound): void {
         if (!this.sprite.scene) return;
-        const soundData = soundFXMap.get(sound);
+        const soundData = soundTracks.get(sound);
         if (soundData !== undefined) {
             this.sprite.scene.sound
                 .add(soundData.sound, soundData.config)

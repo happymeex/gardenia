@@ -21,40 +21,56 @@ export enum SpriteSheet {
 }
 
 /**
- * Identifying keys for sounds (i.e. each item in this enum corresponds to
+ * Keys identifying audio files (i.e. each item in this enum corresponds to
  * one .mp3 file that can be loaded into a scene).
  */
-export enum Sound {
+export enum SoundKey {
     BATTLE = "b",
     MENU = "m",
     WHOOSH = "w",
     DAMAGE = "d",
+    TUTORIAL = "t",
     EXPLODE = "e",
 }
 
 /** Keys for identifying particular sound effects. */
-export enum SoundFX {
+export enum Sound {
+    BATTLE_THEME,
+    MENU_THEME,
+    TUTORIAL_THEME,
     PLAYER_ATTACK,
     EXPLODE,
     DAMAGE,
 }
 
-/** Holds data for all sound effects, indexed by keys of type `SoundFX`. */
-export const soundFXMap = new Map<
-    SoundFX,
-    { sound: Sound; config: Phaser.Types.Sound.SoundConfig }
+/** Holds data for all sounds, indexed by keys of type `SoundFX`. */
+export const soundTracks = new Map<
+    Sound,
+    { sound: SoundKey; config: Phaser.Types.Sound.SoundConfig }
 >([
     [
-        SoundFX.PLAYER_ATTACK,
-        { sound: Sound.WHOOSH, config: { loop: false, volume: 0.7 } },
+        Sound.BATTLE_THEME,
+        { sound: SoundKey.BATTLE, config: { loop: true, volume: 0.7 } },
     ],
     [
-        SoundFX.EXPLODE,
-        { sound: Sound.EXPLODE, config: { loop: false, volume: 0.8 } },
+        Sound.MENU_THEME,
+        { sound: SoundKey.MENU, config: { loop: true, volume: 0.7 } },
     ],
     [
-        SoundFX.DAMAGE,
-        { sound: Sound.DAMAGE, config: { loop: false, volume: 0.8 } },
+        Sound.TUTORIAL_THEME,
+        { sound: SoundKey.TUTORIAL, config: { loop: true, volume: 1 } },
+    ],
+    [
+        Sound.PLAYER_ATTACK,
+        { sound: SoundKey.WHOOSH, config: { loop: false, volume: 0.7 } },
+    ],
+    [
+        Sound.EXPLODE,
+        { sound: SoundKey.EXPLODE, config: { loop: false, volume: 0.8 } },
+    ],
+    [
+        Sound.DAMAGE,
+        { sound: SoundKey.DAMAGE, config: { loop: false, volume: 0.8 } },
     ],
 ]);
 
@@ -356,7 +372,7 @@ export interface HasHealth extends CanBeHit {
 /**
  * Sentinel object.
  */
-class NullAudio {
+export class NullAudio {
     public play() {
         throw new Error("Audio is currently null");
     }

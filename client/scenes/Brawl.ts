@@ -10,6 +10,7 @@ import {
     createSpecialKeys,
     BattleScene,
     loadAudio,
+    playBGM,
 } from "../utils";
 import { configurePauseMenu } from "../ui";
 import {
@@ -18,11 +19,12 @@ import {
     SpriteSheet,
     CANVAS_HEIGHT,
     BGM,
-    Sound,
+    SoundKey,
     CANVAS_WIDTH,
     NullSocket,
     getSpriteMetaData,
-    soundFXMap,
+    soundTracks,
+    Sound,
 } from "../constants";
 import { Player, getMotions, Projectile } from "../Player";
 import { PlayerBody, SpriteBody } from "../SpriteBody";
@@ -54,10 +56,10 @@ class Brawl extends Phaser.Scene implements BattleScene {
     preload() {
         loadSettingsIcon(this);
         loadAudio(this, [
-            Sound.BATTLE,
-            Sound.WHOOSH,
-            Sound.DAMAGE,
-            Sound.EXPLODE,
+            SoundKey.BATTLE,
+            SoundKey.WHOOSH,
+            SoundKey.DAMAGE,
+            SoundKey.EXPLODE,
         ]);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
@@ -65,10 +67,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
-        BGM.audio.stop();
-        BGM.audio.destroy();
-        BGM.audio = this.sound.add(Sound.BATTLE, { loop: true, volume: 0.7 });
-        BGM.audio.play();
+        playBGM(this, Sound.BATTLE_THEME);
         this.isPaused = false; // need to reset this in case this brawl isn't the first one of the sitting
         this.otherPlayers = new Map();
         this.socket = data.socket;
@@ -162,7 +161,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
                 projectile.remove();
             } else if (type === MsgTypes.SOUND) {
                 if (sourceId === this.uid) return;
-                const soundData = soundFXMap.get(msg[Field.VALUE]);
+                const soundData = soundTracks.get(msg[Field.VALUE]);
                 if (soundData === undefined)
                     throw new Error("Sound not found!");
                 this.sound.add(soundData.sound, soundData.config).play();

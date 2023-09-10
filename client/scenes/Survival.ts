@@ -10,6 +10,7 @@ import {
     createSpecialKeys,
     loadSprites,
     loadAudio,
+    playBGM,
 } from "../utils";
 import {
     configurePauseMenu,
@@ -26,6 +27,7 @@ import {
     CANVAS_WIDTH,
     SpriteSheet,
     BGM,
+    SoundKey,
     Sound,
 } from "../constants";
 import { CombatManager } from "../CombatManager";
@@ -55,10 +57,10 @@ class Survival extends Phaser.Scene {
     preload() {
         loadSettingsIcon(this);
         loadAudio(this, [
-            Sound.BATTLE,
-            Sound.WHOOSH,
-            Sound.EXPLODE,
-            Sound.DAMAGE,
+            SoundKey.BATTLE,
+            SoundKey.WHOOSH,
+            SoundKey.EXPLODE,
+            SoundKey.DAMAGE,
         ]);
         this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
         this.load.image(SpriteSheet.PLATFORM, platform);
@@ -71,9 +73,7 @@ class Survival extends Phaser.Scene {
         this.numKilled = 0;
         this.numSpawned = 0;
         this.processes.clear();
-        BGM.audio.stop();
-        BGM.audio = this.sound.add(Sound.BATTLE, { loop: true, volume: 0.7 });
-        BGM.audio.play();
+        playBGM(this, Sound.BATTLE_THEME);
 
         this.specialKeys = createSpecialKeys(this);
         const { pause, resume, leave } = this.makeFlowControlFunctions();
