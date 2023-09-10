@@ -7,6 +7,7 @@ import {
     HasHealth,
     Sound,
     soundTracks,
+    USER,
 } from "./constants";
 import { flashWhite } from "./utils";
 import {
@@ -87,8 +88,14 @@ export class BaseSprite implements HasHealth {
         if (this.health <= 0) this.die();
     }
 
+    /**
+     * Plays a sound immediately if the user has sound fx turned on. Otherwise does nothing.
+     *
+     * @param sound
+     * @returns
+     */
     protected playSound(sound: Sound): void {
-        if (!this.sprite.scene) return;
+        if (!this.sprite.scene || !USER.getSettings().soundFX) return;
         const soundData = soundTracks.get(sound);
         if (soundData !== undefined) {
             this.sprite.scene.sound

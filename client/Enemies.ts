@@ -1,13 +1,10 @@
 import Phaser from "phaser";
 import { BaseSprite, CollisionObject } from "./BaseSprite";
 import {
-    SpriteMetaData,
     AttackState,
     basicBotSpriteMetaData,
     bombBotMetaData,
     HasLocation,
-    SoundKey,
-    soundTracks,
     Sound,
 } from "./constants";
 enum EnemyStates {
