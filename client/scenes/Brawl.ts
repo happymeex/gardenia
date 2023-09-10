@@ -119,6 +119,12 @@ class Brawl extends Phaser.Scene implements BattleScene {
                 if (playerBody === undefined)
                     throw new Error("Unknown health update");
                 playerBody.setHealthUI(msg[Field.VALUE]);
+            } else if (type === MsgTypes.MANA) {
+                if (sourceId === this.uid) return;
+                const playerBody = this.otherPlayers.get(sourceId);
+                if (playerBody === undefined)
+                    throw new Error("Unknown health update");
+                playerBody.setManaUI(msg[Field.VALUE]);
             } else if (type === MsgTypes.DEATH) {
                 if (sourceId === this.uid) return;
                 const playerBody = this.otherPlayers.get(sourceId);
@@ -252,7 +258,16 @@ class Brawl extends Phaser.Scene implements BattleScene {
                         );
                         setHealthUI(ratio);
                     },
-                    setManaUI,
+                    (ratio) => {
+                        this.socket.send(
+                            `data_${JSON.stringify({
+                                [Field.SOURCE]: this.uid,
+                                [Field.TYPE]: MsgTypes.MANA,
+                                [Field.VALUE]: this.player.getManaPercentage(),
+                            })}`
+                        );
+                        setManaUI(ratio);
+                    },
                     changeIcon,
                     (sound) => {
                         this.socket.send(

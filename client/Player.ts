@@ -183,12 +183,16 @@ class Player extends BaseSprite {
         this.playSound(SoundFX.DAMAGE);
     }
 
+    public getManaPercentage(): number {
+        return Math.max(this.mana / MAX_MANA, 0);
+    }
+
     /**
      * Transforms the player sprite back to human form first before playing the death animation.
      * @inheritdoc
      */
     public die() {
-        this.transform(SpriteSheet.PLAYER);
+        this.transform(SpriteSheet.PLAYER, true);
         for (const process of this.processes.values()) {
             clearInterval(process);
         }
@@ -277,18 +281,21 @@ class Player extends BaseSprite {
     }
 
     /**
-     * If the player is attacking, does nothing. Otherwise, changes the sprite
+     * If the player is attacking, is currently already in the target state, or has insufficient mana,
+     * does nothing. Otherwise, changes the sprite
      * to the one corresponding to `target`, shifts the sprite vertically so that
      * its feet level stays constant, sets the frame to the idle frame
      * specified in the spritesheet metadata of `target`, and finally calls `this.onTransform`.
      *
      * @param target the key of the spritesheet to transform to
+     * @param force if true, then the transformation goes through regardless
      * @returns true if the transformation occurs, false otherwise
      */
-    public transform(target: SpriteSheet): boolean {
+    public transform(target: SpriteSheet, force = false): boolean {
         if (
             this.attackState === AttackState.ATTACKING ||
-            target === this.spriteData.spriteKey
+            target === this.spriteData.spriteKey ||
+            (this.mana < TRANSFORM_MANA_COST && !force)
         )
             return false;
         // note: when Phaser swaps the sprite's texture, it preserves

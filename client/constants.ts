@@ -112,6 +112,7 @@ export enum MsgTypes {
      * their UIs accordingly.
      */
     HEALTH = "c",
+    MANA = "m",
     DEATH = "d",
     PROJECTILE_UPDATE = "e",
     PROJECTILE_CREATE = "f",
