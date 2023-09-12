@@ -9,7 +9,7 @@ import (
 )
 
 var upgrader = websocket.Upgrader{
-	ReadBufferSize: 1024,
+	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
 
@@ -37,9 +37,9 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 		if !isHost {
 			sendErrorMessage("The requested brawl does not exist!")
 			return
-		} 
+		}
 		b = &BrawlNetwork{false, uid, make(map[string]*websocket.Conn)}
-		AllBrawls[url] = b;
+		AllBrawls[url] = b
 	}
 
 	if b.active {
@@ -57,7 +57,13 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 	_, alreadyConnected := b.sockets[uid]
 	if alreadyConnected {
 		sendErrorMessage("You have already joined this brawl!")
-		return;
+		return
+	}
+
+	// cap at 3 players
+	if len(b.sockets) == 3 {
+		sendErrorMessage("This brawl is already full!")
+		return
 	}
 
 	conn, err := upgrader.Upgrade(w, req, nil)
@@ -68,9 +74,9 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 	conn.WriteMessage(websocket.TextMessage, []byte("validate"))
 
 	// add the user to the network and let everyone know
-	b.sockets[uid] = conn;
+	b.sockets[uid] = conn
 	fmt.Println("currently connected:", b.sockets)
-	b.sendIdList();
+	b.sendIdList()
 
 	for {
 		_, rawMsg, err := conn.ReadMessage()
@@ -81,38 +87,38 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 				delete(AllBrawls, url)
 				for _, other := range b.sockets {
 					sendErrorMessage("The host aborted the game.")
-					other.Close();
+					other.Close()
 				}
 			} else {
 				b.sendIdList()
 			}
-			
-			conn.Close(); // in case error wasn't a closure
-			return;
+
+			conn.Close() // in case error wasn't a closure
+			return
 		}
 		msgParts := strings.SplitN(string(rawMsg), "_", 2)
 		switch msgParts[0] {
-			case "begin":
-				if !b.active {
-					fmt.Println("Creating new brawl")
-					b.active = true;
-					// notify all other clients, each then pings "begin" through its own socket connection
-					for _, connection := range b.sockets {
-						err := connection.WriteMessage(websocket.TextMessage,[]byte("activate"))
-						if err != nil {
-							fmt.Println(err)
-						}
+		case "begin":
+			if !b.active {
+				fmt.Println("Creating new brawl")
+				b.active = true
+				// notify all other clients, each then pings "begin" through its own socket connection
+				for _, connection := range b.sockets {
+					err := connection.WriteMessage(websocket.TextMessage, []byte("activate"))
+					if err != nil {
+						fmt.Println(err)
 					}
-					go b.StartBrawl()
-				} else {
-					fmt.Println("already began")
 				}
-				
-			case "data":
-				// pipe data through channel; StartBrawl func listens on other side for data to pipe to all clients
-				UserInput <- msgParts[1]
-			default:
-				fmt.Println(msgParts[0])
+				go b.StartBrawl()
+			} else {
+				fmt.Println("already began")
+			}
+
+		case "data":
+			// pipe data through channel; StartBrawl func listens on other side for data to pipe to all clients
+			UserInput <- msgParts[1]
+		default:
+			fmt.Println(msgParts[0])
 		}
 	}
 }
