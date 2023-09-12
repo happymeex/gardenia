@@ -28,6 +28,12 @@ class BrawlCreate extends Phaser.Scene {
             ...menuTextStyleBase,
             fontSize: "72px",
         });
+        const subHeader = this.add.text(
+            0,
+            -200,
+            "Duke it out with friends!",
+            paragraphTextStyleBase
+        );
         const goBack = this.add.text(
             -400,
             -250,
@@ -57,7 +63,7 @@ class BrawlCreate extends Phaser.Scene {
             color: darkenedColor,
         });
 
-        const id = USER.name;
+        const id = USER.getName();
         fetch(`/new-brawl-id?id=${id}`)
             .then((res) => res.text())
             .then((brawlId) => {
@@ -114,9 +120,15 @@ class BrawlCreate extends Phaser.Scene {
             if (this.socket) this.socket.close(1000);
         });
         container.add(
-            [header, goBack, generateLink, brawlIdText, numJoined, begin].map(
-                (item) => item.setOrigin(0.5)
-            )
+            [
+                header,
+                subHeader,
+                goBack,
+                generateLink,
+                brawlIdText,
+                numJoined,
+                begin,
+            ].map((item) => item.setOrigin(0.5))
         );
     }
 }

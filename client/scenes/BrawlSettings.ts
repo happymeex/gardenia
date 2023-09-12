@@ -1,6 +1,10 @@
 import Phaser from "phaser";
 import { CANVAS_CENTER } from "../constants";
-import { menuTextStyleBase, makeClickable } from "../ui";
+import {
+    menuTextStyleBase,
+    makeClickable,
+    paragraphTextStyleBase,
+} from "../ui";
 
 class BrawlSettings extends Phaser.Scene {
     public constructor() {
@@ -13,6 +17,12 @@ class BrawlSettings extends Phaser.Scene {
             ...menuTextStyleBase,
             fontSize: "72px",
         });
+        const subHeader = this.add.text(
+            0,
+            -200,
+            "Duke it out with friends!",
+            paragraphTextStyleBase
+        );
         const returnToHome = this.add.text(
             -400,
             -250,
@@ -21,7 +31,7 @@ class BrawlSettings extends Phaser.Scene {
         );
         const joinBrawl = this.add.text(
             0,
-            -100,
+            -80,
             "Join existing brawl",
             menuTextStyleBase
         );
@@ -30,7 +40,7 @@ class BrawlSettings extends Phaser.Scene {
         });
         const createNew = this.add.text(
             0,
-            100,
+            80,
             "Create new brawl",
             menuTextStyleBase
         );
@@ -42,8 +52,8 @@ class BrawlSettings extends Phaser.Scene {
             this.scene.start("main-menu");
         });
         container.add(
-            [header, returnToHome, joinBrawl, orText, createNew].map((item) =>
-                item.setOrigin(0.5)
+            [header, subHeader, returnToHome, joinBrawl, orText, createNew].map(
+                (item) => item.setOrigin(0.5)
             )
         );
     }

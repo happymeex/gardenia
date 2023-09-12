@@ -33,6 +33,12 @@ class BrawlJoin extends Phaser.Scene {
             ...menuTextStyleBase,
             fontSize: "72px",
         });
+        const subHeader = this.add.text(
+            0,
+            -200,
+            "Duke it out with friends!",
+            paragraphTextStyleBase
+        );
         const goBack = this.add.text(
             -400,
             -250,
@@ -86,7 +92,9 @@ class BrawlJoin extends Phaser.Scene {
         this.joinButton.disableInteractive();
 
         container.add(joinCodeContainer);
-        container.add([header, goBack].map((item) => item.setOrigin(0.5)));
+        container.add(
+            [header, subHeader, goBack].map((item) => item.setOrigin(0.5))
+        );
         container.add(this.joinButton);
     }
     private makeInputHandler() {
