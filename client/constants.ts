@@ -239,7 +239,7 @@ export const basicBotSpriteMetaData: SpriteMetaData = {
 
 const foxSpriteMetaData: SpriteMetaData = {
     spriteKey: SpriteSheet.FOX,
-    width: 180,
+    width: 76,
     height: 100,
     iconFrame: 1,
     idleFrame: 16,
@@ -258,8 +258,8 @@ const foxSpriteMetaData: SpriteMetaData = {
 
 const bearSpriteMetaData: SpriteMetaData = {
     spriteKey: SpriteSheet.BEAR,
-    width: 100,
-    height: 165,
+    width: 80,
+    height: 158,
     idleFrame: 14,
     iconFrame: 2,
     health: 100,

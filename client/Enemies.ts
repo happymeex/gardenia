@@ -172,7 +172,7 @@ class BombBot extends BaseSprite implements Enemy {
             this.spriteData.walkSpeed * (this.direction === "right" ? 1 : -1);
         this.sprite.setVelocityX(velocity);
         this.sprite.anims.play("walk", true);
-        this.sprite.setOffset(0, 38);
+        this.sprite.setOffset(22, 38);
     }
 
     /**

@@ -76,6 +76,9 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.processes.clear();
 
         const platforms = addWaterfallBackground(this);
+        platforms.create(CANVAS_WIDTH / 2, 230, SpriteSheet.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2 - 300, 420, SpriteSheet.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2 + 300, 420, SpriteSheet.PLATFORM);
         this.specialKeys = createSpecialKeys(this);
 
         this.socket.onmessage = (e) => {

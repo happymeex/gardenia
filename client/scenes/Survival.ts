@@ -26,7 +26,6 @@ import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     SpriteSheet,
-    BGM,
     SoundKey,
     Sound,
 } from "../constants";
@@ -34,7 +33,7 @@ import { CombatManager } from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
 import { addWaterfallBackground } from "../backgrounds";
 
-const INITIAL_SPAWN_PERIOD = 10;
+const INITIAL_SPAWN_PERIOD = 5;
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -79,6 +78,9 @@ class Survival extends Phaser.Scene {
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         this.settingsButton = configurePauseMenu(this, pause, resume, leave);
         const platforms = addWaterfallBackground(this);
+        platforms.create(CANVAS_WIDTH / 2, 230, SpriteSheet.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2 - 300, 420, SpriteSheet.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2 + 300, 420, SpriteSheet.PLATFORM);
 
         this.combatManager = new CombatManager();
         const { setHealthUI, setManaUI, changeIcon } = addPlayerStatusUI(
@@ -147,15 +149,16 @@ class Survival extends Phaser.Scene {
         if (cursors === undefined || this.isPaused) return;
         handleTransformation(this.player, this.specialKeys);
         this.player.handleMotion(getMotions(cursors));
+        const { x: px, y: py } = this.player.getPosition();
         for (const enemy of this.enemies.values()) {
+            const { x: ex, y: ey } = enemy.getPosition();
             if (intersect(this.player, enemy)) {
                 enemy.attack();
-            } else if (inRange(this.player, enemy, 300)) {
-                enemy.handleMotion(
-                    this.player.getPosition().x < enemy.getPosition().x
-                        ? "left"
-                        : "right"
-                );
+            } else if (
+                Math.abs(py - ey) < 100 && // homing iff enemy and player are roughly eye level, and...
+                inRange(this.player, enemy, 300) // are within reasonable distance
+            ) {
+                enemy.handleMotion(px < ex ? "left" : "right");
             } else enemy.handleMotion(null);
         }
     }
