@@ -381,6 +381,7 @@ export class NullAudio {
     }
     public stop() {}
     public destroy() {}
+    public fadeOut(duration: number) {}
     public isPlaying = false;
     public key = "";
 }
@@ -458,3 +459,5 @@ class User {
 
 /** User object holding name, settings data */
 export const USER = new User();
+
+export const DEFAULT_FADE_TIME = 700;

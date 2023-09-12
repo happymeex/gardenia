@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { makeClickable, mainMenu } from "../ui";
 import { CANVAS_CENTER, BGM, SoundKey } from "../constants";
 import menuTheme from "../static/menu_theme.mp3";
+import { fadeMusic, fadeToNextScene } from "../utils";
 
 const buttonData = [
     {
@@ -58,7 +59,12 @@ class MainMenu extends Phaser.Scene {
                 mainMenu.optionStyle
             );
             makeClickable(navButton, this, () => {
-                this.scene.start(nextScene);
+                if (nextScene === "tutorial") {
+                    fadeMusic(this);
+                    fadeToNextScene(this, nextScene);
+                } else {
+                    this.scene.start(nextScene);
+                }
             });
             menuTextContainer.add(navButton);
             navButton.setOrigin(0.5); // center-align text

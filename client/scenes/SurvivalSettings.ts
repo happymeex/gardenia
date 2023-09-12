@@ -1,10 +1,11 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER } from "../constants";
+import { CANVAS_CENTER, DEFAULT_FADE_TIME } from "../constants";
 import {
     menuTextStyleBase,
     paragraphTextStyleBase,
     makeClickable,
 } from "../ui";
+import { fadeMusic, fadeToNextScene } from "../utils";
 
 class SurvivalSettings extends Phaser.Scene {
     public constructor() {
@@ -33,7 +34,8 @@ class SurvivalSettings extends Phaser.Scene {
             this.scene.start("main-menu");
         });
         makeClickable(begin, this, () => {
-            this.scene.start("survival");
+            fadeMusic(this);
+            fadeToNextScene(this, "survival");
         });
         container.add(
             [header, subHeader, returnToHome, begin].map((item) =>

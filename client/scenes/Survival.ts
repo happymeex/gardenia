@@ -11,6 +11,8 @@ import {
     loadSprites,
     loadAudio,
     playBGM,
+    fadeToNextScene,
+    fadeMusic,
 } from "../utils";
 import {
     configurePauseMenu,
@@ -232,7 +234,8 @@ class Survival extends Phaser.Scene {
         });
         makeClickable(returnToMenu, this, () => {
             this.makeFlowControlFunctions().leave();
-            this.scene.start("main-menu");
+            fadeMusic(this);
+            fadeToNextScene(this, "main-menu");
         });
         container.add(
             [header, LHS, RHS, returnToMenu].map((item) => item.setOrigin(0.5))

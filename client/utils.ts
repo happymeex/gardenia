@@ -3,6 +3,7 @@ import {
     BGM,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
+    DEFAULT_FADE_TIME,
     getSpriteMetaData,
     NullAudio,
     playerSpriteMetaData,
@@ -419,4 +420,47 @@ export function playBGM(scene: Phaser.Scene, sound: Sound) {
     } else {
         BGM.audio = new NullAudio();
     }
+}
+
+/**
+ * Fades the background music's volume to 0.
+ *
+ * @param scene
+ * @param duration how long the fade should take. By default, it's `DEFAULT_FADE_TIME`.
+ */
+export function fadeMusic(scene: Phaser.Scene, duration = DEFAULT_FADE_TIME) {
+    scene.tweens.add({
+        targets: BGM.audio,
+        volume: 0,
+        duration: duration,
+    });
+}
+
+/**
+ * Fades the game screen to black and then moves to new scene.
+ *
+ * @param scene starting scene
+ * @param nextScene key of the next scene
+ * @param onFadeFinish optional function to call right when the fade finishes, before
+ *      transitioning to the next scene
+ */
+export function fadeToNextScene(
+    scene: Phaser.Scene,
+    nextScene: string,
+    onFadeFinish?: () => void,
+    duration?: number
+) {
+    duration = duration ?? DEFAULT_FADE_TIME;
+    scene.cameras.main.fadeOut(
+        duration,
+        0,
+        0,
+        0,
+        (camera, progress: number) => {
+            if (progress === 1) {
+                if (onFadeFinish) onFadeFinish();
+                scene.scene.start(nextScene);
+            }
+        }
+    );
 }
