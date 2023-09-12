@@ -1,6 +1,10 @@
 import Phaser from "phaser";
 import { CANVAS_CENTER } from "../constants";
-import { menuTextStyleBase, makeClickable } from "../ui";
+import {
+    menuTextStyleBase,
+    paragraphTextStyleBase,
+    makeClickable,
+} from "../ui";
 
 class SurvivalSettings extends Phaser.Scene {
     public constructor() {
@@ -12,6 +16,12 @@ class SurvivalSettings extends Phaser.Scene {
             ...menuTextStyleBase,
             fontSize: "72px",
         });
+        const subHeader = this.add.text(
+            0,
+            -200,
+            "Test yourself against hordes of bots!",
+            paragraphTextStyleBase
+        );
         const returnToHome = this.add.text(
             -400,
             -250,
@@ -26,7 +36,9 @@ class SurvivalSettings extends Phaser.Scene {
             this.scene.start("survival");
         });
         container.add(
-            [header, returnToHome, begin].map((item) => item.setOrigin(0.5))
+            [header, subHeader, returnToHome, begin].map((item) =>
+                item.setOrigin(0.5)
+            )
         );
     }
 }
