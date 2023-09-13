@@ -12,6 +12,27 @@ const defaultSettings: UserSettings = {
     music: true,
 };
 
+export const OPTIONS: Array<{
+    label: string;
+    onChange: (state: boolean) => void;
+    setting: keyof UserSettings;
+}> = [
+    {
+        label: "Sound Effects",
+        onChange: (state: boolean) => {
+            USER.setSetting("soundFX", state);
+        },
+        setting: "soundFX",
+    },
+    {
+        label: "Music",
+        onChange: (state: boolean) => {
+            USER.setSetting("music", state);
+        },
+        setting: "music",
+    },
+];
+
 class User {
     private name = "Anonymous";
     private hasSetName = false;

@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { BGM } from "./BGM";
 import { CANVAS_CENTER, CANVAS_WIDTH, CANVAS_HEIGHT } from "./constants";
 import { fadeToNextScene } from "./utils";
+import { USER, OPTIONS } from "./User";
 
 export type TextStyle = Phaser.Types.GameObjects.Text.TextStyle;
 
@@ -100,9 +101,10 @@ export function configurePauseMenu(
     });
     const menuTextContainer = scene.add.container(...CANVAS_CENTER);
     menuTextContainer.setDepth(100);
+    const upShift = 100;
     const header = scene.add.text(
         0,
-        -pauseMenu.headerMarginBottom,
+        -pauseMenu.headerMarginBottom - upShift,
         "Menu",
         pauseMenu.headerStyle
     );
@@ -124,19 +126,50 @@ export function configurePauseMenu(
             },
         },
     ];
+
     const buttons = buttonData.map(({ label, onClick }, i) => {
         const textButton = scene.add.text(
             0,
-            pauseMenu.optionSpacing * i,
+            -upShift + pauseMenu.optionSpacing * i,
             label,
             pauseMenu.optionStyle
         );
         makeClickable(textButton, scene, onClick);
         return textButton;
     });
+
+    // add options controls
+    const downShift = 60;
+    const optionsHeader = scene.add
+        .text(0, downShift, "Options", pauseMenu.headerStyle)
+        .setOrigin(0.5);
+    const settings = USER.getSettings();
+    const options = scene.add.container(
+        0,
+        downShift + pauseMenu.headerMarginBottom
+    );
+    OPTIONS.forEach(({ label, onChange, setting }, i) => {
+        const optionContainer = scene.add.container(0, 60 * i);
+        const checkbox = new Checkbox(
+            scene,
+            -100,
+            0,
+            settings[setting],
+            onChange
+        );
+        const text = scene.add
+            .text(-50, 0, label, paragraphTextStyleBase)
+            .setOrigin(0, 0.5);
+        optionContainer.add(text);
+        checkbox.addToContainer(optionContainer);
+        options.add(optionContainer);
+    });
+
+    // put everything together
     menuTextContainer.add(
         [header, ...buttons].map((item) => item.setOrigin(0.5))
     );
+    menuTextContainer.add([optionsHeader, options]);
 
     menuTextContainer.setVisible(false);
     return settingsButton;
@@ -208,4 +241,65 @@ export function makeClickable(
             duration,
         });
     });
+}
+
+const CHECKBOX_SIZE = 32;
+
+export class Checkbox {
+    private innerFill: Phaser.GameObjects.Rectangle;
+    private outerBox: Phaser.GameObjects.Rectangle;
+
+    /**
+     * Adds a checkbox to `scene` whose checked status is given by `initialState`.
+     *
+     * @param scene Scene to add the checkbox to
+     * @param x x-coordinate of checkbox location
+     * @param y y-coordinate of checkbox location
+     * @param checked initial status of the checkbox.
+     * @param onChange callback function invoked each time the checkbox is toggled.
+     */
+    constructor(
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        private checked: boolean,
+        private onChange: (state: boolean) => void
+    ) {
+        this.outerBox = scene.add
+            .rectangle(x, y, CHECKBOX_SIZE, CHECKBOX_SIZE)
+            .setStrokeStyle(4, baseColorNumber);
+        this.innerFill = scene.add
+            .rectangle(x, y, 0.6 * CHECKBOX_SIZE, 0.6 * CHECKBOX_SIZE)
+            .setFillStyle(baseColorNumber);
+        if (!checked) {
+            this.innerFill.setVisible(false);
+        }
+        makeClickable(
+            this.outerBox,
+            scene,
+            () => {
+                this.setState(!this.checked);
+            },
+            false,
+            1,
+            1,
+            0.1
+        );
+    }
+
+    /**
+     * Adds the checkbox to `container`. Note that the coordinates `x`, `y` passed into
+     * the constructor become relative to the container's position.
+     *
+     */
+    public addToContainer(container: Phaser.GameObjects.Container) {
+        container.add([this.outerBox, this.innerFill]);
+    }
+
+    /** Checks the checkbox if `state` is true and unchecks otherwise. */
+    public setState(state: boolean) {
+        this.checked = state;
+        this.onChange(state);
+        this.innerFill.setVisible(state);
+    }
 }
