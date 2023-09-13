@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser, { RIGHT } from "phaser";
 import { configurePauseMenu, paragraphTextStyleBase } from "../ui";
 import {
     BattleScene,
@@ -85,13 +85,14 @@ class Tutorial extends Phaser.Scene implements BattleScene {
             USER.getName(),
             this,
             platforms,
-            300,
-            300,
+            CANVAS_WIDTH / 2,
+            -100,
             this.makeDeathHandlers("player"),
             setHealthUI,
             setManaUI,
             changeIcon,
-            () => {}
+            () => {},
+            "right"
         );
         this.player.registerAsCombatant(this.combatManager, "player");
         this.currTextIndex = 0;
@@ -188,13 +189,14 @@ class Tutorial extends Phaser.Scene implements BattleScene {
                             USER.getName(),
                             this,
                             this.platforms,
-                            300,
+                            CANVAS_WIDTH / 2,
                             -100,
                             this.makeDeathHandlers("player"),
                             setHealthUI,
                             setManaUI,
                             changeIcon,
-                            () => {}
+                            () => {},
+                            "right"
                         );
                         this.player.registerAsCombatant(
                             this.combatManager,

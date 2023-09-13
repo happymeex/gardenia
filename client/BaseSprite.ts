@@ -41,7 +41,7 @@ export class BaseSprite implements HasHealth {
      * @param scene scene to which the sprite belongs
      * @param x initial x-coord
      * @param y initial y-coord
-     * @param direction initial direction that the sprite is facing. Defaults to "right".
+     * @param direction initial direction that the sprite is facing.
      */
     public constructor(
         public readonly name: string,
@@ -50,7 +50,7 @@ export class BaseSprite implements HasHealth {
         x: number,
         y: number,
         private onDeath: (name: string) => void,
-        protected direction: "left" | "right" = "right"
+        protected direction: "left" | "right"
     ) {
         this.health = spriteData.health;
         this.maxHealth = spriteData.health;

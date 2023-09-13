@@ -75,7 +75,7 @@ class Player extends BaseSprite {
         private onManaChange: (ratio: number) => void,
         private onTransform: (target: SpriteSheet) => void,
         private onSound: (sound: Sound) => void,
-        direction: "left" | "right" = "right"
+        direction: "left" | "right"
     ) {
         super(name, scene, playerSpriteMetaData, x, y, onDeath, direction);
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());

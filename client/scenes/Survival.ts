@@ -94,13 +94,14 @@ class Survival extends Phaser.Scene {
             "Meex",
             this,
             platforms,
-            300,
-            300,
+            CANVAS_WIDTH / 2,
+            350,
             this.makeDeathHandlers("player"),
             setHealthUI,
             setManaUI,
             changeIcon,
-            () => {}
+            () => {},
+            "right"
         );
         this.player.registerAsCombatant(this.combatManager, "player");
         const createEnemy = () => {

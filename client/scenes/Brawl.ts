@@ -278,7 +278,8 @@ class Brawl extends Phaser.Scene implements BattleScene {
                                 [Field.VALUE]: sound,
                             })}`
                         );
-                    }
+                    },
+                    "right"
                 );
                 this.player.registerAsCombatant(combatManager, id);
             } else {
