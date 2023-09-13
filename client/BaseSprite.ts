@@ -60,6 +60,7 @@ export class BaseSprite implements HasHealth {
             spriteData.spriteKey,
             spriteData.idleFrame
         );
+        if (direction === "left") this.sprite.setFlipX(true);
         initializeAnimations(this.sprite, spriteData.spriteKey);
         this.sprite.setSize(spriteData.width, spriteData.height);
         this.sprite.on(
