@@ -98,9 +98,7 @@ export class BaseSprite implements HasHealth {
         if (!this.sprite.scene || !USER.getSettings().soundFX) return;
         const soundData = soundTracks.get(sound);
         if (soundData !== undefined) {
-            this.sprite.scene.sound
-                .add(soundData.sound, soundData.config)
-                .play();
+            this.sprite.scene.sound.add(soundData.key, soundData.config).play();
         }
     }
 

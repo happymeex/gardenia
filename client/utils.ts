@@ -1,11 +1,9 @@
 import Phaser from "phaser";
 import {
-    BGM,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     DEFAULT_FADE_TIME,
     getSpriteMetaData,
-    NullAudio,
     playerSpriteMetaData,
     Sound,
     SoundKey,
@@ -400,41 +398,6 @@ const audioMap = new Map([
     [SoundKey.EXPLODE, explosionSound],
     [SoundKey.TUTORIAL, tutorialTheme],
 ]);
-
-/**
- * Stops and destroys any existing audio attached to the `BGM` global
- * audio manager, attaches the soundtrack specified by `sound`,
- * and plays it. If the soundtrack doesn't exist, sets `BGM.audio` to
- * `NullAudio` instead.
- *
- * @param scene
- * @param sound
- */
-export function playBGM(scene: Phaser.Scene, sound: Sound) {
-    BGM.audio.stop();
-    BGM.audio.destroy();
-    const soundData = soundTracks.get(sound);
-    if (soundData) {
-        BGM.audio = scene.sound.add(soundData.sound, soundData.config);
-        BGM.audio.play();
-    } else {
-        BGM.audio = new NullAudio();
-    }
-}
-
-/**
- * Fades the background music's volume to 0.
- *
- * @param scene
- * @param duration how long the fade should take. By default, it's `DEFAULT_FADE_TIME`.
- */
-export function fadeMusic(scene: Phaser.Scene, duration = DEFAULT_FADE_TIME) {
-    scene.tweens.add({
-        targets: BGM.audio,
-        volume: 0,
-        duration: duration,
-    });
-}
 
 /**
  * Fades the game screen to black and then moves to new scene.

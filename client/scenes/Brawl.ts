@@ -10,7 +10,6 @@ import {
     createSpecialKeys,
     BattleScene,
     loadAudio,
-    playBGM,
 } from "../utils";
 import { configurePauseMenu } from "../ui";
 import {
@@ -18,7 +17,6 @@ import {
     MsgTypes,
     SpriteSheet,
     CANVAS_HEIGHT,
-    BGM,
     SoundKey,
     CANVAS_WIDTH,
     NullSocket,
@@ -30,6 +28,7 @@ import { Player, getMotions, Projectile } from "../Player";
 import { PlayerBody, SpriteBody } from "../SpriteBody";
 import { addWaterfallBackground } from "../backgrounds";
 import { CombatManager } from "../CombatManager";
+import { BGM } from "../BGM";
 
 const SPRITE_PINGER_PROCESS_NAME = "*sprite-pinger";
 
@@ -67,7 +66,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
-        playBGM(this, Sound.BATTLE_THEME);
+        BGM.play(this, Sound.BATTLE_THEME);
         this.isPaused = false; // need to reset this in case this brawl isn't the first one of the sitting
         this.otherPlayers = new Map();
         this.socket = data.socket;
@@ -167,7 +166,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
                 const soundData = soundTracks.get(msg[Field.VALUE]);
                 if (soundData === undefined)
                     throw new Error("Sound not found!");
-                this.sound.add(soundData.sound, soundData.config).play();
+                this.sound.add(soundData.key, soundData.config).play();
             }
         };
         this.socket.onclose = () => {

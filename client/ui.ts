@@ -1,11 +1,7 @@
 import Phaser from "phaser";
-import {
-    CANVAS_CENTER,
-    CANVAS_WIDTH,
-    CANVAS_HEIGHT,
-    DEFAULT_FADE_TIME,
-} from "./constants";
-import { fadeMusic, fadeToNextScene } from "./utils";
+import { BGM } from "./BGM";
+import { CANVAS_CENTER, CANVAS_WIDTH, CANVAS_HEIGHT } from "./constants";
+import { fadeToNextScene } from "./utils";
 
 export type TextStyle = Phaser.Types.GameObjects.Text.TextStyle;
 
@@ -123,7 +119,7 @@ export function configurePauseMenu(
         {
             label: "Return to home",
             onClick: () => {
-                fadeMusic(scene);
+                BGM.fadeOut(scene);
                 fadeToNextScene(scene, "main-menu", onLeave);
             },
         },

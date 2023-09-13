@@ -1,8 +1,9 @@
 import Phaser from "phaser";
 import { makeClickable, mainMenu } from "../ui";
-import { CANVAS_CENTER, BGM, SoundKey } from "../constants";
+import { CANVAS_CENTER, Sound, SoundKey } from "../constants";
 import menuTheme from "../static/menu_theme.mp3";
-import { fadeMusic, fadeToNextScene } from "../utils";
+import { fadeToNextScene } from "../utils";
+import { BGM } from "../BGM";
 
 const buttonData = [
     {
@@ -32,14 +33,7 @@ class MainMenu extends Phaser.Scene {
         this.load.audio(SoundKey.MENU, menuTheme);
     }
     create() {
-        if (BGM.audio.key !== SoundKey.MENU) {
-            BGM.audio.stop();
-            BGM.audio = this.sound.add(SoundKey.MENU, {
-                loop: true,
-                volume: 0.7,
-            });
-            BGM.audio.play();
-        }
+        BGM.play(this, Sound.MENU_THEME, false);
         const menuTextContainer = this.add.container(...CANVAS_CENTER);
         const title = this.add
             .text(
@@ -60,7 +54,7 @@ class MainMenu extends Phaser.Scene {
             );
             makeClickable(navButton, this, () => {
                 if (nextScene === "tutorial") {
-                    fadeMusic(this);
+                    BGM.fadeOut(this);
                     fadeToNextScene(this, nextScene);
                 } else {
                     this.scene.start(nextScene);

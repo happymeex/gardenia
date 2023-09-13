@@ -8,7 +8,6 @@ import {
     SpecialKeys,
     createSpecialKeys,
     loadAudio,
-    playBGM,
 } from "../utils";
 import { addWaterfallBackground } from "../backgrounds";
 import {
@@ -17,8 +16,6 @@ import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     USER,
-    BGM,
-    soundTracks,
     Sound,
 } from "../constants";
 import platform from "../static/platform.png";
@@ -27,6 +24,7 @@ import { CombatManager } from "../CombatManager";
 import { Player, getMotions } from "../Player";
 import { BasicBot } from "../Enemies";
 import { handleTransformation, intersect, inRange } from "../utils";
+import { BGM } from "../BGM";
 
 const SECONDS_BETWEEN_ENEMY_SPAWN = 10;
 
@@ -68,7 +66,7 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {
-        playBGM(this, Sound.TUTORIAL_THEME);
+        BGM.play(this, Sound.TUTORIAL_THEME);
 
         this.numSpawned = 0;
         this.isPaused = false;

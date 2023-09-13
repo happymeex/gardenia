@@ -35,6 +35,7 @@ export enum SoundKey {
 
 /** Keys for identifying particular sound effects. */
 export enum Sound {
+    SILENCE,
     BATTLE_THEME,
     MENU_THEME,
     TUTORIAL_THEME,
@@ -46,31 +47,31 @@ export enum Sound {
 /** Holds data for all sounds, indexed by keys of type `SoundFX`. */
 export const soundTracks = new Map<
     Sound,
-    { sound: SoundKey; config: Phaser.Types.Sound.SoundConfig }
+    { key: SoundKey; config: Phaser.Types.Sound.SoundConfig }
 >([
     [
         Sound.BATTLE_THEME,
-        { sound: SoundKey.BATTLE, config: { loop: true, volume: 0.7 } },
+        { key: SoundKey.BATTLE, config: { loop: true, volume: 0.7 } },
     ],
     [
         Sound.MENU_THEME,
-        { sound: SoundKey.MENU, config: { loop: true, volume: 0.7 } },
+        { key: SoundKey.MENU, config: { loop: true, volume: 0.7 } },
     ],
     [
         Sound.TUTORIAL_THEME,
-        { sound: SoundKey.TUTORIAL, config: { loop: true, volume: 1 } },
+        { key: SoundKey.TUTORIAL, config: { loop: true, volume: 1 } },
     ],
     [
         Sound.PLAYER_ATTACK,
-        { sound: SoundKey.WHOOSH, config: { loop: false, volume: 0.7 } },
+        { key: SoundKey.WHOOSH, config: { loop: false, volume: 0.7 } },
     ],
     [
         Sound.EXPLODE,
-        { sound: SoundKey.EXPLODE, config: { loop: false, volume: 0.8 } },
+        { key: SoundKey.EXPLODE, config: { loop: false, volume: 0.8 } },
     ],
     [
         Sound.DAMAGE,
-        { sound: SoundKey.DAMAGE, config: { loop: false, volume: 0.8 } },
+        { key: SoundKey.DAMAGE, config: { loop: false, volume: 0.8 } },
     ],
 ]);
 
@@ -368,32 +369,6 @@ export interface CanBeHit extends HasLocation {
 export interface HasHealth extends CanBeHit {
     getHealthPercentage(): number;
 }
-
-/**
- * Sentinel object.
- */
-export class NullAudio {
-    public play() {
-        throw new Error("Audio is currently null");
-    }
-    public resume() {
-        throw new Error("Audio is currently null");
-    }
-    public stop() {}
-    public destroy() {}
-    public fadeOut(duration: number) {}
-    public isPlaying = false;
-    public key = "";
-}
-
-export type Audio =
-    | Phaser.Sound.NoAudioSound
-    | Phaser.Sound.HTML5AudioSound
-    | Phaser.Sound.WebAudioSound
-    | NullAudio;
-
-/** Global audio manager. */
-export let BGM: { audio: Audio } = { audio: new NullAudio() };
 
 /**
  * Sentinel object.

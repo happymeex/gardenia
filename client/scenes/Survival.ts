@@ -10,9 +10,7 @@ import {
     createSpecialKeys,
     loadSprites,
     loadAudio,
-    playBGM,
     fadeToNextScene,
-    fadeMusic,
 } from "../utils";
 import {
     configurePauseMenu,
@@ -34,6 +32,7 @@ import {
 import { CombatManager } from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
 import { addWaterfallBackground } from "../backgrounds";
+import { BGM } from "../BGM";
 
 const INITIAL_SPAWN_PERIOD = 5;
 
@@ -74,7 +73,7 @@ class Survival extends Phaser.Scene {
         this.numKilled = 0;
         this.numSpawned = 0;
         this.processes.clear();
-        playBGM(this, Sound.BATTLE_THEME);
+        BGM.play(this, Sound.BATTLE_THEME);
 
         this.specialKeys = createSpecialKeys(this);
         const { pause, resume, leave } = this.makeFlowControlFunctions();
@@ -234,7 +233,7 @@ class Survival extends Phaser.Scene {
         });
         makeClickable(returnToMenu, this, () => {
             this.makeFlowControlFunctions().leave();
-            fadeMusic(this);
+            BGM.fadeOut(this);
             fadeToNextScene(this, "main-menu");
         });
         container.add(

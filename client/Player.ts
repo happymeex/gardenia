@@ -231,7 +231,7 @@ class Player extends BaseSprite {
                 const soundData = soundTracks.get(Sound.PLAYER_ATTACK);
                 if (soundData !== undefined) {
                     this.scene.sound
-                        .add(soundData.sound, soundData.config)
+                        .add(soundData.key, soundData.config)
                         .play();
                 }
             }
