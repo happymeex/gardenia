@@ -34,7 +34,10 @@ const TUTORIAL_TEXT = [
     "Press SPACE to attack.",
     "Your health and mana bars are shown in green and blue, respectively.\nThey automatically regenerate over time.",
     "Press F, B, and G to switch between Fox, Bear, and Human modes.\nNote that each transformation costs mana!",
-    "Click the icon in the top right to pause the game.",
+    "The nimble Fox has a ranged attack that costs mana.\nIt has lowered defense.",
+    "The slow but sturdy Bear has a powerful melee attack.\nIt has elevated defense.",
+    "Click the icon in the top right to pause the game\n and return the main menu or adjust settings.",
+    "",
 ];
 
 class Tutorial extends Phaser.Scene implements BattleScene {
@@ -100,15 +103,18 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         this.enterKey = this.input.keyboard?.addKey(
             Phaser.Input.Keyboard.KeyCodes.ENTER
         );
+
+        // Handle tutorial text
         if (this.enterKey) {
             this.enterKey.on("down", () => {
                 if (this.isPaused) return;
-                this.addTutorialText(
-                    TUTORIAL_TEXT[this.currTextIndex + 1] ?? ""
-                );
-                this.currTextIndex++;
+                this.currTextIndex =
+                    (this.currTextIndex + 1) % TUTORIAL_TEXT.length;
+                this.addTutorialText(TUTORIAL_TEXT[this.currTextIndex]);
             });
         }
+
+        // spawn enemies, at most 3 on screen at a time
         const createEnemy = () => {
             if (this.isPaused) return;
             const numEnemies = this.enemies.size;
@@ -239,7 +245,7 @@ class Tutorial extends Phaser.Scene implements BattleScene {
      */
     private addTutorialText(text: string): void {
         if (this.currText) this.currText.destroy();
-        if (text === "") return;
+
         this.currText = this.add.container(
             CANVAS_WIDTH / 2,
             CANVAS_HEIGHT - 80
@@ -249,15 +255,19 @@ class Tutorial extends Phaser.Scene implements BattleScene {
             .setAlign("center")
             .setOrigin(0.5, 1);
 
+        const blinkingTextContent =
+            text !== ""
+                ? "(Press ENTER to continue)"
+                : "(Press ENTER to reset tutorial text)";
         const blinkingText = this.add
-            .text(0, 0, "(Press ENTER to continue)", paragraphTextStyleBase)
+            .text(0, 0, blinkingTextContent, paragraphTextStyleBase)
             .setAlign("center")
             .setOrigin(0.5, 0);
 
         this.add.tween({
             targets: blinkingText,
             alpha: 0,
-            duration: 1000,
+            duration: 1300,
             yoyo: true,
             repeat: -1,
         });
