@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { DEFAULT_FADE_TIME, Sound, soundTracks } from "./constants";
+import { DEFAULT_FADE_TIME, Sound, soundTracks, USER } from "./constants";
 
 /**
  * Sentinel object.
@@ -13,7 +13,7 @@ class NullAudio {
     }
     public stop() {}
     public destroy() {}
-    public fadeOut(duration: number) {}
+    public setVolume(value: number) {}
     public isPlaying = false;
     public key = "";
 }
@@ -55,9 +55,30 @@ class BGMManager {
         const soundData = soundTracks.get(music);
         if (soundData) {
             this.audio = scene.sound.add(soundData.key, soundData.config);
+            if (!USER.getSettings().music) this.audio.setVolume(0);
             this.audio.play();
         } else {
             this.audio = new NullAudio();
+        }
+    }
+
+    /**
+     * Sets audio volume to 0.
+     */
+    public hideMusic() {
+        this.audio.setVolume(0);
+    }
+
+    /**
+     * Restores music volume to the proper level (i.e. the level specified by the
+     * soundtrack most recently passed to the `play` method)
+     */
+    public restoreMusic() {
+        console.log("restoring music");
+        const soundData = soundTracks.get(this.currMusic);
+        if (soundData) {
+            const volume = soundData.config.volume ?? 1;
+            this.audio.setVolume(volume);
         }
     }
 

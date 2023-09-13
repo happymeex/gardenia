@@ -1,3 +1,4 @@
+import { BGM } from "./BGM";
 import { SpriteAppearance } from "./SpriteBody";
 
 export const CANVAS_WIDTH = 1344;
@@ -429,6 +430,13 @@ class User {
         value: UserSettings[typeof setting]
     ): void {
         this.settings[setting] = value;
+        if (setting === "music") {
+            if (value) {
+                BGM.restoreMusic();
+            } else {
+                BGM.hideMusic();
+            }
+        }
     }
 }
 
