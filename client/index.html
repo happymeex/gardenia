@@ -3,6 +3,16 @@
 <html>
     <head>
         <title>Gardenia</title>
+        <meta name="og:title" content="Gardenia" />
+        <meta
+            name="description"
+            content="2D platformer game about a shapeshifting forest nymph."
+        />
+        <meta
+            property="og:description"
+            content="2D platformer game about a shapeshifting forest nymph."
+        />
+        <meta name="twitter:card" content="summary_large_image" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -14,9 +24,32 @@
         <div id="font-renderer">.</div>
         <div id="font-renderer2">.</div>
         <main id="game-container"></main>
+        <div id="socials-bar">
+            <a
+                href="https://github.com/happymeex/gardenia#readme"
+                target="_blank"
+            >
+                <img src="./static/social-media-icons/icons8-github-48.png" />
+            </a>
+            <a href="https://instagram.com/happymeex" target="_blank">
+                <img
+                    src="./static/social-media-icons/icons8-instagram-48.png"
+                />
+            </a>
+            <a href="https://twitter.com/EC_Matrix" target="_blank">
+                <img src="./static/social-media-icons/icons8-twitter-48.png" />
+            </a>
+        </div>
     </body>
     <input id="join-code-input" placeholder="Join code" />
     <style>
+        #socials-bar {
+            display: flex;
+            gap: 4px;
+        }
+        #socials-bar img {
+            filter: opacity(0.5);
+        }
         #font-renderer,
         #font-renderer2 {
             font-family: "Alegreya SC";
@@ -30,8 +63,10 @@
         body {
             margin: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 8px;
             height: 100vh;
         }
         #game-container {
