@@ -109,6 +109,7 @@ class Survival extends Phaser.Scene {
             if (numEnemies === this.maxEnemies) return;
             const name = `enemy-${this.numSpawned}`;
             let enemy: BasicBot | BombBot;
+            const direction = Math.random() < 0.5 ? "left" : "right";
             if (Math.random() < 0.5) {
                 enemy = new BasicBot(
                     name,
@@ -116,7 +117,8 @@ class Survival extends Phaser.Scene {
                     platforms,
                     CANVAS_WIDTH / 2,
                     -500,
-                    this.makeDeathHandlers("enemy")
+                    this.makeDeathHandlers("enemy"),
+                    direction
                 );
             } else {
                 enemy = new BombBot(
@@ -125,7 +127,8 @@ class Survival extends Phaser.Scene {
                     platforms,
                     CANVAS_WIDTH / 2,
                     -500,
-                    this.makeDeathHandlers("enemy")
+                    this.makeDeathHandlers("enemy"),
+                    direction
                 );
             }
             this.enemies.set(name, enemy);
@@ -156,7 +159,7 @@ class Survival extends Phaser.Scene {
             if (intersect(this.player, enemy)) {
                 enemy.attack();
             } else if (
-                Math.abs(py - ey) < 100 && // homing iff enemy and player are roughly eye level, and...
+                Math.abs(py - ey) < 80 && // homing iff enemy and player are roughly eye level, and...
                 inRange(this.player, enemy, 300) // are within reasonable distance
             ) {
                 enemy.handleMotion(px < ex ? "left" : "right");
