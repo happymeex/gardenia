@@ -34,7 +34,10 @@ export enum SoundKey {
     EXPLODE = "e",
 }
 
-/** Keys for identifying particular sound effects. */
+/**
+ * Keys for identifying particular sounds. A "sound" refers to both an audio file
+ * (i.e. a `SoundKey`) and config information (volume, etc.).
+ */
 export enum Sound {
     SILENCE,
     BATTLE_THEME,
@@ -45,11 +48,13 @@ export enum Sound {
     DAMAGE,
 }
 
+type SoundData = {
+    readonly key: SoundKey;
+    readonly config: Phaser.Types.Sound.SoundConfig;
+};
+
 /** Holds data for all sounds, indexed by keys of type `SoundFX`. */
-export const soundTracks = new Map<
-    Sound,
-    { key: SoundKey; config: Phaser.Types.Sound.SoundConfig }
->([
+export const soundTracks = new Map<Sound, SoundData>([
     [
         Sound.BATTLE_THEME,
         { key: SoundKey.BATTLE, config: { loop: true, volume: 0.7 } },
