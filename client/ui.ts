@@ -49,7 +49,7 @@ export const mainMenu: MenuStyle = {
         fontSize: "40px",
     },
     optionSpacing: 60,
-    headerMarginBottom: 128,
+    headerMarginBottom: 108,
 };
 
 /** Styles for in-game pause menu. Specifies font, font size, spacing. */
