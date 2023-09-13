@@ -7,6 +7,10 @@ import { BGM } from "../BGM";
 
 const buttonData = [
     {
+        label: "Tutorial",
+        nextScene: "tutorial",
+    },
+    {
         label: "Survival",
         nextScene: "survival-settings",
     },
@@ -14,10 +18,6 @@ const buttonData = [
     {
         label: "Story",
         nextScene: "story",
-    },
-    {
-        label: "Tutorial",
-        nextScene: "tutorial",
     },
     {
         label: "Options",

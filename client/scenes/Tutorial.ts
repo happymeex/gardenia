@@ -238,10 +238,11 @@ class Tutorial extends Phaser.Scene implements BattleScene {
     }
 
     /**
-     * Displays `text` at the bottom center of the game screen, along with
+     * Displays `text` at the bottom center of the game screen, along with blinking text that reads
      * "(Press ENTER to continue)" underneath. Also removes the text that was there previously.
      *
-     * @param text Text to be displayed. If empty string, then no new text is added.
+     * @param text Text to be displayed. If empty string, then no new text is added, and the
+     *      blinking text reads "(Press ENTER to reset tutorial text)".
      */
     private addTutorialText(text: string): void {
         if (this.currText) this.currText.destroy();
