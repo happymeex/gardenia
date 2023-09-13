@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, USER, UserSettings } from "../constants";
+import { CANVAS_CENTER } from "../constants";
+import { USER, UserSettings } from "../User";
 import {
     menuTextStyleBase,
     makeClickable,

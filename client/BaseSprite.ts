@@ -7,8 +7,8 @@ import {
     HasHealth,
     Sound,
     soundTracks,
-    USER,
 } from "./constants";
+import { USER } from "./User";
 import { flashWhite } from "./utils";
 import {
     CombatManager,

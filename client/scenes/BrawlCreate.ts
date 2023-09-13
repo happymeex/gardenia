@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, USER } from "../constants";
+import { CANVAS_CENTER } from "../constants";
+import { USER } from "../User";
 import {
     makeClickable,
     largeParagraph,

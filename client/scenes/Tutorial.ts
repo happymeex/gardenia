@@ -15,9 +15,9 @@ import {
     SoundKey,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
-    USER,
     Sound,
 } from "../constants";
+import { USER } from "../User";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import { CombatManager } from "../CombatManager";

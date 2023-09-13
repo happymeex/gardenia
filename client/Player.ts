@@ -7,10 +7,10 @@ import {
     HasAppearance,
     SpriteMetaData,
     AttackData,
-    USER,
     Sound,
     soundTracks,
 } from "./constants";
+import { USER } from "./User";
 import { initializeAnimations } from "./animations";
 import { getSpriteMetaData } from "./constants";
 import { SpriteAppearance } from "./SpriteBody";

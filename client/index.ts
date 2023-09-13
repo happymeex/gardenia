@@ -11,7 +11,7 @@ import Tutorial from "./scenes/Tutorial";
 import Options from "./scenes/Options";
 import { getUserId, setUserId } from "./utils";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
-import { USER } from "./constants";
+import { USER } from "./User";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",
