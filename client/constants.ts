@@ -386,3 +386,88 @@ export class NullSocket {
 }
 
 export const DEFAULT_FADE_TIME = 700;
+
+/** Data for adjusting a character's stats. */
+export interface Buff {
+    /** Multiply health by this. */
+    readonly HealthMultiplier: number;
+    /** Multiply damage by this. */
+    readonly DamageMultiplier: number;
+    /** Multiply speed by this */
+    readonly SpeedMultiplier: number;
+}
+
+export const NoBuff: Buff = {
+    HealthMultiplier: 1,
+    DamageMultiplier: 1,
+    SpeedMultiplier: 1,
+};
+
+/**
+ * Parameters for a survival mode difficulty setting. Specifies
+ * an enemy spawn period, an upper bound on the number of living enemies on screen at a time,
+ * a buff to apply periodically to newly spawned enemies, and the
+ * period with which to apply it.
+ */
+export type SurvivalDifficultyParams = {
+    /** Number of seconds between consecutive enemy spawns. */
+    readonly spawnPeriod: number;
+    /** Number of seconds between each increase in difficulty */
+    readonly difficultyIncreasePeriod: number;
+    /** Maximum number of  */
+    readonly maxEnemies: number;
+    /** Buff to be periodically applied to newly spawned enemies. */
+    readonly enemyBuff: Buff;
+};
+
+const EasyDifficultyParams: SurvivalDifficultyParams = {
+    spawnPeriod: 6,
+    maxEnemies: 8,
+    difficultyIncreasePeriod: 18,
+    enemyBuff: {
+        HealthMultiplier: 1.1,
+        DamageMultiplier: 1.1,
+        SpeedMultiplier: 1.05,
+    },
+};
+
+const MediumDifficultyParams: SurvivalDifficultyParams = {
+    spawnPeriod: 5,
+    difficultyIncreasePeriod: 15,
+    maxEnemies: 9,
+    enemyBuff: {
+        HealthMultiplier: 1.15,
+        DamageMultiplier: 1.1,
+        SpeedMultiplier: 1.1,
+    },
+};
+
+const HardDifficultyParams: SurvivalDifficultyParams = {
+    spawnPeriod: 4,
+    difficultyIncreasePeriod: 12,
+    maxEnemies: 10,
+    enemyBuff: {
+        HealthMultiplier: 1.2,
+        DamageMultiplier: 1.2,
+        SpeedMultiplier: 1.15,
+    },
+};
+
+/**
+ * Returns survival mode difficulty parameters given a difficulty level.
+ */
+export function getDifficultyParams(
+    difficulty: "easy" | "medium" | "hard"
+): SurvivalDifficultyParams {
+    switch (difficulty) {
+        case "easy":
+            return EasyDifficultyParams;
+        case "medium":
+            return MediumDifficultyParams;
+        case "hard":
+            return HardDifficultyParams;
+    }
+}
+
+/** Survival mode default difficulty. */
+export const DEFAULT_DIFFICULTY: "easy" | "medium" | "hard" = "medium";

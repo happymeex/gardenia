@@ -11,6 +11,7 @@ import {
     loadSprites,
     loadAudio,
     fadeToNextScene,
+    composeBuffs,
 } from "../utils";
 import {
     configurePauseMenu,
@@ -28,13 +29,14 @@ import {
     SpriteSheet,
     SoundKey,
     Sound,
+    SurvivalDifficultyParams,
+    NoBuff,
+    Buff,
 } from "../constants";
 import { CombatManager } from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
 import { addWaterfallBackground } from "../backgrounds";
 import { BGM } from "../BGM";
-
-const INITIAL_SPAWN_PERIOD = 5;
 
 class Survival extends Phaser.Scene {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
@@ -43,13 +45,13 @@ class Survival extends Phaser.Scene {
     private combatManager: CombatManager;
     /** Maps names to enemy characters. */
     private readonly enemies: Map<string, Enemy> = new Map();
-    private readonly maxEnemies = 8;
     private numSpawned = 0;
     private numKilled = 0;
     private timer: Phaser.GameObjects.Text;
     private processes: Map<string, number> = new Map();
     private settingsButton: Phaser.GameObjects.Image;
     private specialKeys: SpecialKeys;
+    private enemyBuff: Buff = NoBuff;
 
     public constructor() {
         super({ key: "survival" });
@@ -67,7 +69,9 @@ class Survival extends Phaser.Scene {
         loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
-    create() {
+    create(params: SurvivalDifficultyParams) {
+        console.log("gotdiff params:", params);
+        this.enemyBuff = NoBuff;
         this.isPaused = false;
         this.enemies.clear();
         this.numKilled = 0;
@@ -107,7 +111,7 @@ class Survival extends Phaser.Scene {
         const createEnemy = () => {
             if (this.isPaused) return;
             const numEnemies = this.enemies.size;
-            if (numEnemies === this.maxEnemies) return;
+            if (numEnemies === params.maxEnemies) return;
             const name = `enemy-${this.numSpawned}`;
             let enemy: BasicBot | BombBot;
             const direction = Math.random() < 0.5 ? "left" : "right";
@@ -119,7 +123,8 @@ class Survival extends Phaser.Scene {
                     CANVAS_WIDTH / 2,
                     -500,
                     this.makeDeathHandlers("enemy"),
-                    direction
+                    direction,
+                    this.enemyBuff
                 );
             } else {
                 enemy = new BombBot(
@@ -129,7 +134,8 @@ class Survival extends Phaser.Scene {
                     CANVAS_WIDTH / 2,
                     -500,
                     this.makeDeathHandlers("enemy"),
-                    direction
+                    direction,
+                    this.enemyBuff
                 );
             }
             this.enemies.set(name, enemy);
@@ -137,7 +143,10 @@ class Survival extends Phaser.Scene {
             this.numSpawned++;
         };
         createEnemy();
-        const spawner = setInterval(createEnemy, INITIAL_SPAWN_PERIOD * 1000);
+        const spawner = setInterval(createEnemy, params.spawnPeriod * 1000);
+        const difficultyIncrease = setInterval(() => {
+            this.enemyBuff = composeBuffs(this.enemyBuff, params.enemyBuff);
+        }, params.difficultyIncreasePeriod * 1000);
 
         const { timeText, processNumber } = createTimer(
             this,
@@ -146,6 +155,7 @@ class Survival extends Phaser.Scene {
         );
         this.timer = timeText.setOrigin(1, 0.5);
 
+        this.processes.set("difficulty-increase", difficultyIncrease);
         this.processes.set("enemy-spawner", spawner);
         this.processes.set("timer", processNumber);
     }

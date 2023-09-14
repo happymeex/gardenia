@@ -1,6 +1,12 @@
 import Phaser from "phaser";
 import { BGM } from "../BGM";
-import { CANVAS_CENTER, DEFAULT_FADE_TIME } from "../constants";
+import {
+    CANVAS_CENTER,
+    DEFAULT_DIFFICULTY,
+    DEFAULT_FADE_TIME,
+    getDifficultyParams,
+    SurvivalDifficultyParams,
+} from "../constants";
 import {
     menuTextStyleBase,
     paragraphTextStyleBase,
@@ -12,6 +18,9 @@ class SurvivalSettings extends Phaser.Scene {
     public constructor() {
         super({ key: "survival-settings" });
     }
+    private survivalDifficultyParams: SurvivalDifficultyParams =
+        getDifficultyParams(DEFAULT_DIFFICULTY);
+
     create() {
         const container = this.add.container(...CANVAS_CENTER);
         const header = this.add.text(0, -250, "Survival", {
@@ -36,7 +45,13 @@ class SurvivalSettings extends Phaser.Scene {
         });
         makeClickable(begin, this, () => {
             BGM.fadeOut(this);
-            fadeToNextScene(this, "survival");
+            fadeToNextScene(
+                this,
+                "survival",
+                () => {},
+                DEFAULT_FADE_TIME,
+                this.survivalDifficultyParams
+            );
         });
         container.add(
             [header, subHeader, returnToHome, begin].map((item) =>

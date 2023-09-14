@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import {
+    Buff,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     DEFAULT_FADE_TIME,
@@ -8,6 +9,7 @@ import {
     Sound,
     SoundKey,
     soundTracks,
+    SpriteMetaData,
     SpriteSheet,
     SpriteSheetSizes,
 } from "./constants";
@@ -406,12 +408,15 @@ const audioMap = new Map([
  * @param nextScene key of the next scene
  * @param onFadeFinish optional function to call right when the fade finishes, before
  *      transitioning to the next scene
+ * @param duration duration of the fadeout. If unspecified, then `DEFAULT_FADE_TIME` is used.
+ * @param sceneData optional data to pass to next scene
  */
 export function fadeToNextScene(
     scene: Phaser.Scene,
     nextScene: string,
     onFadeFinish?: () => void,
-    duration?: number
+    duration?: number,
+    sceneData?: Object
 ) {
     duration = duration ?? DEFAULT_FADE_TIME;
     scene.cameras.main.fadeOut(
@@ -422,8 +427,59 @@ export function fadeToNextScene(
         (camera, progress: number) => {
             if (progress === 1) {
                 if (onFadeFinish) onFadeFinish();
-                scene.scene.start(nextScene);
+                if (sceneData) scene.scene.start(nextScene, sceneData);
+                else scene.scene.start(nextScene);
             }
         }
     );
+}
+
+/**
+ * Same description as `applyBuff` but only does it once.
+ *
+ * @param buff
+ * @param spriteData
+ */
+function applyBuffOnce(buff: Buff, spriteData: SpriteMetaData): SpriteMetaData {
+    const newData = { ...spriteData };
+    const newAttackData = { ...spriteData.attackData };
+    newAttackData.damage *= buff.DamageMultiplier;
+    newData.attackData = newAttackData;
+    newData.walkSpeed *= buff.SpeedMultiplier;
+    newData.health *= buff.HealthMultiplier;
+
+    return newData;
+}
+
+/**
+ * Computes buffed stats given base stats.
+ *
+ * @param buff buff to be applied
+ * @param spriteData base spriteData to apply the buff to
+ * @param numTimes number of times to iteratively apply the buff. Default 1.
+ * @returns a new copy of the sprite data with buffed stats.
+ */
+export function applyBuff(
+    buff: Buff,
+    spriteData: SpriteMetaData,
+    numTimes = 1
+): SpriteMetaData {
+    let ret = spriteData;
+    for (let i = 0; i < numTimes; i++) {
+        ret = applyBuffOnce(buff, ret);
+    }
+    return ret;
+}
+
+/**
+ * @returns the aggregate buff that would be equivalent to applying
+ *      `buff1` and `buff2` in succession.
+ */
+export function composeBuffs(buff1: Buff, buff2: Buff): Buff {
+    const ret: Buff = {
+        HealthMultiplier: buff1.HealthMultiplier * buff2.HealthMultiplier,
+        DamageMultiplier: buff1.DamageMultiplier * buff2.DamageMultiplier,
+        SpeedMultiplier: buff1.SpeedMultiplier * buff2.SpeedMultiplier,
+    };
+    return ret;
 }

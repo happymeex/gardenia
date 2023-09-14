@@ -4,9 +4,11 @@ import {
     AttackState,
     basicBotSpriteMetaData,
     bombBotMetaData,
+    Buff,
     HasLocation,
     Sound,
 } from "./constants";
+import { applyBuff } from "./utils";
 enum EnemyStates {
     WALKING,
     IDLE,
@@ -45,9 +47,12 @@ class BasicBot extends BaseSprite implements Enemy {
         x: number,
         y: number,
         onDeath: (name: string) => void,
-        direction: "left" | "right" = "right"
+        direction: "left" | "right" = "right",
+        buff?: Buff
     ) {
-        super(name, scene, basicBotSpriteMetaData, x, y, onDeath, direction);
+        let spriteData = basicBotSpriteMetaData;
+        if (buff) spriteData = applyBuff(buff, spriteData);
+        super(name, scene, spriteData, x, y, onDeath, direction);
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
         this.sprite.on(
             "animationcomplete",
@@ -164,9 +169,12 @@ class BombBot extends BaseSprite implements Enemy {
         x: number,
         y: number,
         onDeath: (name: string) => void,
-        direction: "left" | "right" = "right"
+        direction: "left" | "right" = "right",
+        buff?: Buff
     ) {
-        super(name, scene, bombBotMetaData, x, y, onDeath, direction);
+        let spriteData = bombBotMetaData;
+        if (buff) spriteData = applyBuff(buff, spriteData);
+        super(name, scene, spriteData, x, y, onDeath, direction);
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
         const velocity =
             this.spriteData.walkSpeed * (this.direction === "right" ? 1 : -1);
