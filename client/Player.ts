@@ -169,6 +169,14 @@ class Player extends BaseSprite {
     }
 
     /**
+     * @returns true if the player has downward velocity (i.e. is falling), otherwise false
+     */
+    private checkFalling(): boolean {
+        const { x, y } = this.sprite.body.velocity;
+        return y > 1;
+    }
+
+    /**
      * Adjusts the healthbar UI accordingly and plays a damage sound.
      * @inheritdoc
      */
@@ -206,6 +214,7 @@ class Player extends BaseSprite {
      */
     public handleMotion(keyData: KeyData) {
         if (this.health <= 0) return;
+        if (this.checkFalling()) this.inAir = true;
         const {
             spriteKey: spriteSheet,
             walkSpeed,
