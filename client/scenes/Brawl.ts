@@ -267,7 +267,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
                     this,
                     platforms,
                     x,
-                    400,
+                    -100,
                     () => {
                         const spritePinger = this.processes.get(
                             SPRITE_PINGER_PROCESS_NAME
