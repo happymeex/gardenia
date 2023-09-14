@@ -322,6 +322,12 @@ export const bombBotMetaData: SpriteMetaData = {
     },
 };
 
+/**
+ * @param asset key indicating a spritesheet
+ * @returns the metadata associated to the character/entity that the spritesheet represents
+ * @throws Error if the key does not refer to a spritesheet with metadata
+ *      (namely, one of player, basic bot, fox, bear, and rock projectile)
+ */
 export function getSpriteMetaData(asset: SpriteSheet): SpriteMetaData {
     switch (asset) {
         case SpriteSheet.PLAYER:
@@ -385,6 +391,10 @@ export class NullSocket {
     public close(code?: number) {}
 }
 
+/**
+ * Milliseconds duration for fade effects, e.g. music fadeouts,
+ * scene blackouts, etc.
+ */
 export const DEFAULT_FADE_TIME = 700;
 
 /** Data for adjusting a character's stats. */
