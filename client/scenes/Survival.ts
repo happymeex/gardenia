@@ -39,18 +39,33 @@ import { addWaterfallBackground } from "../backgrounds";
 import { BGM } from "../BGM";
 
 class Survival extends Phaser.Scene {
+    /** Manages arrow key and space bar presses. */
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
+    /** The player character, controlled by keyboard input. */
     private player: Player;
+    /** Indicates whether or not the scene is paused. */
     private isPaused: boolean;
     private combatManager: CombatManager;
-    /** Maps names to enemy characters. */
+    /** Maps names to enemy characters. Remember to clear this for each new game. */
     private readonly enemies: Map<string, Enemy> = new Map();
+    /** Number of enemies spawned in this survival game. Reset for each new game. */
     private numSpawned = 0;
+    /** Number of enemies killed in this survival game. Reset for each new game. */
     private numKilled = 0;
     private timer: Phaser.GameObjects.Text;
+    /**
+     * Tracks process numbers created by calls to `setInterval`. Remember to clear them
+     * before leaving the scene.
+     */
     private processes: Map<string, number> = new Map();
+    /** Button at the top right corner. */
     private settingsButton: Phaser.GameObjects.Image;
+    /** Manages F, B, G keypresses. */
     private specialKeys: SpecialKeys;
+    /**
+     * Buff applied to newly spawned enemies. Increases over time at a frequency
+     * depending on the selected survival mode difficulty.
+     */
     private enemyBuff: Buff = NoBuff;
 
     public constructor() {
