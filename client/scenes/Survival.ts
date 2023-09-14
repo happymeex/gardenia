@@ -70,7 +70,6 @@ class Survival extends Phaser.Scene {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create(params: SurvivalDifficultyParams) {
-        console.log("gotdiff params:", params);
         this.enemyBuff = NoBuff;
         this.isPaused = false;
         this.enemies.clear();

@@ -463,21 +463,24 @@ const HardDifficultyParams: SurvivalDifficultyParams = {
     },
 };
 
+/** UI-facing names for the difficulty levels 0, 1, and 2, resp. */
+export const difficultyLevels = ["Easy", "Medium", "Hard"] as const;
+
 /**
  * Returns survival mode difficulty parameters given a difficulty level.
  */
 export function getDifficultyParams(
-    difficulty: "easy" | "medium" | "hard"
+    difficulty: (typeof difficultyLevels)[number]
 ): SurvivalDifficultyParams {
     switch (difficulty) {
-        case "easy":
+        case "Easy":
             return EasyDifficultyParams;
-        case "medium":
+        case "Medium":
             return MediumDifficultyParams;
-        case "hard":
+        case "Hard":
             return HardDifficultyParams;
     }
 }
 
 /** Survival mode default difficulty. */
-export const DEFAULT_DIFFICULTY: "easy" | "medium" | "hard" = "medium";
+export const DEFAULT_DIFFICULTY: (typeof difficultyLevels)[number] = "Medium";

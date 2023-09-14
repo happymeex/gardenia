@@ -4,6 +4,7 @@ import {
     CANVAS_CENTER,
     DEFAULT_DIFFICULTY,
     DEFAULT_FADE_TIME,
+    difficultyLevels,
     getDifficultyParams,
     SurvivalDifficultyParams,
 } from "../constants";
@@ -11,6 +12,7 @@ import {
     menuTextStyleBase,
     paragraphTextStyleBase,
     makeClickable,
+    Checkbox,
 } from "../ui";
 import { fadeToNextScene } from "../utils";
 
@@ -53,11 +55,49 @@ class SurvivalSettings extends Phaser.Scene {
                 this.survivalDifficultyParams
             );
         });
+
+        // Difficulty selection UI
+        const rowSpacing = 50;
+        const diffContainer = this.add.container(
+            0,
+            -20,
+            this.add
+                .text(0, -60, "Select a difficulty:", menuTextStyleBase)
+                .setOrigin(0.5)
+        );
+        const checkboxes: Array<Checkbox> = [];
+        difficultyLevels.forEach((level, i) => {
+            const checkbox = new Checkbox(
+                this,
+                -50,
+                0,
+                level === DEFAULT_DIFFICULTY,
+                () => {
+                    this.survivalDifficultyParams = getDifficultyParams(level);
+                    checkboxes.forEach((box, j) => {
+                        if (i === j) return;
+                        box.setState(false, true);
+                    });
+                }
+            );
+            checkboxes.push(checkbox);
+        });
+        difficultyLevels.forEach((level, i) => {
+            const row = this.add.container(0, i * rowSpacing);
+            const checkbox = checkboxes[i];
+            const text = this.add
+                .text(0, 0, level, paragraphTextStyleBase)
+                .setOrigin(0, 0.5);
+            checkbox.addToContainer(row);
+            row.add(text);
+            diffContainer.add(row);
+        });
         container.add(
             [header, subHeader, returnToHome, begin].map((item) =>
                 item.setOrigin(0.5)
             )
         );
+        container.add(diffContainer);
     }
 }
 

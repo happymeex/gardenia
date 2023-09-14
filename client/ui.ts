@@ -296,10 +296,17 @@ export class Checkbox {
         container.add([this.outerBox, this.innerFill]);
     }
 
-    /** Checks the checkbox if `state` is true and unchecks otherwise. */
-    public setState(state: boolean) {
+    /**
+     * Checks the checkbox if `state` is true and unchecks otherwise.
+     *
+     * @param state if true, box will be checked, otherwise unchecked.
+     * @param pure if true, then no extra effects will occur -- just the toggling
+     *      of the checkbox. If false, then this method calls the `onChange` method
+     *      passed in to the constructor. Default false.
+     */
+    public setState(state: boolean, pure = false) {
         this.checked = state;
-        this.onChange(state);
+        if (!pure) this.onChange(state);
         this.innerFill.setVisible(state);
     }
 }
