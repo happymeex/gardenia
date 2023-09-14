@@ -10,8 +10,15 @@ import {
     createSpecialKeys,
     BattleScene,
     loadAudio,
+    fadeToNextScene,
+    showNotification,
 } from "../utils";
-import { configurePauseMenu } from "../ui";
+import {
+    makeClickable,
+    configurePauseMenu,
+    menuTextStyleBase,
+    createDarkenedOverlay,
+} from "../ui";
 import {
     Field,
     MsgTypes,
@@ -23,6 +30,7 @@ import {
     getSpriteMetaData,
     soundTracks,
     Sound,
+    CANVAS_CENTER,
 } from "../constants";
 import { Player, getMotions, Projectile } from "../Player";
 import { PlayerBody, SpriteBody } from "../SpriteBody";
@@ -47,7 +55,13 @@ class Brawl extends Phaser.Scene implements BattleScene {
     private specialKeys: SpecialKeys;
     /** Tracks all projectiles spawned by *other* players. */
     private projectiles: Map<string, SpriteBody> = new Map();
+    /**
+     * Tracks process numbers created by calls to `setInterval`. Remember to clear them
+     * before leaving the scene.
+     */
     private processes: Map<string, number> = new Map();
+    /** Tracks names of players that are still connected and alive. */
+    private livePlayers: Set<string> = new Set();
 
     public constructor() {
         super({ key: "brawl" });
@@ -73,6 +87,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.uid = data.id;
         this.projectiles.clear();
         this.processes.clear();
+        this.livePlayers = new Set(data.idList);
 
         const platforms = addWaterfallBackground(this);
         platforms.create(CANVAS_WIDTH / 2, 230, SpriteSheet.PLATFORM);
@@ -83,7 +98,18 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.socket.onmessage = (e) => {
             const raw = e.data as string;
             if (raw.startsWith("idList")) {
-                console.log("new idList:", raw);
+                const idList: string[] = JSON.parse(
+                    raw.slice("idList_".length)
+                );
+                const newLivePlayers = new Set(idList);
+                for (const name of this.livePlayers) {
+                    if (!newLivePlayers.has(name)) {
+                        showNotification(this, `${name} disconnected!`);
+                        break;
+                    }
+                }
+                this.livePlayers = newLivePlayers;
+                this.checkGameOver();
                 return;
             }
             const msg = JSON.parse(raw);
@@ -133,7 +159,8 @@ class Brawl extends Phaser.Scene implements BattleScene {
                     throw new Error("Unknown death update");
                 combatManager.removeParticipant(playerBody.name);
                 playerBody.remove();
-                // TODO: darken UI
+                this.livePlayers.delete(playerBody.name);
+                this.checkGameOver();
             } else if (type === MsgTypes.PROJECTILE_CREATE) {
                 if (sourceId === this.uid) return;
                 const { x, y } = msg[Field.POSITION];
@@ -247,6 +274,8 @@ class Brawl extends Phaser.Scene implements BattleScene {
                                 [Field.TYPE]: MsgTypes.DEATH,
                             })}`
                         );
+                        this.livePlayers.delete(this.uid);
+                        this.checkGameOver();
                     },
                     (ratio) => {
                         this.socket.send(
@@ -343,8 +372,51 @@ class Brawl extends Phaser.Scene implements BattleScene {
         return this.isPaused;
     }
 
+    /**
+     * Adds a process number (created by a call to `setInterval`) to the scene's
+     * internal process tracker, associating it with the key `processName`.
+     */
     public addProcess(processName: string, process: number): void {
         this.processes.set(processName, process);
+    }
+
+    /**
+     * Checks if there is only a single living player left. If so, waits 2 seconds
+     * and then initiates the game over screen.
+     */
+    private checkGameOver(): void {
+        if (this.livePlayers.size === 1) {
+            setTimeout(() => {
+                this.gameOver(Array.from(this.livePlayers)[0]);
+            }, 2000);
+        }
+    }
+
+    /**
+     * Pauses the game, and displays a screen saying "Winner: {victor}"
+     * and a button that takes the user back to the main menu.
+     */
+    private gameOver(victor: string): void {
+        this.isPaused = true;
+        createDarkenedOverlay(this);
+        const container = this.add.container(...CANVAS_CENTER);
+        const header = this.add.text(0, -100, `Winner: ${victor}`, {
+            ...menuTextStyleBase,
+            fontSize: "96px",
+        });
+        const returnToMenu = this.add.text(0, 190, "Return to Main Menu", {
+            ...menuTextStyleBase,
+            fontSize: "40px",
+        });
+        makeClickable(returnToMenu, this, () => {
+            this.makeFlowControlFunctions().leave();
+            BGM.fadeOut(this);
+            fadeToNextScene(this, "main-menu");
+        });
+        container.add(
+            [header, returnToMenu].map((item) => item.setOrigin(0.5))
+        );
+        container.setDepth(100);
     }
 }
 
