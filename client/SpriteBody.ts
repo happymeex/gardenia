@@ -92,6 +92,7 @@ export class PlayerBody extends SpriteBody {
      * @param y
      * @param setHealthUI
      * @param setManaUI
+     * @param setIcon
      */
     public constructor(
         name: string,
@@ -99,7 +100,8 @@ export class PlayerBody extends SpriteBody {
         x: number,
         y: number,
         public readonly setHealthUI: (ratio: number) => void,
-        public readonly setManaUI: (ratio: number) => void
+        public readonly setManaUI: (ratio: number) => void,
+        public readonly setIcon: (target: SpriteSheet) => void
     ) {
         super(
             name,

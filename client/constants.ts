@@ -140,6 +140,7 @@ export enum MsgTypes {
     PROJECTILE_CREATE = "f",
     PROJECTILE_REMOVE = "g",
     SOUND = "h",
+    TRANSFORM = "i",
 }
 
 //////////////////////////////////////

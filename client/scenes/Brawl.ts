@@ -194,6 +194,12 @@ class Brawl extends Phaser.Scene implements BattleScene {
                 if (soundData === undefined)
                     throw new Error("Sound not found!");
                 this.sound.add(soundData.key, soundData.config).play();
+            } else if (type === MsgTypes.TRANSFORM) {
+                if (sourceId === this.uid) return;
+                const playerBody = this.otherPlayers.get(sourceId);
+                if (playerBody === undefined)
+                    throw new Error("Player not found!");
+                playerBody.setIcon(msg[Field.VALUE]);
             }
         };
         this.socket.onclose = () => {
@@ -298,7 +304,16 @@ class Brawl extends Phaser.Scene implements BattleScene {
                         );
                         setManaUI(ratio);
                     },
-                    changeIcon,
+                    (target) => {
+                        this.socket.send(
+                            `data_${JSON.stringify({
+                                [Field.SOURCE]: this.uid,
+                                [Field.TYPE]: MsgTypes.TRANSFORM,
+                                [Field.VALUE]: target,
+                            })}`
+                        );
+                        changeIcon(target);
+                    },
                     (sound) => {
                         this.socket.send(
                             `data_${JSON.stringify({
@@ -318,7 +333,8 @@ class Brawl extends Phaser.Scene implements BattleScene {
                     x,
                     y,
                     setHealthUI,
-                    setManaUI
+                    setManaUI,
+                    changeIcon
                 );
                 this.otherPlayers.set(id, other);
                 combatManager.addParticipant(other, id, (dmg) => {
