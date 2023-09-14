@@ -322,12 +322,13 @@ class Brawl extends Phaser.Scene implements BattleScene {
     private makeFlowControlFunctions() {
         return {
             pause: () => {
-                this.physics.pause();
-                this.isPaused = true;
+                // Allow users to open pause menu but make the game continue in the background
+                //this.physics.pause();
+                //this.isPaused = true;
             },
             resume: () => {
-                this.physics.resume();
-                this.isPaused = false;
+                //this.physics.resume();
+                //this.isPaused = false;
             },
             leave: () => {
                 for (const processNumber of this.processes.values())

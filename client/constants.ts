@@ -1,4 +1,3 @@
-import { BGM } from "./BGM";
 import { SpriteAppearance } from "./SpriteBody";
 
 export const CANVAS_WIDTH = 1344;
