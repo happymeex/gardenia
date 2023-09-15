@@ -5,7 +5,8 @@ import {
     ImageAsset,
     Sound,
     SoundKey,
-    SpriteSheet,
+    DEFAULT_FADE_TIME,
+    mainMenuFade,
 } from "../constants";
 import menuTheme from "../static/menu_theme.mp3";
 import { fadeToNextScene, loadMenuBg, loadMenuBgBlurred } from "../utils";
@@ -41,6 +42,10 @@ class MainMenu extends Phaser.Scene {
         this.load.audio(SoundKey.MENU, menuTheme);
     }
     create() {
+        if (mainMenuFade.value)
+            this.cameras.main.fadeIn(DEFAULT_FADE_TIME, 0, 0, 0);
+        else mainMenuFade.value = true;
+
         this.add.image(...CANVAS_CENTER, ImageAsset.MENU_BG);
         BGM.play(this, Sound.MENU_THEME, false);
         const menuTextContainer = this.add.container(...CANVAS_CENTER);

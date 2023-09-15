@@ -1,5 +1,10 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, ImageAsset, SpriteSheet } from "../constants";
+import {
+    CANVAS_CENTER,
+    ImageAsset,
+    mainMenuFade,
+    SpriteSheet,
+} from "../constants";
 import {
     menuTextStyleBase,
     makeClickable,
@@ -50,6 +55,7 @@ class BrawlSettings extends Phaser.Scene {
         });
         const orText = this.add.text(0, 0, "Or", menuTextStyleBase);
         makeClickable(returnToHome, this, () => {
+            mainMenuFade.value = false;
             this.scene.start("main-menu");
         });
         container.add(

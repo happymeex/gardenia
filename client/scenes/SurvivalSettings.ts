@@ -7,6 +7,7 @@ import {
     difficultyLevels,
     getDifficultyParams,
     ImageAsset,
+    mainMenuFade,
     SpriteSheet,
     SurvivalDifficultyParams,
 } from "../constants";
@@ -46,6 +47,7 @@ class SurvivalSettings extends Phaser.Scene {
         );
         const begin = this.add.text(0, 200, "Begin", menuTextStyleBase);
         makeClickable(returnToHome, this, () => {
+            mainMenuFade.value = false;
             this.scene.start("main-menu");
         });
         makeClickable(begin, this, () => {

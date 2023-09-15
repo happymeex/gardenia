@@ -1,5 +1,10 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, ImageAsset, SpriteSheet } from "../constants";
+import {
+    CANVAS_CENTER,
+    ImageAsset,
+    mainMenuFade,
+    SpriteSheet,
+} from "../constants";
 import { USER, OPTIONS } from "../User";
 import {
     Checkbox,
@@ -46,6 +51,7 @@ class Options extends Phaser.Scene {
 
         container.add([header, goBack, options]);
         makeClickable(goBack, this, () => {
+            mainMenuFade.value = false;
             this.scene.start("main-menu");
         });
     }

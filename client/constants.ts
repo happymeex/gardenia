@@ -489,3 +489,11 @@ export function getDifficultyParams(
 
 /** Survival mode default difficulty. */
 export const DEFAULT_DIFFICULTY: (typeof difficultyLevels)[number] = "Medium";
+
+/**
+ * Global value controlling whether or not the menu screen should fade in when
+ * the user next goes to it. By default the value should be true; for scenes
+ * where transitioning to the main menu should *not* incur a fade-in, set this
+ * value to false before transitioning.
+ */
+export const mainMenuFade = { value: true };
