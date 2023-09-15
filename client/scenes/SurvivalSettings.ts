@@ -6,6 +6,7 @@ import {
     DEFAULT_FADE_TIME,
     difficultyLevels,
     getDifficultyParams,
+    SpriteSheet,
     SurvivalDifficultyParams,
 } from "../constants";
 import {
@@ -24,6 +25,7 @@ class SurvivalSettings extends Phaser.Scene {
         getDifficultyParams(DEFAULT_DIFFICULTY);
 
     create() {
+        this.add.image(...CANVAS_CENTER, SpriteSheet.MENU_BG_BLURRED);
         const container = this.add.container(...CANVAS_CENTER);
         const header = this.add.text(0, -250, "Survival", {
             ...menuTextStyleBase,

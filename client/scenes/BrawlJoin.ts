@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER } from "../constants";
+import { CANVAS_CENTER, SpriteSheet } from "../constants";
 import {
     menuTextStyleBase,
     paragraphTextStyleBase,
@@ -28,6 +28,7 @@ class BrawlJoin extends Phaser.Scene {
     private socket: WebSocket;
 
     create() {
+        this.add.image(...CANVAS_CENTER, SpriteSheet.MENU_BG_BLURRED);
         const container = this.add.container(...CANVAS_CENTER);
         const header = this.add.text(0, -250, "Brawl", {
             ...menuTextStyleBase,

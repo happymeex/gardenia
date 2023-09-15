@@ -13,6 +13,8 @@ export enum SpriteSheet {
     BASIC_BOT = "basic-bot",
     PLATFORM = "platform",
     WATERFALL = "waterfall-bg",
+    MENU_BG = "menu-bg",
+    MENU_BG_BLURRED = "menu-bg-blurred",
     FOX = "fox",
     BEAR = "bear",
     ICONS = "icon",

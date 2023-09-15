@@ -6,13 +6,13 @@ import {
     DEFAULT_FADE_TIME,
     getSpriteMetaData,
     playerSpriteMetaData,
-    Sound,
     SoundKey,
-    soundTracks,
     SpriteMetaData,
     SpriteSheet,
     SpriteSheetSizes,
 } from "./constants";
+import menuBg from "./static/menu_bg.jpg";
+import menuBgBlurred from "./static/menu_bg_blurred.jpg";
 import settingsIcon from "./static/settings_icon.png";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import basicBotSpritesheet from "./static/basic_bot_spritesheet.png";
@@ -34,6 +34,15 @@ import { HasLocation } from "./constants";
 /** Loads the settings icon image into a scene. */
 export function loadSettingsIcon(scene: Phaser.Scene) {
     scene.load.image("settings-icon", settingsIcon);
+}
+
+/** Loads a background image of the player character and the fox standing in a ray of light. */
+export function loadMenuBg(scene: Phaser.Scene) {
+    scene.load.image(SpriteSheet.MENU_BG, menuBg);
+}
+
+export function loadMenuBgBlurred(scene: Phaser.Scene) {
+    scene.load.image(SpriteSheet.MENU_BG_BLURRED, menuBgBlurred);
 }
 
 /**
