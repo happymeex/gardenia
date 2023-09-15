@@ -64,7 +64,7 @@ class SurvivalSettings extends Phaser.Scene {
             0,
             -20,
             this.add
-                .text(0, -60, "Select a difficulty:", menuTextStyleBase)
+                .text(0, -60, "Difficulty:", menuTextStyleBase)
                 .setOrigin(0.5)
         );
         const checkboxes: Array<Checkbox> = [];

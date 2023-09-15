@@ -43,6 +43,14 @@ export const mainMenu: MenuStyle = {
     headerStyle: {
         ...menuTextStyleBase,
         fontSize: "120px",
+        shadow: {
+            offsetX: 2,
+            offsetY: 4,
+            color: "black",
+            blur: 4,
+            fill: true,
+            stroke: true,
+        },
     },
     optionStyle: {
         ...menuTextStyleBase,
