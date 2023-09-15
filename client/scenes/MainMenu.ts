@@ -35,7 +35,7 @@ class MainMenu extends Phaser.Scene {
         this.load.audio(SoundKey.MENU, menuTheme);
     }
     create() {
-        const bgImg = this.add.image(...CANVAS_CENTER, SpriteSheet.MENU_BG);
+        this.add.image(...CANVAS_CENTER, SpriteSheet.MENU_BG);
         BGM.play(this, Sound.MENU_THEME, false);
         const menuTextContainer = this.add.container(...CANVAS_CENTER);
         const title = this.add

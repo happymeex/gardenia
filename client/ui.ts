@@ -265,13 +265,16 @@ export class Checkbox {
      * @param y y-coordinate of checkbox location
      * @param checked initial status of the checkbox.
      * @param onChange callback function invoked each time the checkbox is toggled.
+     * @param isRadio if true, then the checkbox is treated as a radio button.
+     *      That is, clicking it while checked does nothing.
      */
     constructor(
         scene: Phaser.Scene,
         x: number,
         y: number,
         private checked: boolean,
-        private onChange: (state: boolean) => void
+        private onChange: (state: boolean) => void,
+        isRadio = false
     ) {
         this.outerBox = scene.add
             .rectangle(x, y, CHECKBOX_SIZE, CHECKBOX_SIZE)
@@ -286,6 +289,7 @@ export class Checkbox {
             this.outerBox,
             scene,
             () => {
+                if (isRadio && this.checked) return; // do not untoggle a checked radio button
                 this.setState(!this.checked);
             },
             false,

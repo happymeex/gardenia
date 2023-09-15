@@ -80,7 +80,8 @@ class SurvivalSettings extends Phaser.Scene {
                         if (i === j) return;
                         box.setState(false, true);
                     });
-                }
+                },
+                true
             );
             checkboxes.push(checkbox);
         });
