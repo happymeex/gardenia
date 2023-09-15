@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import Landing from "./scenes/Landing";
 import MainMenu from "./scenes/MainMenu";
 import Story from "./scenes/Story";
 import Survival from "./scenes/Survival";
@@ -18,6 +19,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: CANVAS_WIDTH,
     height: CANVAS_HEIGHT,
     scene: [
+        Landing,
         MainMenu,
         Story,
         Survival,

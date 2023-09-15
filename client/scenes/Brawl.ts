@@ -1,15 +1,10 @@
 import Phaser from "phaser";
-import waterfallBackground from "../static/waterfall-bg.jpg";
-import platform from "../static/platform.png";
 import {
-    loadSettingsIcon,
     addPlayerStatusUI,
-    loadSprites,
     handleTransformation,
     SpecialKeys,
     createSpecialKeys,
     BattleScene,
-    loadAudio,
     fadeToNextScene,
     showNotification,
 } from "../utils";
@@ -22,15 +17,14 @@ import {
 import {
     Field,
     MsgTypes,
-    SpriteSheet,
     CANVAS_HEIGHT,
-    SoundKey,
     CANVAS_WIDTH,
     NullSocket,
     getSpriteMetaData,
     soundTracks,
     Sound,
     CANVAS_CENTER,
+    ImageAsset,
 } from "../constants";
 import { Player, getMotions, Projectile } from "../Player";
 import { PlayerBody, SpriteBody } from "../SpriteBody";
@@ -67,16 +61,6 @@ class Brawl extends Phaser.Scene implements BattleScene {
         super({ key: "brawl" });
     }
     preload() {
-        loadSettingsIcon(this);
-        loadAudio(this, [
-            SoundKey.BATTLE,
-            SoundKey.WHOOSH,
-            SoundKey.DAMAGE,
-            SoundKey.EXPLODE,
-        ]);
-        this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
-        this.load.image(SpriteSheet.PLATFORM, platform);
-        loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
@@ -90,9 +74,9 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.livePlayers = new Set(data.idList);
 
         const platforms = addWaterfallBackground(this);
-        platforms.create(CANVAS_WIDTH / 2, 230, SpriteSheet.PLATFORM);
-        platforms.create(CANVAS_WIDTH / 2 - 300, 420, SpriteSheet.PLATFORM);
-        platforms.create(CANVAS_WIDTH / 2 + 300, 420, SpriteSheet.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2, 230, ImageAsset.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2 - 300, 420, ImageAsset.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2 + 300, 420, ImageAsset.PLATFORM);
         this.specialKeys = createSpecialKeys(this);
 
         this.socket.onmessage = (e) => {

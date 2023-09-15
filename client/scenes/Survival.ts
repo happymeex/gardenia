@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import {
-    loadSettingsIcon,
     addPlayerStatusUI,
     createTimer,
     intersect,
@@ -8,8 +7,6 @@ import {
     handleTransformation,
     SpecialKeys,
     createSpecialKeys,
-    loadSprites,
-    loadAudio,
     fadeToNextScene,
     composeBuffs,
 } from "../utils";
@@ -20,18 +17,15 @@ import {
 } from "../ui";
 import { Player, getMotions } from "../Player";
 import { BombBot, Enemy, BasicBot } from "../Enemies";
-import platform from "../static/platform.png";
-import waterfallBackground from "../static/waterfall-bg.jpg";
 import {
     CANVAS_CENTER,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
-    SpriteSheet,
-    SoundKey,
     Sound,
     SurvivalDifficultyParams,
     NoBuff,
     Buff,
+    ImageAsset,
 } from "../constants";
 import { CombatManager } from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
@@ -72,16 +66,6 @@ class Survival extends Phaser.Scene {
         super({ key: "survival" });
     }
     preload() {
-        loadSettingsIcon(this);
-        loadAudio(this, [
-            SoundKey.BATTLE,
-            SoundKey.WHOOSH,
-            SoundKey.EXPLODE,
-            SoundKey.DAMAGE,
-        ]);
-        this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
-        this.load.image(SpriteSheet.PLATFORM, platform);
-        loadSprites(this);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create(params: SurvivalDifficultyParams) {
@@ -97,9 +81,9 @@ class Survival extends Phaser.Scene {
         const { pause, resume, leave } = this.makeFlowControlFunctions();
         this.settingsButton = configurePauseMenu(this, pause, resume, leave);
         const platforms = addWaterfallBackground(this);
-        platforms.create(CANVAS_WIDTH / 2, 230, SpriteSheet.PLATFORM);
-        platforms.create(CANVAS_WIDTH / 2 - 300, 420, SpriteSheet.PLATFORM);
-        platforms.create(CANVAS_WIDTH / 2 + 300, 420, SpriteSheet.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2, 230, ImageAsset.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2 - 300, 420, ImageAsset.PLATFORM);
+        platforms.create(CANVAS_WIDTH / 2 + 300, 420, ImageAsset.PLATFORM);
 
         this.combatManager = new CombatManager();
         const { setHealthUI, setManaUI, changeIcon } = addPlayerStatusUI(

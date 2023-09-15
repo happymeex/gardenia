@@ -1,6 +1,12 @@
 import Phaser from "phaser";
 import { makeClickable, mainMenu } from "../ui";
-import { CANVAS_CENTER, Sound, SoundKey, SpriteSheet } from "../constants";
+import {
+    CANVAS_CENTER,
+    ImageAsset,
+    Sound,
+    SoundKey,
+    SpriteSheet,
+} from "../constants";
 import menuTheme from "../static/menu_theme.mp3";
 import { fadeToNextScene, loadMenuBg, loadMenuBgBlurred } from "../utils";
 import { BGM } from "../BGM";
@@ -35,7 +41,7 @@ class MainMenu extends Phaser.Scene {
         this.load.audio(SoundKey.MENU, menuTheme);
     }
     create() {
-        this.add.image(...CANVAS_CENTER, SpriteSheet.MENU_BG);
+        this.add.image(...CANVAS_CENTER, ImageAsset.MENU_BG);
         BGM.play(this, Sound.MENU_THEME, false);
         const menuTextContainer = this.add.container(...CANVAS_CENTER);
         const title = this.add

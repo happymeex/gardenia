@@ -5,6 +5,7 @@ import {
     CANVAS_WIDTH,
     DEFAULT_FADE_TIME,
     getSpriteMetaData,
+    ImageAsset,
     playerSpriteMetaData,
     SoundKey,
     SpriteMetaData,
@@ -13,6 +14,8 @@ import {
 } from "./constants";
 import menuBg from "./static/menu_bg.jpg";
 import menuBgBlurred from "./static/menu_bg_blurred.jpg";
+import waterfallBg from "./static/waterfall_bg.jpg";
+import platform from "./static/platform.png";
 import settingsIcon from "./static/settings_icon.png";
 import playerSpritesheet from "./static/gardenia_spritesheet.png";
 import basicBotSpritesheet from "./static/basic_bot_spritesheet.png";
@@ -38,11 +41,11 @@ export function loadSettingsIcon(scene: Phaser.Scene) {
 
 /** Loads a background image of the player character and the fox standing in a ray of light. */
 export function loadMenuBg(scene: Phaser.Scene) {
-    scene.load.image(SpriteSheet.MENU_BG, menuBg);
+    scene.load.image(ImageAsset.MENU_BG, menuBg);
 }
 
 export function loadMenuBgBlurred(scene: Phaser.Scene) {
-    scene.load.image(SpriteSheet.MENU_BG_BLURRED, menuBgBlurred);
+    scene.load.image(ImageAsset.MENU_BG_BLURRED, menuBgBlurred);
 }
 
 /**
@@ -359,18 +362,13 @@ export function handleTransformation(
 }
 
 /**
- * Loads spritesheets. By default, loads all spritesheets needed for
- * the player character: human, fox, bear, basic and bomb bot enemies, icons (for UI component),
- * rock projectile.
+ * Loads all spritesheets: human, fox, bear, basic and bomb bot enemies, icons (for UI component),
+ * rock projectile. Each is loaded with its appropriate key.
  *
  * @param scene
- * @param spriteList List of sprite keys to load. Default value as described above.
  */
-export function loadSprites(
-    scene: Phaser.Scene,
-    spriteList = spriteSheetMap.keys()
-) {
-    [...spriteList].forEach((spriteKey) => {
+export function loadSprites(scene: Phaser.Scene) {
+    [...spriteSheetMap.keys()].forEach((spriteKey) => {
         const URL = spriteSheetMap.get(spriteKey);
         scene.load.spritesheet(spriteKey, URL, SpriteSheetSizes[spriteKey]);
     });
@@ -387,15 +385,12 @@ const spriteSheetMap = new Map([
 ]);
 
 /**
- * Call this method in the `preload` method of a scene. Loads the audio
- * specified by `audioList` into the scene and assigns each audio the
- * appropriate key.
+ * Loads all audio, each with its appropriate key.
  *
  * @param scene
- * @param audioList List of keys identifying sounds that should be loaded.
  */
-export function loadAudio(scene: Phaser.Scene, audioList: SoundKey[]) {
-    audioList.forEach((sound) => {
+export function loadAudio(scene: Phaser.Scene) {
+    [...audioMap.keys()].forEach((sound) => {
         const URL = audioMap.get(sound);
         scene.load.audio(sound, URL);
     });
@@ -410,6 +405,23 @@ const audioMap = new Map([
     [SoundKey.TUTORIAL, tutorialTheme],
 ]);
 
+/**
+ * Loads all images, each with its appropriate key.
+ *
+ * @param scene
+ */
+export function loadImages(scene: Phaser.Scene) {
+    [...imageMap.keys()].forEach((image) => {
+        const URL = imageMap.get(image);
+        scene.load.image(image, URL);
+    });
+}
+const imageMap = new Map([
+    [ImageAsset.MENU_BG, menuBg],
+    [ImageAsset.MENU_BG_BLURRED, menuBgBlurred],
+    [ImageAsset.WATERFALL, waterfallBg],
+    [ImageAsset.PLATFORM, platform],
+]);
 /**
  * Fades the game screen to black and then moves to new scene.
  *

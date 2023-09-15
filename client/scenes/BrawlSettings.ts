@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, SpriteSheet } from "../constants";
+import { CANVAS_CENTER, ImageAsset, SpriteSheet } from "../constants";
 import {
     menuTextStyleBase,
     makeClickable,
@@ -12,7 +12,7 @@ class BrawlSettings extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(...CANVAS_CENTER, SpriteSheet.MENU_BG_BLURRED);
+        this.add.image(...CANVAS_CENTER, ImageAsset.MENU_BG_BLURRED);
         const container = this.add.container(...CANVAS_CENTER);
         const header = this.add.text(0, -250, "Brawl", {
             ...menuTextStyleBase,

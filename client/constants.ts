@@ -11,15 +11,18 @@ export const CANVAS_CENTER = [CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2] as const;
 export enum SpriteSheet {
     PLAYER = "player",
     BASIC_BOT = "basic-bot",
-    PLATFORM = "platform",
-    WATERFALL = "waterfall-bg",
-    MENU_BG = "menu-bg",
-    MENU_BG_BLURRED = "menu-bg-blurred",
     FOX = "fox",
     BEAR = "bear",
     ICONS = "icon",
     ROCK_PROJECTILE = "rock",
     BOMB_BOT = "bomb-bot",
+}
+
+export enum ImageAsset {
+    PLATFORM = "platform",
+    WATERFALL = "waterfall-bg",
+    MENU_BG = "menu-bg",
+    MENU_BG_BLURRED = "menu-bg-blurred",
 }
 
 /**

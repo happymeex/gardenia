@@ -61,11 +61,6 @@ class Tutorial extends Phaser.Scene implements BattleScene {
         super({ key: "tutorial" });
     }
     preload() {
-        this.load.image(SpriteSheet.WATERFALL, waterfallBackground);
-        this.load.image(SpriteSheet.PLATFORM, platform);
-        loadSettingsIcon(this);
-        loadSprites(this);
-        loadAudio(this, [SoundKey.DAMAGE, SoundKey.WHOOSH, SoundKey.TUTORIAL]);
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
     create() {
