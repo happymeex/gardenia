@@ -56,6 +56,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
     private processes: Map<string, number> = new Map();
     /** Tracks names of players that are still connected and alive. */
     private livePlayers: Set<string> = new Set();
+    private gameFinished = false;
 
     public constructor() {
         super({ key: "brawl" });
@@ -65,6 +66,7 @@ class Brawl extends Phaser.Scene implements BattleScene {
     }
     create(data: { socket: WebSocket; id: string; idList: string[] }) {
         BGM.play(this, Sound.BATTLE_THEME);
+        this.gameFinished = false;
         this.isPaused = false; // need to reset this in case this brawl isn't the first one of the sitting
         this.otherPlayers = new Map();
         this.socket = data.socket;
@@ -397,6 +399,8 @@ class Brawl extends Phaser.Scene implements BattleScene {
      * and a button that takes the user back to the main menu.
      */
     private gameOver(victor: string): void {
+        if (this.gameFinished) return;
+        this.gameFinished = true;
         this.isPaused = true;
         createDarkenedOverlay(this);
         const container = this.add.container(...CANVAS_CENTER);
