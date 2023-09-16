@@ -1,4 +1,4 @@
-import { SpriteAppearance } from "./SpriteBody";
+import { SpriteAppearance } from "../SpriteBody";
 
 export const CANVAS_WIDTH = 1344;
 export const CANVAS_HEIGHT = 756;

@@ -9,12 +9,12 @@ import {
     createSpecialKeys,
     fadeToNextScene,
     composeBuffs,
-} from "../utils";
+} from "../utils/utils";
 import {
     configurePauseMenu,
     createDarkenedOverlay,
     makeClickable,
-} from "../ui";
+} from "../utils/ui";
 import { Player, getMotions } from "../Player";
 import { BombBot, Enemy, BasicBot } from "../Enemies";
 import {
@@ -26,10 +26,10 @@ import {
     NoBuff,
     Buff,
     ImageAsset,
-} from "../constants";
+} from "../utils/constants";
 import { CombatManager } from "../CombatManager";
-import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
-import { addWaterfallBackground } from "../backgrounds";
+import { menuTextStyleBase, paragraphTextStyleBase } from "../utils/ui";
+import { addWaterfallBackground } from "../utils/backgrounds";
 import { BGM } from "../BGM";
 
 class Survival extends Phaser.Scene {

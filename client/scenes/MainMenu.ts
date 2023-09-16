@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { makeClickable, mainMenu } from "../ui";
+import { makeClickable, mainMenu } from "../utils/ui";
 import {
     CANVAS_CENTER,
     ImageAsset,
@@ -7,9 +7,9 @@ import {
     SoundKey,
     DEFAULT_FADE_TIME,
     mainMenuFade,
-} from "../constants";
+} from "../utils/constants";
 import menuTheme from "../static/menu_theme.mp3";
-import { fadeToNextScene, loadMenuBg, loadMenuBgBlurred } from "../utils";
+import { fadeToNextScene, loadMenuBg, loadMenuBgBlurred } from "../utils/utils";
 import { BGM } from "../BGM";
 
 const buttonData = [

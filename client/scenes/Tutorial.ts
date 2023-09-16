@@ -1,5 +1,5 @@
 import Phaser, { RIGHT } from "phaser";
-import { configurePauseMenu, paragraphTextStyleBase } from "../ui";
+import { configurePauseMenu, paragraphTextStyleBase } from "../utils/ui";
 import {
     BattleScene,
     loadSettingsIcon,
@@ -8,22 +8,22 @@ import {
     SpecialKeys,
     createSpecialKeys,
     loadAudio,
-} from "../utils";
-import { addWaterfallBackground } from "../backgrounds";
+} from "../utils/utils";
+import { addWaterfallBackground } from "../utils/backgrounds";
 import {
     SpriteSheet,
     SoundKey,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     Sound,
-} from "../constants";
+} from "../utils/constants";
 import { USER } from "../User";
 import platform from "../static/platform.png";
 import waterfallBackground from "../static/waterfall-bg.jpg";
 import { CombatManager } from "../CombatManager";
 import { Player, getMotions } from "../Player";
 import { BasicBot } from "../Enemies";
-import { handleTransformation, intersect, inRange } from "../utils";
+import { handleTransformation, intersect, inRange } from "../utils/utils";
 import { BGM } from "../BGM";
 
 const SECONDS_BETWEEN_ENEMY_SPAWN = 10;

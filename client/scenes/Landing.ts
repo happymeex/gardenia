@@ -1,13 +1,13 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, CANVAS_WIDTH } from "../constants";
-import { paragraphTextStyleBase } from "../ui";
+import { CANVAS_CENTER, CANVAS_WIDTH } from "../utils/constants";
+import { paragraphTextStyleBase } from "../utils/ui";
 import {
     fadeToNextScene,
     loadAudio,
     loadImages,
     loadSettingsIcon,
     loadSprites,
-} from "../utils";
+} from "../utils/utils";
 
 class Landing extends Phaser.Scene {
     private centerText = { destroy() {} };

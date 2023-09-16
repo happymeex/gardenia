@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { BGM } from "./BGM";
+import { BGM } from "../BGM";
 import { CANVAS_CENTER, CANVAS_WIDTH, CANVAS_HEIGHT } from "./constants";
 import { fadeToNextScene } from "./utils";
-import { USER, OPTIONS } from "./User";
+import { USER, OPTIONS } from "../User";
 
 export type TextStyle = Phaser.Types.GameObjects.Text.TextStyle;
 

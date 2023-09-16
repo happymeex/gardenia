@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { DEFAULT_FADE_TIME, Sound, soundTracks } from "./constants";
+import { DEFAULT_FADE_TIME, Sound, soundTracks } from "./utils/constants";
 import { USER } from "./User";
 
 /**

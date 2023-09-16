@@ -10,14 +10,14 @@ import {
     mainMenuFade,
     SpriteSheet,
     SurvivalDifficultyParams,
-} from "../constants";
+} from "../utils/constants";
 import {
     menuTextStyleBase,
     paragraphTextStyleBase,
     makeClickable,
     Checkbox,
-} from "../ui";
-import { fadeToNextScene } from "../utils";
+} from "../utils/ui";
+import { fadeToNextScene } from "../utils/utils";
 
 class SurvivalSettings extends Phaser.Scene {
     public constructor() {

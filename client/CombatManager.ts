@@ -1,6 +1,11 @@
 import Phaser from "phaser";
-import { intersect } from "./utils";
-import { CanBeHit, AttackData, HasLocation, AttackType } from "./constants";
+import { intersect } from "./utils/utils";
+import {
+    CanBeHit,
+    AttackData,
+    HasLocation,
+    AttackType,
+} from "./utils/constants";
 import { Projectile } from "./Player";
 
 export interface ICombatManager {

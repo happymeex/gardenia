@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER } from "../constants";
-import { menuTextStyleBase, paragraphTextStyleBase } from "../ui";
-import { makeClickable } from "../ui";
+import { CANVAS_CENTER } from "../utils/constants";
+import { menuTextStyleBase, paragraphTextStyleBase } from "../utils/ui";
+import { makeClickable } from "../utils/ui";
 
 class Story extends Phaser.Scene {
     public constructor() {

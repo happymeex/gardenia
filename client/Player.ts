@@ -9,12 +9,12 @@ import {
     AttackData,
     Sound,
     soundTracks,
-} from "./constants";
+} from "./utils/constants";
 import { USER } from "./User";
-import { initializeAnimations } from "./animations";
-import { getSpriteMetaData } from "./constants";
+import { initializeAnimations } from "./utils/animations";
+import { getSpriteMetaData } from "./utils/constants";
 import { SpriteAppearance } from "./SpriteBody";
-import { BattleScene } from "./utils";
+import { BattleScene } from "./utils/utils";
 
 const MAX_MANA = 100;
 const MANA_REGEN_PER_SEC = 2.2;

@@ -7,8 +7,8 @@ import {
     Buff,
     HasLocation,
     Sound,
-} from "./constants";
-import { applyBuff } from "./utils";
+} from "./utils/constants";
+import { applyBuff } from "./utils/utils";
 enum EnemyStates {
     WALKING,
     IDLE,

@@ -1,5 +1,5 @@
 import { BGM } from "./BGM";
-import { getUserId } from "./utils";
+import { getUserId } from "./utils/utils";
 
 export interface UserSettings {
     /** If true, sound effects (punching, damage, etc.) play. */

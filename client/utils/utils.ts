@@ -12,26 +12,26 @@ import {
     SpriteSheet,
     SpriteSheetSizes,
 } from "./constants";
-import menuBg from "./static/menu_bg.jpg";
-import menuBgBlurred from "./static/menu_bg_blurred.jpg";
-import waterfallBg from "./static/waterfall_bg.jpg";
-import platform from "./static/platform.png";
-import settingsIcon from "./static/settings_icon.png";
-import playerSpritesheet from "./static/gardenia_spritesheet.png";
-import basicBotSpritesheet from "./static/basic_bot_spritesheet.png";
-import foxSpritesheet from "./static/fox_spritesheet.png";
-import bearSpritesheet from "./static/bear_spritesheet.png";
-import iconSheet from "./static/icons.png";
-import rockSpritesheet from "./static/rock_projectile_spritesheet.png";
-import bombBotSpritesheet from "./static/bomb_bot_spritesheet.png";
-import battleMusic from "./static/battle_theme.mp3";
-import tutorialTheme from "./static/tutorial_theme.mp3";
-import menuTheme from "./static/menu_theme.mp3";
-import whooshSound from "./static/whoosh.mp3";
-import damageSound from "./static/damage.mp3";
-import explosionSound from "./static/explode.mp3";
+import menuBg from "../static/menu_bg.jpg";
+import menuBgBlurred from "../static/menu_bg_blurred.jpg";
+import waterfallBg from "../static/waterfall_bg.jpg";
+import platform from "../static/platform.png";
+import settingsIcon from "../static/settings_icon.png";
+import playerSpritesheet from "../static/gardenia_spritesheet.png";
+import basicBotSpritesheet from "../static/basic_bot_spritesheet.png";
+import foxSpritesheet from "../static/fox_spritesheet.png";
+import bearSpritesheet from "../static/bear_spritesheet.png";
+import iconSheet from "../static/icons.png";
+import rockSpritesheet from "../static/rock_projectile_spritesheet.png";
+import bombBotSpritesheet from "../static/bomb_bot_spritesheet.png";
+import battleMusic from "../static/battle_theme.mp3";
+import tutorialTheme from "../static/tutorial_theme.mp3";
+import menuTheme from "../static/menu_theme.mp3";
+import whooshSound from "../static/whoosh.mp3";
+import damageSound from "../static/damage.mp3";
+import explosionSound from "../static/explode.mp3";
 import { baseColor, darkenedColor, paragraphTextStyleBase } from "./ui";
-import { Player } from "./Player";
+import { Player } from "../Player";
 import { HasLocation } from "./constants";
 
 /** Loads the settings icon image into a scene. */

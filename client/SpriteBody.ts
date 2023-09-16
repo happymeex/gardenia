@@ -1,13 +1,13 @@
 import Phaser from "phaser";
-import { initializeAnimations } from "./animations";
+import { initializeAnimations } from "./utils/animations";
 import {
     SpriteSheet,
     playerSpriteMetaData,
     CanBeHit,
     SpriteMetaData,
     getSpriteMetaData,
-} from "./constants";
-import { flashWhite } from "./utils";
+} from "./utils/constants";
+import { flashWhite } from "./utils/utils";
 
 export type SpriteAppearance = {
     anim: string;

@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, ImageAsset } from "../constants";
+import { CANVAS_CENTER, ImageAsset } from "../utils/constants";
 import {
     menuTextStyleBase,
     paragraphTextStyleBase,
@@ -8,14 +8,14 @@ import {
     lowercaseFont,
     baseColor,
     makeClickable,
-} from "../ui";
+} from "../utils/ui";
 import { USER } from "../User";
 import {
     makeBrawlWebSocket,
     undarkenText,
     darkenText,
     showNotification,
-} from "../utils";
+} from "../utils/utils";
 
 class BrawlJoin extends Phaser.Scene {
     public constructor() {

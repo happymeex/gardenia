@@ -8,13 +8,13 @@ import {
     fadeToNextScene,
     showNotification,
     addGlow,
-} from "../utils";
+} from "../utils/utils";
 import {
     makeClickable,
     configurePauseMenu,
     menuTextStyleBase,
     createDarkenedOverlay,
-} from "../ui";
+} from "../utils/ui";
 import {
     Field,
     MsgTypes,
@@ -26,10 +26,10 @@ import {
     Sound,
     CANVAS_CENTER,
     ImageAsset,
-} from "../constants";
+} from "../utils/constants";
 import { Player, getMotions, Projectile } from "../Player";
 import { PlayerBody, SpriteBody } from "../SpriteBody";
-import { addWaterfallBackground } from "../backgrounds";
+import { addWaterfallBackground } from "../utils/backgrounds";
 import { CombatManager } from "../CombatManager";
 import { BGM } from "../BGM";
 

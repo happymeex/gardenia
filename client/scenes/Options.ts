@@ -4,14 +4,14 @@ import {
     ImageAsset,
     mainMenuFade,
     SpriteSheet,
-} from "../constants";
+} from "../utils/constants";
 import { USER, OPTIONS } from "../User";
 import {
     Checkbox,
     menuTextStyleBase,
     makeClickable,
     paragraphTextStyleBase,
-} from "../ui";
+} from "../utils/ui";
 
 /**
  * Screen with options to toggle volume, sound fx

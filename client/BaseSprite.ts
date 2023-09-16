@@ -1,15 +1,15 @@
 import Phaser from "phaser";
 import { SpriteAppearance } from "./SpriteBody";
-import { initializeAnimations } from "./animations";
+import { initializeAnimations } from "./utils/animations";
 import {
     AttackState,
     SpriteMetaData,
     HasHealth,
     Sound,
     soundTracks,
-} from "./constants";
+} from "./utils/constants";
 import { USER } from "./User";
-import { flashWhite } from "./utils";
+import { flashWhite } from "./utils/utils";
 import {
     CombatManager,
     NullCombatManager,

@@ -10,8 +10,8 @@ import BrawlJoin from "./scenes/BrawlJoin";
 import BrawlCreate from "./scenes/BrawlCreate";
 import Tutorial from "./scenes/Tutorial";
 import Options from "./scenes/Options";
-import { getUserId, setUserId } from "./utils";
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
+import { getUserId, setUserId } from "./utils/utils";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./utils/constants";
 import { USER, UserSettings } from "./User";
 
 const config: Phaser.Types.Core.GameConfig = {

@@ -4,12 +4,12 @@ import {
     ImageAsset,
     mainMenuFade,
     SpriteSheet,
-} from "../constants";
+} from "../utils/constants";
 import {
     menuTextStyleBase,
     makeClickable,
     paragraphTextStyleBase,
-} from "../ui";
+} from "../utils/ui";
 
 class BrawlSettings extends Phaser.Scene {
     public constructor() {
