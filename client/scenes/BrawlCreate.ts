@@ -8,14 +8,20 @@ import {
     darkenedColor,
     paragraphTextStyleBase,
 } from "../utils/ui";
-import { makeBrawlWebSocket, darkenText, undarkenText } from "../utils/utils";
+import {
+    makeBrawlWebSocket,
+    darkenText,
+    undarkenText,
+    getUserId,
+    showNotification,
+} from "../utils/utils";
 
 class BrawlCreate extends Phaser.Scene {
     public constructor() {
         super({ key: "brawl-create" });
     }
 
-    private idList: string[];
+    private idList: Record<string, string>;
     private socket: WebSocket;
 
     create() {
@@ -60,7 +66,14 @@ class BrawlCreate extends Phaser.Scene {
             color: darkenedColor,
         });
 
-        const id = USER.getName();
+        const id = getUserId();
+        if (id === null) {
+            showNotification(
+                this,
+                "Unexpected missing ID! Try clearing cookies and refreshing the page."
+            );
+            throw new Error();
+        }
         fetch(`/new-brawl-id?id=${id}`)
             .then((res) => res.text())
             .then((brawlId) => {
@@ -85,18 +98,18 @@ class BrawlCreate extends Phaser.Scene {
                         });
                     };
                     if (msg.startsWith("idList")) {
-                        const idList: string[] = JSON.parse(
+                        const idList: Record<string, string> = JSON.parse(
                             msg.replace(new RegExp("idList_"), "")
                         );
                         this.idList = idList;
-                        const numOthers = idList.length - 1;
+                        const numOthers = Object.keys(idList).length - 1;
                         numJoined.text =
                             numOthers === 1
                                 ? "1 other has joined"
                                 : `${
                                       numOthers ? numOthers : 0
                                   } others have joined`;
-                        if (idList.length > 1) {
+                        if (Object.keys(idList).length > 1) {
                             makeClickable(begin, this, () => {
                                 if (socket.readyState === socket.OPEN) {
                                     start();

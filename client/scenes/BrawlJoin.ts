@@ -15,6 +15,7 @@ import {
     undarkenText,
     darkenText,
     showNotification,
+    getUserId,
 } from "../utils/utils";
 
 class BrawlJoin extends Phaser.Scene {
@@ -24,7 +25,7 @@ class BrawlJoin extends Phaser.Scene {
     private joinCodeInput: Phaser.GameObjects.DOMElement;
     private joinButton: Phaser.GameObjects.Text;
     private joinCode: string;
-    private idList: string[];
+    private idList: Record<string, string>;
     private socket: WebSocket;
 
     create() {
@@ -118,8 +119,14 @@ class BrawlJoin extends Phaser.Scene {
         };
     }
     private makeJoinHandler() {
-        const id = USER.getName();
-        if (id === null) throw new Error("Unexpected null id!");
+        const id = getUserId();
+        if (id === null) {
+            showNotification(
+                this,
+                "Unexpected missing ID! Try clearing cookies and refreshing the page."
+            );
+            throw new Error();
+        }
         return () => {
             this.joinCodeInput.node.setAttribute("disabled", "");
             this.joinButton.disableInteractive();
@@ -147,7 +154,7 @@ class BrawlJoin extends Phaser.Scene {
                 } else if (type === "activate") {
                     start();
                 } else if (type === "idList") {
-                    const idList: string[] = JSON.parse(content);
+                    const idList: Record<string, string> = JSON.parse(content);
                     this.idList = idList;
                 } else if (type === "error") {
                     showNotification(this, content);

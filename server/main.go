@@ -22,11 +22,18 @@ func main() {
 	if err == nil {
 		err = InitializeDB()
 		if err != nil {
-			fmt.Println("Failed to connect to DB:", err)
+			fmt.Println("Failed to connect to DB:")
+			panic(err)
 		}
 	} else {
-		fmt.Println("Failed to connect to DB:", err)
-		return
+		fmt.Println("Failed to connect to DB:")
+		panic(err)
+	}
+
+	err = ConnectToRedis()
+	if err != nil {
+		fmt.Println("Failed to connect to Redis")
+		panic(err)
 	}
 
 	var prodMode bool

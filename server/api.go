@@ -27,6 +27,7 @@ func HandleAuth(w http.ResponseWriter, req *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf(`{"id":"%s","name":"%s","musicOn":%t,"sfxOn":%t}`, uuid, userData.name, userData.musicOn, userData.sfxOn)))
+	RedisAddUser(uuid, userData.name)
 }
 
 // HandleUpdateSettings update's a user's settings. It expects three fields

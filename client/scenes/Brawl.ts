@@ -55,8 +55,10 @@ class Brawl extends Phaser.Scene implements BattleScene {
      * before leaving the scene.
      */
     private processes: Map<string, number> = new Map();
-    /** Tracks names of players that are still connected and alive. */
+    /** Tracks ids of players that are still connected and alive. */
     private livePlayers: Set<string> = new Set();
+    /** Map (object) from player ids to player names. */
+    private playerNames: Record<string, string>;
     private gameFinished = false;
 
     public constructor() {
@@ -65,7 +67,11 @@ class Brawl extends Phaser.Scene implements BattleScene {
     preload() {
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
-    create(data: { socket: WebSocket; id: string; idList: string[] }) {
+    create(data: {
+        socket: WebSocket;
+        id: string;
+        idList: Record<string, string>;
+    }) {
         BGM.play(this, Sound.BATTLE_THEME);
         this.gameFinished = false;
         this.isPaused = false; // need to reset this in case this brawl isn't the first one of the sitting
@@ -74,7 +80,8 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.uid = data.id;
         this.projectiles.clear();
         this.processes.clear();
-        this.livePlayers = new Set(data.idList);
+        this.livePlayers = new Set(Object.keys(data.idList));
+        this.playerNames = data.idList;
 
         const platforms = addWaterfallBackground(this);
         platforms.create(CANVAS_WIDTH / 2, 230, ImageAsset.PLATFORM);
@@ -85,12 +92,13 @@ class Brawl extends Phaser.Scene implements BattleScene {
         this.socket.onmessage = (e) => {
             const raw = e.data as string;
             if (raw.startsWith("idList")) {
-                const idList: string[] = JSON.parse(
+                const idList: Record<string, string> = JSON.parse(
                     raw.slice("idList_".length)
                 );
-                const newLivePlayers = new Set(idList);
-                for (const name of this.livePlayers) {
-                    if (!newLivePlayers.has(name)) {
+                const newLivePlayers = new Set(Object.keys(idList));
+                for (const id of this.livePlayers) {
+                    if (!newLivePlayers.has(id)) {
+                        const name = this.playerNames[id];
                         showNotification(this, `${name} disconnected!`);
                         break;
                     }
@@ -239,12 +247,14 @@ class Brawl extends Phaser.Scene implements BattleScene {
                 );
             },
         });
-        const UIPositions = getStatusUIPositions(data.idList.length);
-        data.idList.forEach((id, i) => {
+        const UIPositions = getStatusUIPositions(
+            Object.keys(data.idList).length
+        );
+        Object.keys(data.idList).forEach((id, i) => {
             const { x, y } = UIPositions[i];
             const { setHealthUI, setManaUI, changeIcon } = addPlayerStatusUI(
                 this,
-                id,
+                data.idList[id],
                 x,
                 y
             );
@@ -391,7 +401,9 @@ class Brawl extends Phaser.Scene implements BattleScene {
     private checkGameOver(): void {
         if (this.livePlayers.size === 1) {
             setTimeout(() => {
-                this.gameOver(Array.from(this.livePlayers)[0]);
+                const victorId = Array.from(this.livePlayers)[0];
+                const victorName = this.playerNames[victorId];
+                this.gameOver(victorName);
             }, 2000);
         }
     }
