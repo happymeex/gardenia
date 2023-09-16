@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Gardenia</title>
+        <meta name="og:title" content="Gardenia" />
+        <meta
+            name="description"
+            content="2D platformer game about a shapeshifting forest nymph."
+        />
+        <meta
+            property="og:description"
+            content="2D platformer game about a shapeshifting forest nymph."
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Alegreya&family=Alegreya+SC&display=swap"
+            rel="stylesheet"
+        />
+      <script type="module" crossorigin src="/assets/index-1717e4f6.js"></script>
+    </head>
+    <body>
+        <div id="font-renderer">.</div>
+        <div id="font-renderer2">.</div>
+        <main id="game-container"></main>
+        <div id="socials-bar">
+            <a
+                href="https://github.com/happymeex/gardenia#readme"
+                target="_blank"
+            >
+                <img src="/assets/icons8-github-48-37184c60.png" />
+            </a>
+            <a href="https://instagram.com/happymeex" target="_blank">
+                <img
+                    src="/assets/icons8-instagram-48-fde6a16f.png"
+                />
+            </a>
+            <a href="https://twitter.com/EC_Matrix" target="_blank">
+                <img src="/assets/icons8-twitter-48-216cd387.png" />
+            </a>
+        </div>
+        <div id="copyright">&copy; 2023 Maxwell Jiang</div>
+    </body>
+    <input id="join-code-input" placeholder="Join code" />
+    <style>
+        #copyright {
+            margin-top: -20px;
+            font-family: "Alegreya", sans-serif;
+            filter: opacity(0.5);
+        }
+        #socials-bar {
+            display: flex;
+            gap: 4px;
+        }
+        #socials-bar img {
+            filter: opacity(0.5);
+        }
+        #font-renderer,
+        #font-renderer2 {
+            font-family: "Alegreya SC";
+            position: absolute;
+            left: -100px;
+            top: -100px;
+        }
+        #font-renderer2 {
+            font-family: "Alegreya";
+        }
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            height: 100vh;
+        }
+        #game-container {
+            width: 1344px;
+            height: 756px;
+        }
+        #join-code-input {
+            display: none;
+        }
+        #join-code-input:focus {
+            border: none;
+            outline: none;
+        }
+    </style>
+    
+</html>

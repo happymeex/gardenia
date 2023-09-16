@@ -4,19 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "concurrently \"go run server/*.go\" \"npx vite\"",
-        "build:client": "vite build",
-        "build:server": "go build -o main server/*.go",
-        "build": "npm run build:server && npm run build:client",
         "start": "./main -prod"
     },
     "keywords": [],
     "author": "",
-    "license": "ISC",
-    "devDependencies": {
-        "vite": "^4.4.9"
-    },
-    "dependencies": {
-        "phaser": "^3.60.0"
-    }
+    "license": "ISC"
 }
