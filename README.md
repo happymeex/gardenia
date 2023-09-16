@@ -1,6 +1,6 @@
 # Gardenia
 
-This repository contains the source code behind Gardenia,
+This repository contains the source code for [Gardenia](https://gardenia-production.up.railway.app/),
 a browser-based 2D platformer game.
 You play as a shapeshifting forest spirit who must protect her
 home from encroaching robot enemies.
