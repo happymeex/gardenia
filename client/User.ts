@@ -2,14 +2,14 @@ import { BGM } from "./BGM";
 
 export interface UserSettings {
     /** If true, sound effects (punching, damage, etc.) play. */
-    soundFX: boolean;
+    sfxOn: boolean;
     /** If true, background music plays. */
-    music: boolean;
+    musicOn: boolean;
 }
 
 const defaultSettings: UserSettings = {
-    soundFX: true,
-    music: true,
+    sfxOn: true,
+    musicOn: true,
 };
 
 export const OPTIONS: Array<{
@@ -20,16 +20,16 @@ export const OPTIONS: Array<{
     {
         label: "Sound Effects",
         onChange: (state: boolean) => {
-            USER.setSetting("soundFX", state);
+            USER.setSetting("sfxOn", state);
         },
-        setting: "soundFX",
+        setting: "sfxOn",
     },
     {
         label: "Music",
         onChange: (state: boolean) => {
-            USER.setSetting("music", state);
+            USER.setSetting("musicOn", state);
         },
-        setting: "music",
+        setting: "musicOn",
     },
 ];
 
@@ -71,13 +71,17 @@ class User {
         value: UserSettings[typeof setting]
     ): void {
         this.settings[setting] = value;
-        if (setting === "music") {
+        if (setting === "musicOn") {
             if (value) {
                 BGM.restoreMusic();
             } else {
                 BGM.hideMusic();
             }
         }
+    }
+
+    public setSettings(settings: UserSettings) {
+        this.settings = structuredClone(settings);
     }
 }
 

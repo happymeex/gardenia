@@ -7,19 +7,28 @@ import (
 
 var AllUsers = make(map[string]bool)
 
-func HandleIdRequest(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	id := GenerateUntilNew(&AllUsers)
-	w.Write([]byte(id))
-	AllUsers[id] = true;
-}
-
 func HandleAuth(w http.ResponseWriter, req *http.Request) {
-	// For now, I'm authenticating everything. TODO: real auth
-	w.WriteHeader(http.StatusOK)
 	queryParams := req.URL.Query()
-	id := queryParams.Get("id")
-	AllUsers[id] = true
+	queryId := queryParams.Get("id")
+	var uuid string
+	if queryId == "" {
+		newId, err := CreateNewUser()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		uuid = newId
+	} else {
+		uuid = queryId
+	}
+	userData, err := GetUserSettings(uuid)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf(`{"id":"%s","name":"%s","musicOn":%t,"sfxOn":%t}`, uuid, userData.name, userData.musicOn, userData.sfxOn)))
+	AllUsers[uuid] = true
 }
 
 func HandleBrawlUrlRequest(w http.ResponseWriter, req *http.Request) {

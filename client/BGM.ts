@@ -56,7 +56,7 @@ class BGMManager {
         const soundData = soundTracks.get(music);
         if (soundData) {
             this.audio = scene.sound.add(soundData.key, soundData.config);
-            if (!USER.getSettings().music) this.audio.setVolume(0);
+            if (!USER.getSettings().musicOn) this.audio.setVolume(0);
             this.audio.play();
         } else {
             this.audio = new NullAudio();

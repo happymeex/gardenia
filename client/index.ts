@@ -12,7 +12,7 @@ import Tutorial from "./scenes/Tutorial";
 import Options from "./scenes/Options";
 import { getUserId, setUserId } from "./utils";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
-import { USER } from "./User";
+import { USER, UserSettings } from "./User";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",
@@ -45,19 +45,23 @@ const config: Phaser.Types.Core.GameConfig = {
     },
 };
 
+type UserData = UserSettings & {
+    id: string;
+    name: string;
+};
+
 const id = getUserId();
-if (id === null) {
-    fetch("/new-id")
-        .then((res) => res.text())
-        .then((id) => {
-            USER.setName(id);
-            console.log("got id:", id);
-            setUserId(id);
-        });
-} else {
-    console.log("existing id:", id);
-    USER.setName(id);
-    fetch(`/auth?id=${id}`);
+let authURL = "/auth";
+if (id !== null) {
+    authURL += `?id=${id}`;
 }
+fetch(authURL)
+    .then((res) => res.text())
+    .then((data) => {
+        const userData: UserData = JSON.parse(data);
+        setUserId(userData.id);
+        USER.setName(userData.name);
+        USER.setSettings(userData);
+    });
 
 const game = new Phaser.Game(config);

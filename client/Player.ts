@@ -235,7 +235,7 @@ class Player extends BaseSprite {
             this.updateMana(-this.spriteData.attackData.manaUsage);
             anim = `${spriteSheet}-attack`;
             this.attackState = AttackState.ATTACKING;
-            if (USER.getSettings().soundFX) {
+            if (USER.getSettings().sfxOn) {
                 this.onSound(Sound.PLAYER_ATTACK);
                 const soundData = soundTracks.get(Sound.PLAYER_ATTACK);
                 if (soundData !== undefined) {

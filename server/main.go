@@ -6,11 +6,18 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+
+	"github.com/joho/godotenv"
 )
 
 const PORT = "8080"
 
-func main(){
+func main() {
+	godotenv.Load() // load env vars from .env
+
+	ConnectToDB()
+	InitializeDB()
+
 	var prodMode bool
 	flag.BoolVar(&prodMode, "prod", false, "Specifies production mode")
 	flag.Parse()
@@ -18,7 +25,7 @@ func main(){
 	if prodMode {
 		fs := http.FileServer(http.Dir("./client/dist/assets/"))
 		http.Handle("/assets/", http.StripPrefix("/assets/", fs))
-		http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request){
+		http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 			http.ServeFile(w, req, "./client/dist/index.html")
 		})
 	} else {
@@ -28,9 +35,8 @@ func main(){
 	}
 
 	http.HandleFunc("/ws/", HandleWebSocket)
-	http.HandleFunc("/new-id", HandleIdRequest)
 	http.HandleFunc("/new-brawl-id", HandleBrawlUrlRequest)
 	http.HandleFunc("/auth", HandleAuth)
 	fmt.Println("Listening on port:", PORT)
-	http.ListenAndServe(":" + PORT, nil)
+	http.ListenAndServe(":"+PORT, nil)
 }
