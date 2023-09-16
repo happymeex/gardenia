@@ -202,14 +202,18 @@ class Brawl extends Phaser.Scene implements BattleScene {
             if (spritePinger !== undefined) clearInterval(spritePinger);
         };
         const spritePinger = setInterval(() => {
-            this.socket.send(
-                `data_${JSON.stringify({
-                    [Field.SOURCE]: this.uid,
-                    [Field.TYPE]: MsgTypes.SPRITE,
-                    [Field.POSITION]: this.player.getPosition(),
-                    [Field.APPEARANCE]: this.player.getAppearance(),
-                })}`
-            );
+            try {
+                this.socket.send(
+                    `data_${JSON.stringify({
+                        [Field.SOURCE]: this.uid,
+                        [Field.TYPE]: MsgTypes.SPRITE,
+                        [Field.POSITION]: this.player.getPosition(),
+                        [Field.APPEARANCE]: this.player.getAppearance(),
+                    })}`
+                );
+            } catch (e) {
+                clearInterval(spritePinger);
+            }
         }, 30); // 33 fps
         this.processes.set(SPRITE_PINGER_PROCESS_NAME, spritePinger);
         const { pause, resume, leave } = this.makeFlowControlFunctions();
