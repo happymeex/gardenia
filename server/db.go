@@ -62,7 +62,7 @@ type UserData struct {
 // Inserts a new user into the database with default settings.
 // Returns the user's UUID.
 func CreateNewUser() (string, error) {
-	name := GenerateUntilNew(&AllUsers)
+	name := GenerateRandomString(1)
 	var generatedUUID string
 	err := GardeniaDB.QueryRow(fmt.Sprintf(`INSERT INTO users (id, name) VALUES (gen_random_uuid(), '%s')
 		RETURNING id;`, name)).Scan(&generatedUUID)

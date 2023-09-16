@@ -6,8 +6,6 @@ import (
 	"strconv"
 )
 
-var AllUsers = make(map[string]bool)
-
 func HandleAuth(w http.ResponseWriter, req *http.Request) {
 	queryParams := req.URL.Query()
 	queryId := queryParams.Get("id")
@@ -29,7 +27,6 @@ func HandleAuth(w http.ResponseWriter, req *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf(`{"id":"%s","name":"%s","musicOn":%t,"sfxOn":%t}`, uuid, userData.name, userData.musicOn, userData.sfxOn)))
-	AllUsers[uuid] = true
 }
 
 // HandleUpdateSettings update's a user's settings. It expects three fields
@@ -61,8 +58,7 @@ func HandleBrawlUrlRequest(w http.ResponseWriter, req *http.Request) {
 	queryParams := req.URL.Query()
 	id := queryParams.Get("id")
 	fmt.Println("id requesting brawl:", id)
-	_, exists := AllUsers[id]
-	if id == "" || !exists {
+	if id == "" {
 		fmt.Println("unauthorized")
 		w.WriteHeader(http.StatusUnauthorized)
 	} else {

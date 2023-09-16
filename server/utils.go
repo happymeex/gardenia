@@ -4,6 +4,8 @@ import (
 	"math/rand"
 )
 
+// GenerateRandomString returns a randomly selected string of the form
+// `Adjective...AdjectiveNoun`, where there are `numAdj` adjectives before the noun.
 func GenerateRandomString(numAdj int) string {
 	ret := ""
 	n := len(adjectives)
@@ -12,7 +14,7 @@ func GenerateRandomString(numAdj int) string {
 		ret += adjectives[rand.Intn(n)]
 	}
 	ret += nouns[rand.Intn(m)]
-	return ret;
+	return ret
 }
 
 func GenerateUntilNew[T any](b *map[string]T) string {
@@ -25,21 +27,22 @@ func GenerateUntilNew[T any](b *map[string]T) string {
 				return try
 			}
 		}
-		numAdj++;
+		numAdj++
 	}
 }
 
 var adjectives = []string{
-	"Big", "Fuzzy",	"Sweet", "Purple", "Green", "Blue", "Strong", "Mighty", "Majestic",
+	"Big", "Fuzzy", "Sweet", "Purple", "Green", "Blue", "Strong", "Mighty", "Majestic",
 	"Proud", "Determined", "Clever", "Small", "Tiny", "Cute", "Fluffy", "Soothing", "Elegant",
 	"Funny", "Happy", "Thoughtful", "Wooden", "Shiny", "Graceful", "Timid", "Aggressive",
 	"Teal", "Sapphire", "Ancient", "Lucid", "Healthy", "Misty", "Mysterious", "Red", "Ferocious",
 	"Tasteful", "Wondrous", "Brilliant", "Keen", "Energetic", "Mystic", "Dedicated", "True",
 	"Generous", "Windy", "Pearly", "Mindful", "Nimble", "Quiet", "Curious", "Humble", "Super",
-	"Industrious", "Kind", "Dutiful", "Capable", "Pleasant", "Precious", "Fearless", "Nice", 
+	"Industrious", "Kind", "Dutiful", "Capable", "Pleasant", "Precious", "Fearless", "Nice",
 	"Agreeable", "Judicious", "Timely", "Diligent", "Persistent", "Harmonious", "Reasonable",
 	"Rational", "Empathetic", "Cordial", "Tractable", "Great", "Charming", "Handsome", "Fatherly",
-	"Daring", "Gifted",
+	"Daring", "Gifted", "Talented", "Trustworthy", "Creative", "Reliable", "Sincere", "Loyal",
+	"Likable", "Adept", "Brave", "Efficient", "Stylish", "Enlightened", "Flexible", "Motherly",
 }
 
 var nouns = []string{
@@ -52,4 +55,5 @@ var nouns = []string{
 	"Tomato", "Kangaroo", "Ostrich", "Alpaca", "Llama", "Meex", "Poppy", "Snack", "Platypus", "Elf",
 	"Sage", "Monk", "Farmer", "Sower", "Leaf", "Petunia", "Gardener", "Artist", "Feather", "Guard",
 	"Traveler", "Adventurer", "Pear", "Grape", "MustardSeed", "Frog", "Tadpole", "Painter", "Giraffe",
+	"Wren", "Ibex", "Ibis", "Jacana", "Motmot", "Asp", "Beagle",
 }
