@@ -18,8 +18,16 @@ func main() {
 		port = "8080"
 	}
 
-	ConnectToDB()
-	InitializeDB()
+	err := ConnectToDB()
+	if err == nil {
+		err = InitializeDB()
+		if err != nil {
+			fmt.Println("Failed to connect to DB:", err)
+		}
+	} else {
+		fmt.Println("Failed to connect to DB:", err)
+		return
+	}
 
 	var prodMode bool
 	flag.BoolVar(&prodMode, "prod", false, "Specifies production mode")

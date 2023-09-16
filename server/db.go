@@ -13,11 +13,11 @@ var GardeniaDB *sql.DB
 
 // ConnectToDB opens a connection to the database and makes `GardeniaDB` point to it.
 func ConnectToDB() error {
-	db_host := os.Getenv("DB_HOST")
-	db_port := os.Getenv("DB_PORT")
-	db_user := os.Getenv("DB_USER")
-	db_name := os.Getenv("DB_NAME")
-	db_password := os.Getenv("DB_PASSWORD")
+	db_host := os.Getenv("PGHOST")
+	db_port := os.Getenv("PGPORT")
+	db_user := os.Getenv("PGUSER")
+	db_name := os.Getenv("PGDATABASE")
+	db_password := os.Getenv("PGPASSWORD")
 	connectionStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
 		db_host, db_port, db_user, db_password, db_name)
 	db, err := sql.Open("postgres", connectionStr)
