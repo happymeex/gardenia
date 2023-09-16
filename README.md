@@ -16,10 +16,10 @@ if enough people show interest.
 
 The server is written in Go, and the client is written in TypeScript using the [PhaserJS game engine](https://phaser.io/).
 
-To run locally, clone this repository and make sure you have Go and PostgreSQL installed.
+To run locally, clone this repository and make sure you have Go, Redis, and PostgreSQL installed.
 Configure a new database in Postgres and populate the environment variables `PGDATABASE`, `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`
 with the database name, host URL (likely just `localhost`), port number, username, and
-password, respectively. (You can put them in a `.env` file
+password, respectively. For Redis, create an environment variable `REDIS_URL`. (You can put these all in a `.env` file
 in the root directory.)
 
 Next, run `npm i` and `npm run dev` to start the development server.
