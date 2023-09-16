@@ -6,14 +6,17 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 
 	"github.com/joho/godotenv"
 )
 
-const PORT = "8080"
-
 func main() {
 	godotenv.Load() // load env vars from .env
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	ConnectToDB()
 	InitializeDB()
@@ -38,6 +41,6 @@ func main() {
 	http.HandleFunc("/new-brawl-id", HandleBrawlUrlRequest)
 	http.HandleFunc("/auth", HandleAuth)
 	http.HandleFunc("/update-setting", HandleUpdateSettings)
-	fmt.Println("Listening on port:", PORT)
-	http.ListenAndServe(":"+PORT, nil)
+	fmt.Println("Listening on port:", port)
+	http.ListenAndServe(":"+port, nil)
 }
