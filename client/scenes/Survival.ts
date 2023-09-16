@@ -31,6 +31,7 @@ import { CombatManager } from "../CombatManager";
 import { menuTextStyleBase, paragraphTextStyleBase } from "../utils/ui";
 import { addWaterfallBackground } from "../utils/backgrounds";
 import { BGM } from "../BGM";
+import { USER } from "../User";
 
 class Survival extends Phaser.Scene {
     /** Manages arrow key and space bar presses. */
@@ -88,12 +89,12 @@ class Survival extends Phaser.Scene {
         this.combatManager = new CombatManager();
         const { setHealthUI, setManaUI, changeIcon } = addPlayerStatusUI(
             this,
-            "Meex",
+            USER.getName(),
             CANVAS_WIDTH / 2,
             CANVAS_HEIGHT - 70
         );
         this.player = new Player(
-            "Meex",
+            USER.getName(),
             this,
             platforms,
             CANVAS_WIDTH / 2,
