@@ -1,4 +1,5 @@
 import { BGM } from "./BGM";
+import { getUserId } from "./utils";
 
 export interface UserSettings {
     /** If true, sound effects (punching, damage, etc.) play. */
@@ -21,6 +22,9 @@ export const OPTIONS: Array<{
         label: "Sound Effects",
         onChange: (state: boolean) => {
             USER.setSetting("sfxOn", state);
+            fetch(
+                `/update-setting?id=${getUserId()}&setting=sfxOn&value=${state}`
+            );
         },
         setting: "sfxOn",
     },
@@ -28,6 +32,9 @@ export const OPTIONS: Array<{
         label: "Music",
         onChange: (state: boolean) => {
             USER.setSetting("musicOn", state);
+            fetch(
+                `/update-setting?id=${getUserId()}&setting=musicOn&value=${state}`
+            );
         },
         setting: "musicOn",
     },

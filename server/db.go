@@ -18,7 +18,6 @@ func ConnectToDB() error {
 	db_user := os.Getenv("DB_USER")
 	db_name := os.Getenv("DB_NAME")
 	db_password := os.Getenv("DB_PASSWORD")
-	fmt.Println("trying to connect to:", db_host, db_port, db_user, db_name, db_password)
 	connectionStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
 		db_host, db_port, db_user, db_password, db_name)
 	db, err := sql.Open("postgres", connectionStr)
@@ -95,4 +94,12 @@ func GetUserSettings(id string) (*UserData, error) {
 	ret.musicOn = musicOn
 	ret.sfxOn = sfxOn
 	return &ret, nil
+}
+
+// UpdateBooleanSetting updates the settings table in the database by
+// finding the user with the given id and changing the given setting to
+// the given value.
+func UpdateBooleanSetting(id, setting string, value bool) error {
+	_, err := GardeniaDB.Exec(fmt.Sprintf(`UPDATE settings SET %s=%t WHERE userId='%s'`, setting, value, id))
+	return err
 }

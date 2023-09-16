@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 var AllUsers = make(map[string]bool)
@@ -29,6 +30,31 @@ func HandleAuth(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf(`{"id":"%s","name":"%s","musicOn":%t,"sfxOn":%t}`, uuid, userData.name, userData.musicOn, userData.sfxOn)))
 	AllUsers[uuid] = true
+}
+
+// HandleUpdateSettings update's a user's settings. It expects three fields
+// in the query: id, setting, and value.
+func HandleUpdateSettings(w http.ResponseWriter, req *http.Request) {
+	queryParams := req.URL.Query()
+	id := queryParams.Get("id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	setting := queryParams.Get("setting")
+	if setting == "musicOn" || setting == "sfxOn" {
+		value, err := strconv.ParseBool(queryParams.Get("value"))
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		err = UpdateBooleanSetting(id, setting, value)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func HandleBrawlUrlRequest(w http.ResponseWriter, req *http.Request) {
