@@ -65,7 +65,7 @@ export const soundTracks = new Map<Sound, SoundData>([
     ],
     [
         Sound.MENU_THEME,
-        { key: SoundKey.MENU, config: { loop: true, volume: 0.7 } },
+        { key: SoundKey.MENU, config: { loop: true, volume: 0.2 } },
     ],
     [
         Sound.TUTORIAL_THEME,

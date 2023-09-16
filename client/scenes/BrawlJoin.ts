@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { CANVAS_CENTER, ImageAsset, SpriteSheet } from "../constants";
+import { CANVAS_CENTER, ImageAsset } from "../constants";
 import {
     menuTextStyleBase,
     paragraphTextStyleBase,
@@ -9,8 +9,8 @@ import {
     baseColor,
     makeClickable,
 } from "../ui";
+import { USER } from "../User";
 import {
-    getUserId,
     makeBrawlWebSocket,
     undarkenText,
     darkenText,
@@ -118,7 +118,7 @@ class BrawlJoin extends Phaser.Scene {
         };
     }
     private makeJoinHandler() {
-        const id = getUserId();
+        const id = USER.getName();
         if (id === null) throw new Error("Unexpected null id!");
         return () => {
             this.joinCodeInput.node.setAttribute("disabled", "");
@@ -128,7 +128,6 @@ class BrawlJoin extends Phaser.Scene {
             this.socket = socket;
             socket.onopen = (e) => {};
             socket.onmessage = (e) => {
-                console.log("got message:", e.data);
                 const start = () => {
                     socket.send("begin_");
                     this.socket.onerror = () => {};

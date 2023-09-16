@@ -111,7 +111,6 @@ export class BaseSprite implements HasHealth {
     public die() {
         this.sprite.setVelocityX(0);
         this.sprite.anims.play("death");
-        console.log(this.name, "died");
     }
 
     /**
