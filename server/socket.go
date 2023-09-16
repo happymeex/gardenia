@@ -75,7 +75,6 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 
 	// add the user to the network and let everyone know
 	b.sockets[uid] = conn
-	fmt.Println("currently connected:", b.sockets)
 	b.sendIdList()
 
 	for {
@@ -100,25 +99,19 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 		switch msgParts[0] {
 		case "begin":
 			if !b.active {
-				fmt.Println("Creating new brawl")
 				b.active = true
 				// notify all other clients, each then pings "begin" through its own socket connection
 				for _, connection := range b.sockets {
 					err := connection.WriteMessage(websocket.TextMessage, []byte("activate"))
 					if err != nil {
-						fmt.Println(err)
+						return
 					}
 				}
 				go b.StartBrawl()
-			} else {
-				fmt.Println("already began")
 			}
-
 		case "data":
 			// pipe data through channel; StartBrawl func listens on other side for data to pipe to all clients
 			UserInput <- msgParts[1]
-		default:
-			fmt.Println(msgParts[0])
 		}
 	}
 }

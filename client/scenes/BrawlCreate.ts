@@ -87,7 +87,6 @@ class BrawlCreate extends Phaser.Scene {
                     // possibly do something here
                 };
                 socket.onmessage = (e) => {
-                    console.log("got message:", e.data);
                     const msg = e.data as string;
                     const start = () => {
                         socket.send("begin_");
