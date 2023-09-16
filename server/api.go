@@ -58,9 +58,8 @@ func HandleUpdateSettings(w http.ResponseWriter, req *http.Request) {
 func HandleBrawlUrlRequest(w http.ResponseWriter, req *http.Request) {
 	queryParams := req.URL.Query()
 	id := queryParams.Get("id")
-	fmt.Println("id requesting brawl:", id)
-	if id == "" {
-		fmt.Println("unauthorized")
+	_, err := NameFromId(id)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 	} else {
 		brawlId := GenerateUntilNew(&AllBrawls)

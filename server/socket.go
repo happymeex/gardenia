@@ -48,10 +48,11 @@ func HandleWebSocket(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// disallow unauthorized users
-	//_, userExists := AllUsers[uid]
-	//if !userExists {
-	//	sendErrorMessage("You seem to be an unauthorized user. Refresh the page?")
-	//}
+	_, err := NameFromId(uid)
+	if err != nil {
+		sendErrorMessage("You seem unauthorized. Try refreshing the page, or clearing cookies.")
+		return
+	}
 
 	// disallow multiple connections by the same user
 	_, alreadyConnected := b.sockets[uid]
