@@ -63,6 +63,8 @@ class Player extends BaseSprite {
      * @param onManaChange callback executed when the player's mana changes.
      * @param onTransform callback executed when the player transforms.
      * @param direction initial direction that the player is facing. Defaults to "right".
+     * @param spriteFX optional function called once in the constructor to apply a visual effect
+     *      to the player character's sprite.
      */
     public constructor(
         name: string,
@@ -75,7 +77,8 @@ class Player extends BaseSprite {
         private onManaChange: (ratio: number) => void,
         private onTransform: (target: SpriteSheet) => void,
         private onSound: (sound: Sound) => void,
-        direction: "left" | "right"
+        direction: "left" | "right",
+        spriteFX?: (sprite: Phaser.GameObjects.Sprite) => void
     ) {
         super(name, scene, playerSpriteMetaData, x, y, onDeath, direction);
         scene.physics.add.collider(this.sprite, platforms, this.makeCollider());
@@ -95,6 +98,7 @@ class Player extends BaseSprite {
                 }
             }
         );
+        if (spriteFX) spriteFX(this.sprite);
         const regenHealth = setInterval(() => {
             if (scene.scene.isActive()) {
                 if (!scene.getIsPaused())

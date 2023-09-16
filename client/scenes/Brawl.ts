@@ -7,6 +7,7 @@ import {
     BattleScene,
     fadeToNextScene,
     showNotification,
+    addGlow,
 } from "../utils";
 import {
     makeClickable,
@@ -309,7 +310,8 @@ class Brawl extends Phaser.Scene implements BattleScene {
                             })}`
                         );
                     },
-                    "right"
+                    "right",
+                    addGlow
                 );
                 this.player.registerAsCombatant(combatManager, id);
             } else {

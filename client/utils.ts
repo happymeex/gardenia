@@ -504,3 +504,11 @@ export function composeBuffs(buff1: Buff, buff2: Buff): Buff {
     };
     return ret;
 }
+
+/**
+ * Adds a weak white glow around sprite. Use for distinguishing the player
+ * character in brawl.
+ */
+export function addGlow(sprite: Phaser.GameObjects.Sprite) {
+    sprite.postFX.addGlow(0xffffff, 1.5, 0, false, 0.1, 7);
+}
