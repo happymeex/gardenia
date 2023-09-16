@@ -2,18 +2,27 @@
 
 This repository contains the source code behind Gardenia,
 a browser-based 2D platformer game inspired by Hollow Knight.
-The server is written in Go, and the client is written using the PhaserJS game engine.
+You play as a shapeshifting forest spirit who must protect her
+home from encroaching robot enemies.
 
-Gardenia is currently in development.
-The goal is to support survival mode, brawl mode (multiplayer Smash-style),
-and eventually a story mode.
+<img src="https://i.imgur.com/7STtkWz.jpg" height="300">
+<img src="https://i.imgur.com/qEUJZk4.jpg" height="300">
+
+Gardenia currently supports a survival mode and a brawl mode (multiplayer Smash-style).
+Development of a story mode is on indefinite hiatus, but I may revisit it
+if enough people show interest.
 
 ## Development
 
-To run locally, install Go, run `npm i`, and run `npm run dev`.
-This starts both the Go server and a Vite development server.
-HTTP requests for HTML/JS assets are forwarded by the former to the latter.
-Visit `localhost:8080` to play the game.
+The server is written in Go, and the client is written in TypeScript using the [PhaserJS game engine](https://phaser.io/).
 
-If you do not wish to install Go, you can run `npm start` which should
-build and run the game in a Docker image.
+To run locally, clone this repository and make sure you have Go and PostgreSQL installed.
+Configure a new database in Postgres and populate the environment variables `PGDATABASE`, `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`
+with the database name, host URL (likely just `localhost`), port number, username, and
+password, respectively. (You can put them in a `.env` file
+in the root directory.)
+
+Next, run `npm i` and `npm run dev` to start the development server.
+It supports hot-module-reloading for the client via vite.
+To run in production mode, you can `npm run build` and `npm start`.
+Visit `localhost:8080` to play the game.
