@@ -1,7 +1,7 @@
 # Gardenia
 
 This repository contains the source code behind Gardenia,
-a browser-based 2D platformer game inspired by Hollow Knight.
+a browser-based 2D platformer game.
 You play as a shapeshifting forest spirit who must protect her
 home from encroaching robot enemies.
 
@@ -26,3 +26,21 @@ Next, run `npm i` and `npm run dev` to start the development server.
 It supports hot-module-reloading for the client via vite.
 To run in production mode, you can `npm run build` and `npm start`.
 Visit `localhost:8080` to play the game.
+
+## Acknowledgements
+
+The game aesthetic takes inspiration from games like Hollow Knight and Celeste.
+I am reponsible for all the art, animation, music, and UI design.
+
+---
+
+Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
+
+This work is licensed under a
+[Creative Commons Attribution 4.0 International License][cc-by].
+
+[![CC BY 4.0][cc-by-image]][cc-by]
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+[cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
