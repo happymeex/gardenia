@@ -61,6 +61,22 @@ class SurvivalSettings extends Phaser.Scene {
             );
         });
 
+        // Difficulty Setting
+        this.add.text(CANVAS_CENTER[0] - 100, CANVAS_CENTER[1] - 50, "Difficulty:", menuTextStyleBase)
+            .setOrigin(0.5);
+
+        const difficultySelect = this.add.dom(CANVAS_CENTER[0] + 50, CANVAS_CENTER[1] - 50, 'select', {
+            style: 'background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white; padding: 5px;',
+            options: difficultyLevels.join('|')
+        })
+            .setOrigin(0.5)
+            .addListener('change')
+            .on('change', (event) => {
+                const selectedDifficulty = (difficultySelect.node as HTMLSelectElement).value as typeof difficultyLevels[number];
+                console.log('Selected difficulty:', selectedDifficulty);
+                this.survivalDifficultyParams = getDifficultyParams(selectedDifficulty);
+            });
+
         // Difficulty selection UI
         const rowSpacing = 50;
         const diffContainer = this.add.container(

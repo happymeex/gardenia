@@ -58,6 +58,23 @@ class BrawlSettings extends Phaser.Scene {
             mainMenuFade.value = false;
             this.scene.start("main-menu");
         });
+
+        // Difficulty Setting
+        this.add.text(CANVAS_CENTER[0] - 100, CANVAS_CENTER[1] - 50, "Difficulty:", menuTextStyleBase)
+            .setOrigin(0.5);
+
+        const difficultySelect = this.add.dom(CANVAS_CENTER[0] + 50, CANVAS_CENTER[1] - 50, 'select', {
+            style: 'background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white; padding: 5px;',
+            options: 'Easy|Medium|Hard'
+        })
+            .setOrigin(0.5)
+            .addListener('change')
+            .on('change', (event) => {
+                const selectedDifficulty = (difficultySelect.node as HTMLSelectElement).value;
+                console.log('Selected difficulty:', selectedDifficulty);
+                // Store the selected difficulty in a variable or use it to adjust game settings
+            });
+
         container.add(
             [header, subHeader, returnToHome, joinBrawl, orText, createNew].map(
                 (item) => item.setOrigin(0.5)
