@@ -12,8 +12,7 @@ import (
 var RedisClient *redis.Client
 var ctx = context.Background()
 
-// Opens a connection to a Redis DB with a volatile-lru eviction policy.
-func ConnectToRedis() error {
+// ConnectToRedis opens a Redis connection and sets eviction policy to volatile-lru.
 	redisURI := os.Getenv("REDIS_URL")
 	opt, err := redis.ParseURL(redisURI)
 	if err != nil {
@@ -32,14 +31,12 @@ func ConnectToRedis() error {
 	return nil
 }
 
-// RedisAddUser adds an (id, name) pair to the Redis database.
-func RedisAddUser(id, name string) error {
+// RedisAddUser stores a user (id, name) in Redis for 72 hours.
 	err := RedisClient.Set(ctx, id, name, 72*time.Hour).Err()
 	return err
 }
 
-// Gets the name correspondin to an id. Non-nil error if the id is invalid.
-func NameFromId(id string) (string, error) {
+// NameFromId returns the name for a given id. If not in Redis, checks DB. Returns error if not found.
 	name, err := RedisClient.Get(ctx, id).Result()
 	if err == redis.Nil {
 		// if not in Redis cache, check DB

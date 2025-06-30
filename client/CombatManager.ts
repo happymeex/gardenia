@@ -69,16 +69,10 @@ class CombatManager implements ICombatManager {
     }
 
     /**
-     * Adds a combatant. Adding a combatant this way only guarantees that it can be hit.
-     * For its attacks to be relayed to the rest of the combatants, use the `processAttack` method,
-     * See also the `Player` class's `registerAsCombatant` method.
-     *
-     * @param participant if a participant with the same name has already been added, then
-     *      this call will override the previous one.
-     * @param team name used to determine which participants should be able to hit each other.
-     *      Friendly fire is disallowed.
-     * @param onHit optional callback executed when this participant takes damage (immediately
-     *      after its `takeDamage` method is called).
+     * Add a combatant to a team. Overwrites if name exists. No friendly fire.
+     * @param participant Combatant object
+     * @param team Team name
+     * @param onHit Callback after taking damage (optional)
      */
     public addParticipant(
         participant: CanBeHit,
@@ -89,16 +83,15 @@ class CombatManager implements ICombatManager {
         this.nameTracker.set(participant.name, participant);
     }
 
-    /** Removes the participant with the given name. */
+    /** Remove a combatant by name. */
     public removeParticipant(name: string) {
         const participant = this.nameTracker.get(name);
         if (participant !== undefined) this.teams.delete(participant);
     }
     /**
-     *
-     * @param attacker
-     * @param dmg amount of damage dealt by attack
-     * @param aoe indicates whether attack strikes everybody in range.
+     * Process an attack from a combatant. Applies damage to valid targets.
+     * @param attacker Attacker object
+     * @param attack Attack data (damage, aoe, etc)
      */
     public processAttack(attacker: CanBeHit, attack: AttackData) {
         const { damage, aoe } = attack;
@@ -116,7 +109,7 @@ class CombatManager implements ICombatManager {
     }
 
     /**
-     * Updates the projectile handlers.
+     * Set custom projectile handlers for onInit, onUpdate, onRemove.
      */
     public setProjectileHandler(handlers: {
         onUpdate: (projectile: HasLocation) => void;
@@ -125,10 +118,21 @@ class CombatManager implements ICombatManager {
     }) {
         this.projectileHandlers = handlers;
     }
+    /**
+     * Get the current projectile handlers.
+     */
     public getProjectileHandlers() {
         return this.projectileHandlers;
     }
 
+    /**
+     * Register a projectile and handle collisions with opponents.
+     * @param projectile Projectile object
+     * @param projectileTeam Team name for projectile
+     * @param attackData Attack data for projectile
+     * @param onProjectileHit Callback when a target is hit (optional)
+     * @returns Interval ID for collision checker
+     */
     public registerProjectile(
         projectile: Projectile,
         projectileTeam: string,

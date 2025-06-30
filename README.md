@@ -1,46 +1,43 @@
 # Gardenia
 
-This repository contains the source code for [Gardenia](https://gardenia-production.up.railway.app/),
-a browser-based 2D platformer game.
-You play as a shapeshifting forest spirit who must protect her
-home from encroaching robot enemies.
+A browser-based 2D platformer game. Play as a shapeshifting forest spirit defending her home from robots. [Play online](https://gardenia-production.up.railway.app/).
 
-<img src="https://i.imgur.com/7STtkWz.jpg" height="300">
-<img src="https://i.imgur.com/qEUJZk4.jpg" height="300">
+<img src="https://i.imgur.com/7STtkWz.jpg" height="180"> <img src="https://i.imgur.com/qEUJZk4.jpg" height="180">
 
-Gardenia currently supports a survival mode and a brawl mode (multiplayer Smash-style).
-Development of a story mode is on indefinite hiatus, but I may revisit it
-if enough people show interest.
+## Quick Start
 
-## Development
+1. **Requirements:** Go, Node.js, Redis, PostgreSQL
+2. **Clone & Install:**
+   ```sh
+   git clone https://github.com/happymeex/gardenia.git
+   cd gardenia
+   npm install
+   ```
+3. **Configure Environment:**
+   - Set up Postgres and Redis
+   - Add these to `.env`:
+     - `PGDATABASE`, `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `REDIS_URL`
+4. **Run Development Server:**
+   ```sh
+   npm run dev
+   # Visit http://localhost:8080
+   ```
+5. **Production:**
+   ```sh
+   npm run build
+   npm start
+   ```
 
-The server is written in Go, and the client is written in TypeScript using the [PhaserJS game engine](https://phaser.io/).
+## Tech Stack
+- **Server:** Go
+- **Client:** TypeScript + [PhaserJS](https://phaser.io/)
+- **Realtime:** WebSockets
 
-To run locally, clone this repository and make sure you have Go, Redis, and PostgreSQL installed.
-Configure a new database in Postgres and populate the environment variables `PGDATABASE`, `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`
-with the database name, host URL (likely just `localhost`), port number, username, and
-password, respectively. For Redis, create an environment variable `REDIS_URL`. (You can put these all in a `.env` file
-in the root directory.)
-
-Next, run `npm i` and `npm run dev` to start the development server.
-It supports hot-module-reloading for the client via vite.
-To run in production mode, you can `npm run build` and `npm start`.
-Visit `localhost:8080` to play the game.
-
-## Acknowledgements
-
-The game aesthetic takes inspiration from games like Hollow Knight and Celeste.
-I am reponsible for all the art, animation, music, and UI design.
-
----
-
-Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
-
-This work is licensed under a
-[Creative Commons Attribution 4.0 International License][cc-by].
+## License
 
 [![CC BY 4.0][cc-by-image]][cc-by]
 
+Licensed under [CC BY 4.0][cc-by].
+
 [cc-by]: http://creativecommons.org/licenses/by/4.0/
 [cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
-[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
