@@ -19,17 +19,14 @@ export interface ICombatManager {
     processAttack(attacker: CanBeHit, attackData: AttackData): void;
 
     /**
-     * Enters a projectile into the combat system: sets up checker that determines
-     * if the projectile has hit (intersects) any of the combatants in the system
-     * and enacts the appropriate damage/effects. The checker calls projectile handlers `onInit`
-     * and `onUpdate` appropriately.
+     * Registers a projectile in the combat system. Sets up an intersection checker to determine
+     * hits and apply damage/effects. Calls `onInit` and `onUpdate` projectile handlers.
      *
-     * @param projectile
-     * @param projectileTeam team name used to determine projectile's targets/non-targets
-     * @param attackData
-     * @param onProjectileHit callback executed when the projectile has hit at least one target.
-     * @returns the process number of the intersection checker; call `clearInterval` on it when
-     *      the projectile should no longer be able to strike targets.
+     * @param projectile The projectile to register.
+     * @param projectileTeam The team name to determine targets.
+     * @param attackData The attack data for the projectile.
+     * @param onProjectileHit Callback when the projectile hits a target.
+     * @returns The process ID of the intersection checker; call `clearInterval` to stop it.
      */
     registerProjectile(
         projectile: Projectile,
@@ -39,9 +36,7 @@ export interface ICombatManager {
     ): number;
 
     /**
-     * @returns Projectile handlers `onInit`, `onUpdate`, and `onRemove`, to be called
-     *      on creating the projectile, on each projectile frame update, and on projecile removal
-     *      (removal here means literally when the sprite needs to be destroyed).
+     * @returns Projectile handlers `onInit`, `onUpdate`, and `onRemove`.
      */
     getProjectileHandlers(): ProjectileHandlers;
 }
@@ -69,16 +64,11 @@ class CombatManager implements ICombatManager {
     }
 
     /**
-     * Adds a combatant. Adding a combatant this way only guarantees that it can be hit.
-     * For its attacks to be relayed to the rest of the combatants, use the `processAttack` method,
-     * See also the `Player` class's `registerAsCombatant` method.
+     * Adds a combatant. Only guarantees it can be hit. For attacks to be relayed, use `processAttack`.
      *
-     * @param participant if a participant with the same name has already been added, then
-     *      this call will override the previous one.
-     * @param team name used to determine which participants should be able to hit each other.
-     *      Friendly fire is disallowed.
-     * @param onHit optional callback executed when this participant takes damage (immediately
-     *      after its `takeDamage` method is called).
+     * @param participant The combatant to add. Overrides if name exists.
+     * @param team Team name to determine friendly fire.
+     * @param onHit Optional callback after participant takes damage.
      */
     public addParticipant(
         participant: CanBeHit,
