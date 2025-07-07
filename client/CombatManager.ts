@@ -8,19 +8,45 @@ import {
 } from "./utils/constants";
 import { Projectile } from "./Player";
 
+/**
+ * Manages combat-related operations.
+ */
 export interface ICombatManager {
+    /**
+     * Gets the team of a participant.
+     * @param name Participant name
+     * @returns Team name or null
+     */
     getTeam(name: string): string | null;
+
+    /**
+     * Adds a participant to the combat manager.
+     * @param participant Participant to add
+     * @param team Team name
+     * @param onHit Damage callback
+     */
     addParticipant(
         participant: CanBeHit,
         team: string,
         onHit?: (dmg: number) => void
     ): void;
+
+    /**
+     * Removes a participant from the combat manager.
+     * @param name Participant name
+     */
     removeParticipant(name: string): void;
+
+    /**
+     * Processes an attack.
+     * @param attacker Attacking participant
+     * @param attackData Attack data
+     */
     processAttack(attacker: CanBeHit, attackData: AttackData): void;
 
     /**
      * Registers a projectile with hit detection.
-     * @param projectile The projectile to register
+     * @param projectile Projectile to register
      * @param projectileTeam Team name for targeting
      * @param attackData Attack configuration
      * @param onProjectileHit Callback when projectile hits
@@ -33,9 +59,13 @@ export interface ICombatManager {
         onProjectileHit?: () => void
     ): number;
 
-    /** @returns Projectile handlers (onInit, onUpdate, onRemove) */
+    /**
+     * Retrieves projectile handlers.
+     * @returns Projectile handlers
+     */
     getProjectileHandlers(): ProjectileHandlers;
 }
+
 /** Combat manager for game participants */
 class CombatManager implements ICombatManager {
     /** Maps participants to teams. No friendly fire. */
