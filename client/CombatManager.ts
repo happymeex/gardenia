@@ -19,12 +19,12 @@ export interface ICombatManager {
     processAttack(attacker: CanBeHit, attackData: AttackData): void;
 
     /**
-     * Registers a projectile in the combat system with hit detection.
+     * Registers a projectile with hit detection.
      * @param projectile The projectile to register
      * @param projectileTeam Team name for targeting
      * @param attackData Attack configuration
-     * @param onProjectileHit Callback when projectile hits a target
-     * @returns Interval ID for hit detection (use clearInterval to stop)
+     * @param onProjectileHit Callback when projectile hits
+     * @returns Interval ID for hit detection
      */
     registerProjectile(
         projectile: Projectile,
@@ -33,17 +33,17 @@ export interface ICombatManager {
         onProjectileHit?: () => void
     ): number;
 
-    /** @returns Projectile lifecycle handlers (onInit, onUpdate, onRemove) */
+    /** @returns Projectile handlers (onInit, onUpdate, onRemove) */
     getProjectileHandlers(): ProjectileHandlers;
 }
-/** Manages combat between game participants */
+/** Combat manager for game participants */
 class CombatManager implements ICombatManager {
-    /** Maps participants to "team names". Friendly fire is disallowed. */
+    /** Maps participants to teams. No friendly fire. */
     private teams: Map<
         CanBeHit,
         { team: string; onHit?: (dmg: number) => void }
     > = new Map();
-    /** Maps participant names to participants. */
+    /** Maps names to participants. */
     private nameTracker: Map<string, CanBeHit> = new Map();
     private projectileHandlers = voidProjectileHandlers;
     public getTeam(name: string): string | null {
@@ -58,10 +58,10 @@ class CombatManager implements ICombatManager {
     }
 
     /**
-     * Adds a combatant to the system.
-     * @param participant Combat participant (overrides if name exists)
-     * @param team Team name (no friendly fire)
-     * @param onHit Optional damage callback
+     * Adds a combatant.
+     * @param participant Combat participant
+     * @param team Team name
+     * @param onHit Damage callback
      */
     public addParticipant(
         participant: CanBeHit,
@@ -78,9 +78,9 @@ class CombatManager implements ICombatManager {
         if (participant !== undefined) this.teams.delete(participant);
     }
     /**
-     * Processes an attack from one participant to others.
+     * Processes an attack.
      * @param attacker The attacking participant
-     * @param attack Attack data including damage and AOE
+     * @param attack Attack data
      */
     public processAttack(attacker: CanBeHit, attack: AttackData) {
         const { damage, aoe } = attack;
@@ -97,7 +97,7 @@ class CombatManager implements ICombatManager {
         }
     }
 
-    /** Sets projectile lifecycle handlers */
+    /** Sets projectile handlers */
     public setProjectileHandler(handlers: {
         onUpdate: (projectile: HasLocation) => void;
         onInit: (projectile: HasLocation) => void;
@@ -172,11 +172,11 @@ class NullCombatManager implements ICombatManager {
 }
 
 export interface ProjectileHandlers {
-    /** Called each frame for projectile updates */
+    /** Called each frame for updates */
     onUpdate(projectile: HasLocation): void;
     /** Called when projectile is created */
     onInit(projetile: HasLocation): void;
-    /** Called when projectile sprite should be destroyed */
+    /** Called when projectile is destroyed */
     onRemove(projectile: HasLocation): void;
 }
 
