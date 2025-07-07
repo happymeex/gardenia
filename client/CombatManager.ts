@@ -19,17 +19,12 @@ export interface ICombatManager {
     processAttack(attacker: CanBeHit, attackData: AttackData): void;
 
     /**
-     * Enters a projectile into the combat system: sets up checker that determines
-     * if the projectile has hit (intersects) any of the combatants in the system
-     * and enacts the appropriate damage/effects. The checker calls projectile handlers `onInit`
-     * and `onUpdate` appropriately.
-     *
+     * Registers a projectile in the combat system and sets up hit detection.
      * @param projectile
-     * @param projectileTeam team name used to determine projectile's targets/non-targets
+     * @param projectileTeam team name for targeting
      * @param attackData
-     * @param onProjectileHit callback executed when the projectile has hit at least one target.
-     * @returns the process number of the intersection checker; call `clearInterval` on it when
-     *      the projectile should no longer be able to strike targets.
+     * @param onProjectileHit callback when projectile hits a target
+     * @returns interval ID for the hit checker
      */
     registerProjectile(
         projectile: Projectile,
@@ -39,24 +34,27 @@ export interface ICombatManager {
     ): number;
 
     /**
-     * @returns Projectile handlers `onInit`, `onUpdate`, and `onRemove`, to be called
-     *      on creating the projectile, on each projectile frame update, and on projecile removal
-     *      (removal here means literally when the sprite needs to be destroyed).
+     * @returns Projectile handlers for init, update, and remove events
      */
     getProjectileHandlers(): ProjectileHandlers;
 }
+
 /**
- * Class for managing attacks between in-game combatants (player-controlled or not).
+ * Manages attacks between combatants.
  */
 class CombatManager implements ICombatManager {
-    /** Maps participants to "team names". Friendly fire is disallowed. */
     private teams: Map<
         CanBeHit,
         { team: string; onHit?: (dmg: number) => void }
     > = new Map();
-    /** Maps participant names to participants. */
     private nameTracker: Map<string, CanBeHit> = new Map();
     private projectileHandlers = voidProjectileHandlers;
+
+    /**
+     * Gets the team name for a participant.
+     * @param name participant name
+     * @returns team name or null if not found
+     */
     public getTeam(name: string): string | null {
         const participant = this.nameTracker.get(name);
         if (participant === undefined) return null;
@@ -69,16 +67,10 @@ class CombatManager implements ICombatManager {
     }
 
     /**
-     * Adds a combatant. Adding a combatant this way only guarantees that it can be hit.
-     * For its attacks to be relayed to the rest of the combatants, use the `processAttack` method,
-     * See also the `Player` class's `registerAsCombatant` method.
-     *
-     * @param participant if a participant with the same name has already been added, then
-     *      this call will override the previous one.
-     * @param team name used to determine which participants should be able to hit each other.
-     *      Friendly fire is disallowed.
-     * @param onHit optional callback executed when this participant takes damage (immediately
-     *      after its `takeDamage` method is called).
+     * Adds a combatant to the system.
+     * @param participant combatant to add
+     * @param team team name (no friendly fire)
+     * @param onHit callback when this participant takes damage
      */
     public addParticipant(
         participant: CanBeHit,
@@ -89,16 +81,19 @@ class CombatManager implements ICombatManager {
         this.nameTracker.set(participant.name, participant);
     }
 
-    /** Removes the participant with the given name. */
+    /**
+     * Removes a participant from the system.
+     * @param name participant name
+     */
     public removeParticipant(name: string) {
         const participant = this.nameTracker.get(name);
         if (participant !== undefined) this.teams.delete(participant);
     }
+
     /**
-     *
+     * Processes an attack from one combatant.
      * @param attacker
-     * @param dmg amount of damage dealt by attack
-     * @param aoe indicates whether attack strikes everybody in range.
+     * @param attack attack data including damage and AOE
      */
     public processAttack(attacker: CanBeHit, attack: AttackData) {
         const { damage, aoe } = attack;
@@ -116,19 +111,32 @@ class CombatManager implements ICombatManager {
     }
 
     /**
-     * Updates the projectile handlers.
+     * Sets projectile event handlers.
      */
     public setProjectileHandler(handlers: {
-        onUpdate: (projectile: HasLocation) => void;
-        onInit: (projectile: HasLocation) => void;
-        onRemove: (projectile: HasLocation) => void;
+        onUpdate(projectile: HasLocation): void;
+        onInit(projetile: HasLocation): void;
+        onRemove(projectile: HasLocation): void;
     }) {
         this.projectileHandlers = handlers;
     }
+
+    /**
+     * Gets projectile event handlers.
+     * @returns projectile handlers
+     */
     public getProjectileHandlers() {
         return this.projectileHandlers;
     }
 
+    /**
+     * Registers a projectile in the combat system.
+     * @param projectile
+     * @param projectileTeam team name for targeting
+     * @param attackData
+     * @param onProjectileHit callback when projectile hits a target
+     * @returns interval ID for the hit checker
+     */
     public registerProjectile(
         projectile: Projectile,
         projectileTeam: string,
@@ -193,17 +201,15 @@ class NullCombatManager implements ICombatManager {
 
 export interface ProjectileHandlers {
     /**
-     * Method to be called on each frame update of `projectile`.
+     * Called on each projectile frame update
      */
     onUpdate(projectile: HasLocation): void;
     /**
-     * Method to be called when the projectile is created.
+     * Called when projectile is created
      */
     onInit(projetile: HasLocation): void;
     /**
-     * Callback to be executed the moment the projectile sprite needs to be destroyed.
-     * Note that the combat manager does not handle projectile removal,
-     * so clients will need to call this method themselves.
+     * Called when projectile sprite should be destroyed
      */
     onRemove(projectile: HasLocation): void;
 }
