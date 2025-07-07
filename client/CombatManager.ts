@@ -151,9 +151,9 @@ export interface ProjectileHandlers {
 }
 
 const voidProjectileHandlers: ProjectileHandlers = {
-    onUpdate: (projectile: HasLocation) => {},
-    onInit: (projectile: HasLocation) => {},
-    onRemove: (projectile: HasLocation) => {},
+    onUpdate: (projectile: HasLocation) => { },
+    onInit: (projectile: HasLocation) => { },
+    onRemove: (projectile: HasLocation) => { },
 };
 
 export { CombatManager, NullCombatManager };
