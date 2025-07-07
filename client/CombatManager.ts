@@ -157,3 +157,5 @@ const voidProjectileHandlers: ProjectileHandlers = {
 };
 
 export { CombatManager, NullCombatManager };
+
+// Temporary comment to force a change
