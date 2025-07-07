@@ -8,6 +8,9 @@ import {
 } from "./utils/constants";
 import { Projectile } from "./Player";
 
+/**
+ * Interface for managing combat operations.
+ */
 export interface ICombatManager {
     getTeam(name: string): string | null;
     addParticipant(
@@ -28,8 +31,7 @@ export interface ICombatManager {
 
 /**
  * Manages combat encounters, including turn order, attack resolution, and combat state.
- */
-class CombatManager implements ICombatManager {
+ */class CombatManager implements ICombatManager {
     private teams: Map<
         CanBeHit,
         { team: string; onHit?: (dmg: number) => void }
@@ -122,6 +124,9 @@ class CombatManager implements ICombatManager {
     }
 }
 
+/**
+ * A null implementation of ICombatManager for testing or default scenarios.
+ */
 class NullCombatManager implements ICombatManager {
     removeParticipant(name: string): void {
         return;
@@ -151,6 +156,9 @@ class NullCombatManager implements ICombatManager {
     }
 }
 
+/**
+ * Handlers for projectile lifecycle events.
+ */
 export interface ProjectileHandlers {
     onUpdate(projectile: HasLocation): void;
     onInit(projectile: HasLocation): void;
