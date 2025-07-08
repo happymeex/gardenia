@@ -2,9 +2,6 @@ import Phaser from "phaser";
 import { DEFAULT_FADE_TIME, Sound, soundTracks } from "./utils/constants";
 import { USER } from "./User";
 
-/**
- * Sentinel object.
- */
 class NullAudio {
     public play() {
         throw new Error("Audio is currently null");
@@ -25,27 +22,10 @@ type Audio =
     | Phaser.Sound.WebAudioSound
     | NullAudio;
 
-/**
- * An object of this class manages the background music for all scenes in the game.
- */
 class BGMManager {
-    /** This audio object interfaces with Phaser's audio APIs. */
     private audio: Audio = new NullAudio();
     private currMusic: Sound = Sound.SILENCE;
 
-    /**
-     * Stops and destroys music that may currently be playing
-     * and starts playing the music specific by `music`.
-     *
-     * If the music isn't found, plays nothing.
-     * If `music` is currently being played, calling this method will
-     * restart it, unless `fromStart` is set to false.
-     *
-     * @param scene current scene
-     * @param music key indicating which soundtrack to play
-     * @param fromStart if false, then attempting to play music that's already
-     *      playing will do nothing. Otherwise, music will always play from the beginning.
-     */
     public play(scene: Phaser.Scene, music: Sound, fromStart = true): void {
         if (!fromStart && this.currMusic === music) {
             return;
@@ -63,17 +43,10 @@ class BGMManager {
         }
     }
 
-    /**
-     * Sets audio volume to 0.
-     */
     public hideMusic() {
         this.audio.setVolume(0);
     }
 
-    /**
-     * Restores music volume to the proper level (i.e. the level specified by the
-     * soundtrack most recently passed to the `play` method)
-     */
     public restoreMusic() {
         console.log("restoring music");
         const soundData = soundTracks.get(this.currMusic);
@@ -83,12 +56,6 @@ class BGMManager {
         }
     }
 
-    /**
-     * Fades the currently playing audio to 0 volume.
-     *
-     * @param scene
-     * @param duration how long the fadeout should take. By default, it's `DEFAULT_FADE_TIME`.
-     */
     public fadeOut(scene: Phaser.Scene, duration = DEFAULT_FADE_TIME) {
         scene.tweens.add({
             targets: this.audio,
