@@ -6,17 +6,17 @@ import { USER } from "./User";
  * Sentinel object.
  */
 class NullAudio {
-    public play() {
+    public play(): void {
         throw new Error("Audio is currently null");
     }
-    public resume() {
+    public resume(): void {
         throw new Error("Audio is currently null");
     }
-    public stop() {}
-    public destroy() {}
-    public setVolume(value: number) {}
-    public isPlaying = false;
-    public key = "";
+    public stop(): void {}
+    public destroy(): void {}
+    public setVolume(value: number): void {}
+    public isPlaying: boolean = false;
+    public key: string = "";
 }
 
 type Audio =
@@ -26,76 +26,86 @@ type Audio =
     | NullAudio;
 
 /**
- * An object of this class manages the background music for all scenes in the game.
+ * Manages background music playback.
  */
-class BGMManager {
-    /** This audio object interfaces with Phaser's audio APIs. */
-    private audio: Audio = new NullAudio();
-    private currMusic: Sound = Sound.SILENCE;
+export class BGMManager {
+  private static instance: BGMManager;
+  private audio: Audio = new NullAudio();
+  private currMusic: Sound = Sound.SILENCE;
 
-    /**
-     * Stops and destroys music that may currently be playing
-     * and starts playing the music specific by `music`.
-     *
-     * If the music isn't found, plays nothing.
-     * If `music` is currently being played, calling this method will
-     * restart it, unless `fromStart` is set to false.
-     *
-     * @param scene current scene
-     * @param music key indicating which soundtrack to play
-     * @param fromStart if false, then attempting to play music that's already
-     *      playing will do nothing. Otherwise, music will always play from the beginning.
-     */
-    public play(scene: Phaser.Scene, music: Sound, fromStart = true): void {
-        if (!fromStart && this.currMusic === music) {
-            return;
-        }
-        this.currMusic = music;
+  private constructor() {}
+
+  /**
+   * Get the singleton instance of BGMManager.
+   * @returns The BGMManager instance.
+   */
+  public static getInstance(): BGMManager {
+    if (!BGMManager.instance) {
+      BGMManager.instance = new BGMManager();
+    }
+    return BGMManager.instance;
+  }
+
+  /**
+   * Play a background music track.
+   * @param scene The current Phaser scene.
+   * @param music The key indicating which soundtrack to play.
+   * @param fromStart If false, attempting to play music that's already playing will not restart it.
+   */
+  public play(scene: Phaser.Scene, music: Sound, fromStart = true) {
+    if (this.currMusic === music && !fromStart) {
+      return;
+    }
+
+    this.audio.stop();
+    this.audio.destroy();
+
+    const soundData = soundTracks.get(music);
+    if (soundData) {
+      this.audio = scene.sound.add(music, soundData);
+      this.audio.play();
+      this.currMusic = music;
+    } else {
+      console.warn(`Music with key ${music} not found.`);
+      this.currMusic = Sound.SILENCE;
+    }
+  }
+
+  /**
+   * Stop the currently playing background music.
+   */
+  public hideMusic() {
+    this.audio.setVolume(0);
+  }
+
+  /**
+   * Resume the currently paused background music.
+   */
+  public restoreMusic() {
+    console.log("restoring music");
+    const soundData = soundTracks.get(this.currMusic);
+    if (soundData) {
+      this.audio.setVolume(soundData.volume || 1);
+    }
+  }
+
+  /**
+   * Fade the currently playing audio to 0 volume.
+   * @param scene The current Phaser scene.
+   * @param duration How long the fadeout should take. Defaults to DEFAULT_FADE_TIME.
+   */
+  public fadeOut(scene: Phaser.Scene, duration = DEFAULT_FADE_TIME) {
+    scene.tweens.add({
+      targets: this.audio,
+      volume: 0,
+      duration: duration,
+      onComplete: () => {
         this.audio.stop();
         this.audio.destroy();
-        const soundData = soundTracks.get(music);
-        if (soundData) {
-            this.audio = scene.sound.add(soundData.key, soundData.config);
-            if (!USER.getSettings().musicOn) this.audio.setVolume(0);
-            this.audio.play();
-        } else {
-            this.audio = new NullAudio();
-        }
-    }
-
-    /**
-     * Sets audio volume to 0.
-     */
-    public hideMusic() {
-        this.audio.setVolume(0);
-    }
-
-    /**
-     * Restores music volume to the proper level (i.e. the level specified by the
-     * soundtrack most recently passed to the `play` method)
-     */
-    public restoreMusic() {
-        console.log("restoring music");
-        const soundData = soundTracks.get(this.currMusic);
-        if (soundData) {
-            const volume = soundData.config.volume ?? 1;
-            this.audio.setVolume(volume);
-        }
-    }
-
-    /**
-     * Fades the currently playing audio to 0 volume.
-     *
-     * @param scene
-     * @param duration how long the fadeout should take. By default, it's `DEFAULT_FADE_TIME`.
-     */
-    public fadeOut(scene: Phaser.Scene, duration = DEFAULT_FADE_TIME) {
-        scene.tweens.add({
-            targets: this.audio,
-            volume: 0,
-            duration,
-        });
-    }
+        this.currMusic = Sound.SILENCE;
+      },
+    });
+  }
 }
 
-export const BGM = new BGMManager();
+export const BGM = BGMManager.getInstance();
