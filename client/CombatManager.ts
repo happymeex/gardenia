@@ -30,8 +30,9 @@ export interface ICombatManager {
 }
 
 /**
- * Manages combat encounters, including turn order, attack resolution, and combat state.
- */class CombatManager implements ICombatManager {
+ * Manages combat participants, teams, attacks, and projectiles.
+ */
+class CombatManager implements ICombatManager {
     private teams: Map<
         CanBeHit,
         { team: string; onHit?: (dmg: number) => void }
