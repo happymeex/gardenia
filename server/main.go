@@ -1,3 +1,4 @@
+// Entry point for the Gardenia game server.
 package main
 
 import (
